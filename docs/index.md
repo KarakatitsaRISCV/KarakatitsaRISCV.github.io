@@ -4,5 +4,7 @@
 
 ## Оглавление
 
-* [1. Введение](1.intro.md)
-* [2. Мигалка светодиодом](2.blink.md)
+| Текстовая версия | Видеоверсия |
+|------------------|-------------|
+| [1. Введение](1.intro.md) | [Youtube](https://www.youtube.com/watch?v=ArJey3KuUyA) |
+| [2. Мигалка светодиодом](2.blink.md) | [Youtube](https://www.youtube.com/watch?v=7UrrxNjqqf8) |
