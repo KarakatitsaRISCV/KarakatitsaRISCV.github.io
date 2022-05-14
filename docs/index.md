@@ -9,3 +9,5 @@
 | [1. Введение](1.intro.md) | [Youtube](https://www.youtube.com/watch?v=ArJey3KuUyA) |
 | [2. Мигалка светодиодом](2.blink.md) | [Youtube](https://www.youtube.com/watch?v=7UrrxNjqqf8) |
 | [3. Битовая магия](3.bitmagic.md) | [Youtube](https://www.youtube.com/watch?v=uTbyINbwNvs) |
+| [4. UART](4.uart.md) | [Youtube](https://www.youtube.com/watch?v=uZaMwdrY9Eo) |
+| [5. Организация памяти](5.memory.md) | [Youtube](https://www.youtube.com/watch?v=ECqfoAc8lec) |
