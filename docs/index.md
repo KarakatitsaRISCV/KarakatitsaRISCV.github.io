@@ -11,3 +11,4 @@
 | [3. Битовая магия](3.bitmagic.md) | [Youtube](https://www.youtube.com/watch?v=uTbyINbwNvs) |
 | [4. UART](4.uart.md) | [Youtube](https://www.youtube.com/watch?v=uZaMwdrY9Eo) |
 | [5. Организация памяти](5.memory.md) | [Youtube](https://www.youtube.com/watch?v=ECqfoAc8lec) |
+| [6. Прерывания](6.interrupts.md) | [Youtube](https://www.youtube.com/watch?v=OYTF6iVvZTo) |
