@@ -18,4 +18,4 @@
 | [6. Прерывания](6.interrupts.md) | [Youtube](https://www.youtube.com/watch?v=OYTF6iVvZTo&list=PLc7FYD_FgfqcgaWyrxhSr8cy2q23xCY3Q&index=6) | [исходник](https://github.com/KarakatitsaRISCV/riscv-asm/tree/main/4.interrupt) |
 | [7. Переход на Си](7.C.md) | [Youtube](https://www.youtube.com/watch?v=DDSGIknu4Ak&list=PLc7FYD_FgfqcgaWyrxhSr8cy2q23xCY3Q&index=7) | [исходник](https://github.com/KarakatitsaRISCV/riscv-asm/tree/main/5.C) |
 
-Появился чат для обсуждения: [t.me/KarakatitsaRISCV](t.me/KarakatitsaRISCV)
+Появился чат для обсуждения: [https://t.me/KarakatitsaRISCV](https://t.me/KarakatitsaRISCV)
