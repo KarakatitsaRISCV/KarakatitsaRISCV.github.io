@@ -8,8 +8,8 @@
 
 [Плейлист на Youtube](https://www.youtube.com/watch?v=ArJey3KuUyA&list=PLc7FYD_FgfqcgaWyrxhSr8cy2q23xCY3Q)
 
-| Текстовая версия | Видеоверсия |
-|------------------|-------------|
+| Текстовая версия | Видеоверсия | Исходный код |
+|------------------|-------------|--------------|
 | [1. Введение](1.intro.md) | [Youtube](https://www.youtube.com/watch?v=ArJey3KuUyA&list=PLc7FYD_FgfqcgaWyrxhSr8cy2q23xCY3Q) | []() |
 | [2. Мигалка светодиодом](2.blink.md) | [Youtube](https://www.youtube.com/watch?v=7UrrxNjqqf8&list=PLc7FYD_FgfqcgaWyrxhSr8cy2q23xCY3Q&index=2) | [исходник](https://github.com/KarakatitsaRISCV/riscv-asm/tree/main/1.blink) |
 | [3. Битовая магия](3.bitmagic.md) | [Youtube](https://www.youtube.com/watch?v=uTbyINbwNvs&list=PLc7FYD_FgfqcgaWyrxhSr8cy2q23xCY3Q&index=3) | []() |
@@ -17,5 +17,6 @@
 | [5. Организация памяти](5.memory.md) | [Youtube](https://www.youtube.com/watch?v=ECqfoAc8lec&list=PLc7FYD_FgfqcgaWyrxhSr8cy2q23xCY3Q&index=5) | [исходник](https://github.com/KarakatitsaRISCV/riscv-asm/tree/main/3.memory) |
 | [6. Прерывания](6.interrupts.md) | [Youtube](https://www.youtube.com/watch?v=OYTF6iVvZTo&list=PLc7FYD_FgfqcgaWyrxhSr8cy2q23xCY3Q&index=6) | [исходник](https://github.com/KarakatitsaRISCV/riscv-asm/tree/main/4.interrupt) |
 | [7. Переход на Си](7.C.md) | [Youtube](https://www.youtube.com/watch?v=DDSGIknu4Ak&list=PLc7FYD_FgfqcgaWyrxhSr8cy2q23xCY3Q&index=7) | [исходник](https://github.com/KarakatitsaRISCV/riscv-asm/tree/main/5.C) |
+| [8. Матричная организация периферии](8.matrix.md) | [Youtube](https://www.youtube.com/watch?v=HP7zUQoAAEQ&list=PLc7FYD_FgfqcgaWyrxhSr8cy2q23xCY3Q&index=8) | [клавиатура](https://github.com/KarakatitsaRISCV/riscv-asm/tree/main/6.matrix_kbd) [дисплей](https://github.com/KarakatitsaRISCV/riscv-asm/tree/main/7.matrix_led) |
 
 Появился чат для обсуждения: [https://t.me/KarakatitsaRISCV](https://t.me/KarakatitsaRISCV)
