@@ -19,5 +19,6 @@
 | [7. Переход на Си](7.C.md) | [Youtube](https://www.youtube.com/watch?v=DDSGIknu4Ak&list=PLc7FYD_FgfqcgaWyrxhSr8cy2q23xCY3Q&index=7) | [исходник](https://github.com/KarakatitsaRISCV/riscv-asm/tree/main/5.C) |
 | [8. Матричная организация периферии](8.matrix.md) | [Youtube](https://www.youtube.com/watch?v=HP7zUQoAAEQ&list=PLc7FYD_FgfqcgaWyrxhSr8cy2q23xCY3Q&index=8) | [клавиатура](https://github.com/KarakatitsaRISCV/riscv-asm/tree/main/6.matrix_kbd) [дисплей](https://github.com/KarakatitsaRISCV/riscv-asm/tree/main/7.matrix_led) |
 | [9. Таймеры и тактирование](9.timers.md) | [Youtube](https://www.youtube.com/watch?v=8WR9gepvWAE&list=PLc7FYD_FgfqcgaWyrxhSr8cy2q23xCY3Q&index=9) | [исходник](https://github.com/KarakatitsaRISCV/riscv-asm/tree/main/8.timer) |
+| [10. DMA](10.DMA.md) | [Youtube](https://www.youtube.com/watch?v=myDKs9CTM6k&list=PLc7FYD_FgfqcgaWyrxhSr8cy2q23xCY3Q&index=10) | [исходник](https://github.com/KarakatitsaRISCV/riscv-asm/tree/main/9.DMA) |
 
 Появился чат для обсуждения: [https://t.me/KarakatitsaRISCV](https://t.me/KarakatitsaRISCV)
