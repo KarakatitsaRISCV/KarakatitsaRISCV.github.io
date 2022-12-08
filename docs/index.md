@@ -22,4 +22,6 @@
 | [10. DMA](10.DMA.md) | [Youtube](https://www.youtube.com/watch?v=myDKs9CTM6k&list=PLc7FYD_FgfqcgaWyrxhSr8cy2q23xCY3Q&index=10) | [исходник](https://github.com/KarakatitsaRISCV/riscv-asm/tree/main/9.DMA) |
 | [11. Многозадачность](11.multitask.md) | [Youtube](https://www.youtube.com/watch?v=Pb8y5IBaTto&list=PLc7FYD_FgfqcgaWyrxhSr8cy2q23xCY3Q&index=11) | [конечный автомат](https://github.com/KarakatitsaRISCV/riscv-asm/tree/main/10.Multitask_finite_state_machine); [кооперативная](https://github.com/KarakatitsaRISCV/riscv-asm/tree/main/11.Multitack_Cooperative); [вытесняющая](https://github.com/KarakatitsaRISCV/riscv-asm/tree/main/12.Multitask_preemptive) |
 
+Что такое [Каракатица](Karakatitsa.md)
+
 Появился чат для обсуждения: [https://t.me/KarakatitsaRISCV](https://t.me/KarakatitsaRISCV)
