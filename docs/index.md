@@ -24,6 +24,6 @@
 
 Что такое [Каракатица](Karakatitsa.md)
 
-Как подключиться: [Windows + IDE](Remote_win.md)
+Как подключиться: [Linux](Remote_lin.md) / [Windows + IDE](Remote_win.md)
 
 Появился чат для обсуждения: [https://t.me/KarakatitsaRISCV](https://t.me/KarakatitsaRISCV)
