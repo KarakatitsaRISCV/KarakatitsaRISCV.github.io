@@ -4,6 +4,8 @@
 
 ## Оглавление
 
+[**Внимание, патчи**](patch.md)
+
 [Все исходники, репозиторий](https://github.com/KarakatitsaRISCV/riscv-asm)
 
 [Плейлист на Youtube](https://www.youtube.com/watch?v=ArJey3KuUyA&list=PLc7FYD_FgfqcgaWyrxhSr8cy2q23xCY3Q)
