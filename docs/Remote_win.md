@@ -86,16 +86,18 @@ ssh karakatitsa "cd /home/user/prog/test ; ./prog.sh"
 ```
 #!/bin/bash
 
-stty -F /dev/tty_STFLASH_0 300
-stty -F /dev/tty_STFLASH_0 50
-echo 'RBU' > /dev/tty_STFLASH_0
-echo 'rBU' > /dev/tty_STFLASH_0
+uart_port="/dev/tty_GD32_PROG_0"
+
+stty -F $uart_port 300
+stty -F $uart_port 50
+echo 'RBU' > $uart_port
+echo 'rBU' > $uart_port
 sleep 1
-stm32flash /dev/tty_STFLASH_0 -w test.bin
-stty -F /dev/tty_STFLASH_0 50
-echo 'Rbu' > /dev/tty_STFLASH_0
+stm32flash $uart_port -w test.bin
+stty -F $uart_port 50
+echo 'Rbu' > $uart_port
 sleep 1
-echo 'rbuz' > /dev/tty_STFLASH_0
+echo 'rbuz' > $uart_port
 ```
 
 Поскольку в windows с консолью все плохо, лучше этот файл создать на своей машине, а потом скопировать на сервер и поменять ему права:
