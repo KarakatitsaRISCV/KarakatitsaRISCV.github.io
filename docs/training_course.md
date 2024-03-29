@@ -27,11 +27,13 @@
 
 [Устройство стенда](Karakatitsa.md)
 
-[Настройка сервера **(TODO)**]()
+[Настройка сервера](config_server.md)
+
+Схема и распиновка отладочной платы [GD32VF103](2.blink.html) ([github](https://github.com/KarakatitsaRISCV/riscv-asm/tree/main/doc/gd32vf103_devboard)) и [CH32V303](12.ch32v303_intro.html) ([github](https://github.com/KarakatitsaRISCV/riscv-asm/tree/main/doc/ch32v303_devboard))
 
 Чат для обсуждения: [https://t.me/KarakatitsaRISCV](https://t.me/KarakatitsaRISCV)
 
-Полезные ссылки:
+## Полезные ссылки:
 
 [Видеокурс от UNИX 2022](https://uneex.org/LecturesCMC/ArchitectureAssembler2022)
 
@@ -40,3 +42,5 @@
 [Моя статья на Хабре](https://habr.com/ru/post/533272/) [часть 2](https://habr.com/ru/post/533356/)
 
 [Еще с Хабра](https://habr.com/ru/post/516006/)
+
+Чат по RISC-V контроллерам (**НЕ по Каракатице**): [https://t.me/riscv_mcu](https://t.me/riscv_mcu)
