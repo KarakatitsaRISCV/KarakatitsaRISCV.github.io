@@ -30,3 +30,11 @@
 Как подключиться: [Linux](Remote_lin.md) ([Видео](https://www.youtube.com/watch?v=HGSRCdKj9J0&list=PLc7FYD_FgfqcgaWyrxhSr8cy2q23xCY3Q&index=13)) / [Windows + IDE](Remote_win.md) ([Видео](https://www.youtube.com/watch?v=eAL2aE_qkf4&list=PLc7FYD_FgfqcgaWyrxhSr8cy2q23xCY3Q&index=14)). [Как настроить сервер](config_server.md)
 
 Появился чат для обсуждения: [https://t.me/KarakatitsaRISCV](https://t.me/KarakatitsaRISCV)
+
+[![CC BY 4.0][cc-by-image]][cc-by]
+
+[cc-by]: http://creativecommons.org/licenses/by/4.0/
+
+[cc-by-image]: https://i.creativecommons.org/l/by/4.0/88x31.png
+
+[cc-by-shield]: https://img.shields.io/badge/License-CC%20BY%204.0-lightgrey.svg

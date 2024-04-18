@@ -271,3 +271,11 @@ char usb_log_ep0_in(config_pack_t *req, void **data, uint16_t *size){
 # Заключение
 
 Надеюсь, я сумел в общих чертах описать что же такое Каракатица, для чего она нужна, как работает и как ее воспроизвести в домашних условиях.
+
+[![CC BY 4.0][cc-by-image]][cc-by]
+
+[cc-by]: http://creativecommons.org/licenses/by/4.0/
+
+[cc-by-image]: https://i.creativecommons.org/l/by/4.0/88x31.png
+
+[cc-by-shield]: https://img.shields.io/badge/License-CC%20BY%204.0-lightgrey.svg
