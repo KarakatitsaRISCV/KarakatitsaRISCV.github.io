@@ -24,7 +24,7 @@
 | [10. DMA](10.DMA.md) | [Youtube](https://www.youtube.com/watch?v=myDKs9CTM6k&list=PLc7FYD_FgfqcgaWyrxhSr8cy2q23xCY3Q&index=10) | [исходник](https://github.com/KarakatitsaRISCV/riscv-asm/tree/main/9.DMA) |
 | [11. Многозадачность](11.multitask.md) | [Youtube](https://www.youtube.com/watch?v=Pb8y5IBaTto&list=PLc7FYD_FgfqcgaWyrxhSr8cy2q23xCY3Q&index=11) | [конечный автомат](https://github.com/KarakatitsaRISCV/riscv-asm/tree/main/10.Multitask_finite_state_machine); [кооперативная](https://github.com/KarakatitsaRISCV/riscv-asm/tree/main/11.Multitack_Cooperative); [вытесняющая](https://github.com/KarakatitsaRISCV/riscv-asm/tree/main/12.Multitask_preemptive) |
 | [12. Изготовление платы для CH32V303](12.ch32v303_intro.md) | [Youtube](https://www.youtube.com/watch?v=tPAHEwi4Fzg&list=PLc7FYD_FgfqcgaWyrxhSr8cy2q23xCY3Q&index=14) | [Пример кода на ассемблере](https://github.com/KarakatitsaRISCV/riscv-asm/tree/main/12.2.ch32v303_blink_asm), [Пример кода на Си](https://github.com/KarakatitsaRISCV/riscv-asm/tree/main/12.1.ch32v303_blink_C) |
-| [13. Дробные числа, FPU](13.FPU.md) | [Youtube]() | [исходник](https://github.com/KarakatitsaRISCV/riscv-asm/tree/main/13.FPU) |
+| [13. Дробные числа, FPU](13.FPU.md) | [Youtube](https://www.youtube.com/watch?v=chH1Mggh7MA&list=PLc7FYD_FgfqcgaWyrxhSr8cy2q23xCY3Q&index=15) | [исходник](https://github.com/KarakatitsaRISCV/riscv-asm/tree/main/13.FPU) |
 
 Что такое [Каракатица](Karakatitsa.md)
 
