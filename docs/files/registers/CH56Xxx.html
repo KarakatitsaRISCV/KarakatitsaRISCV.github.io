@@ -1,0 +1,4228 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <title>CH569</title>
+    <script>
+      var found=[];
+      function search(){
+        resetContent();
+        var elements=document.getElementsByClassName("content");
+        var searchText=document.getElementById("search-field").value;
+        for(var i=0; i<elements.length; i++){
+          if(elements[i].textContent.indexOf(searchText)!==-1){
+            expandDetails(elements[i]);
+            if(elements[i].innerText.indexOf(searchText)!==-1){
+              elements[i].style.background='yellow';
+            }
+            found.push(elements[i]);
+          }
+        }
+      }
+      function resetContent(){
+        for(var i=0;i<found.length;i++){
+          found[i].style.background='transparent';
+        }
+        var details=document.getElementsByTagName("DETAILS");
+        for(var i=0;i<details.length;i++){
+          details[i].removeAttribute("open");
+        }
+        found=[];
+      }
+      function expandDetails(element){
+        var tagName=element.tagName;
+        if(tagName==='BODY'){
+          return;
+        }
+        if(tagName==='DETAILS'){
+          element.setAttribute("open","");
+        }
+        expandDetails(element.parentElement);
+      }
+    </script>
+  </head>
+  <body>
+    <H1>CH569</H1>
+
+    <form style="position:fixed; top:0px; left:100px" onsubmit="event.preventDefault(); search();">
+      <input type="search" id="search-field" placeholder="Search the site…" required="" value="addr">
+      <button>Search</button>
+      <button type="button" onclick="resetContent();">Reset</button>
+    </form>
+<ul>
+<li class="content"><details><summary>0x40001000<b style="margin: 20px;">SYS</b>// SYS register</summary>
+<ul>
+<li class="content"><details><summary>0x40001000<b style="margin: 20px;">R8_SAFE_ACCESS_SIG</b>//   safe accessing sign register</summary>
+<ul>
+<li class="content">
+[0:1]<b style="margin: 20px;">RB_SAFE_ACC_MODE</b> (def=0x0)    //    current safe accessing mode
+</li>
+<li class="content">
+[4:6]<b style="margin: 20px;">RB_SAFE_ACC_TIMER</b> (def=0x0)    //    safe accessing timer bit mask
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40001001<b style="margin: 20px;">R8_CHIP_ID</b>//   chip ID register</summary>
+<ul>
+<li class="content">
+[0:7]<b style="margin: 20px;">R8_CHIP_ID</b> (def=0x69)    //    chip ID
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40001002<b style="margin: 20px;">R8_SAFE_ACCESS_ID</b>//   safe accessing ID register</summary>
+<ul>
+<li class="content">
+[0:7]<b style="margin: 20px;">R8_SAFE_ACCESS_ID</b> (def=0x2)    //    safe accessing ID
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40001003<b style="margin: 20px;">R8_WDOG_COUNT</b>//   watch-dog count register</summary>
+<ul>
+<li class="content">
+[0:7]<b style="margin: 20px;">R8_WDOG_COUNT</b> (def=0x0)    //    watch-dog count
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40001004<b style="margin: 20px;">R8_GLOB_ROM_CFG</b>//   flash ROM configuration register</summary>
+<ul>
+<li class="content">
+[0]<b style="margin: 20px;">RB_ROM_EXT_RE</b> (def=0x0)    //    enable flash ROM being read by external programmer
+</li>
+<li class="content">
+[1]<b style="margin: 20px;">RB_CODE_RAM_WE</b> (def=0x0)    //    enable code RAM being write
+</li>
+<li class="content">
+[2]<b style="margin: 20px;">RB_ROM_DATA_WE</b> (def=0x0)    //    enable flash ROM data area being erase/write
+</li>
+<li class="content">
+[3]<b style="margin: 20px;">RB_ROM_CODE_WE</b> (def=0x0)    //    enable flash ROM code_data area being erase/write
+</li>
+<li class="content">
+[4]<b style="margin: 20px;">RB_ROM_CODE_OFS</b> (def=0x0)    //    Config the start offset address of user code in Flash
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40001005<b style="margin: 20px;">R8_RST_BOOT_STAT</b>//   reset status and boot/debug status</summary>
+<ul>
+<li class="content">
+[0:1]<b style="margin: 20px;">RB_RESET_FLAG</b> (def=0x0)    //    recent reset flag
+</li>
+<li class="content">
+[2]<b style="margin: 20px;">RB_CFG_RESET_EN</b> (def=0x0)    //    manual reset input enable status
+</li>
+<li class="content">
+[3]<b style="margin: 20px;">RB_CFG_BOOT_EN</b> (def=0x1)    //    boot-loader enable status
+</li>
+<li class="content">
+[4]<b style="margin: 20px;">RB_CFG_DEBUG_EN</b> (def=0x0)    //    debug enable status
+</li>
+<li class="content">
+[5]<b style="margin: 20px;">RB_BOOT_LOADER</b> (def=0x0)    //    indicate boot loader status
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40001006<b style="margin: 20px;">R8_RST_WDOG_CTRL</b>//   reset and watch-dog control</summary>
+<ul>
+<li class="content">
+[0]<b style="margin: 20px;">RB_SOFTWARE_RESET</b> (def=0x0)    //    global software reset
+</li>
+<li class="content">
+[1]<b style="margin: 20px;">RB_WDOG_RST_EN</b> (def=0x0)    //    enable watch-dog reset if watch-dog timer overflow: 0=as timer only, 1=enable reset if timer overfl
+</li>
+<li class="content">
+[2]<b style="margin: 20px;">RB_WDOG_INT_EN</b> (def=0x0)    //    watch-dog interrupt enable or INT_ID_WDOG interrupt source selection: 0=software interrupt
+</li>
+<li class="content">
+[3]<b style="margin: 20px;">RB_WDOG_INT_FLAG</b> (def=0x0)    //    watch-dog timer overflow interrupt flag
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40001007<b style="margin: 20px;">R8_GLOB_RESET_KEEP</b>//   value keeper during global reset</summary>
+<ul>
+<li class="content">
+[0:7]<b style="margin: 20px;">R8_GLOB_RESET_KEEP</b> (def=0x0)    //    value keeper during global reset
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40001008<b style="margin: 20px;">R8_CLK_PLL_DIV</b>//   output clock divider from PLL</summary>
+<ul>
+<li class="content">
+[0:7]<b style="margin: 20px;">R8_CLK_PLL_DIV</b> (def=0x42)    //    output clock divider from PLL
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x4000100A<b style="margin: 20px;">R8_CLK_CFG_CTRL</b>//   clock control</summary>
+<ul>
+<li class="content">
+[0]<b style="margin: 20px;">RB_CLK_PLL_SLEEP</b> (def=0x0)    //    PLL sleep control
+</li>
+<li class="content">
+[1]<b style="margin: 20px;">RB_CLK_SEL_PLL</b> (def=0x0)    //    clock source selection
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x4000100B<b style="margin: 20px;">R8_CLK_MOD_AUX</b>//   clock mode aux register</summary>
+<ul>
+<li class="content">
+[0]<b style="margin: 20px;">RB_INT_125M_EN</b> (def=0x0)    //    clock from USB_PHY PCLK(125MHz)
+</li>
+<li class="content">
+[1]<b style="margin: 20px;">RB_EXT_125M_EN</b> (def=0x0)    //    clock from pin_PA[16]
+</li>
+<li class="content">
+[2:3]<b style="margin: 20px;">RB_MCO_SEL_MSK</b> (def=0x0)    //    MCO output selection
+</li>
+<li class="content">
+[4]<b style="margin: 20px;">RB_MCO_EN</b> (def=0x0)    //    MCO output enable
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x4000100C<b style="margin: 20px;">R8_SLP_CLK_OFF0</b>//   sleep clock off control byte 0</summary>
+<ul>
+<li class="content">
+[0]<b style="margin: 20px;">RB_SLP_CLK_TMR0</b> (def=0x0)    //    sleep TMR0 clock
+</li>
+<li class="content">
+[1]<b style="margin: 20px;">RB_SLP_CLK_TMR1</b> (def=0x0)    //    sleep TMR1 clock
+</li>
+<li class="content">
+[2]<b style="margin: 20px;">RB_SLP_CLK_TMR2</b> (def=0x0)    //    sleep TMR2 clock
+</li>
+<li class="content">
+[3]<b style="margin: 20px;">RB_SLP_CLK_PWMX</b> (def=0x0)    //    sleep PWMX clock
+</li>
+<li class="content">
+[4]<b style="margin: 20px;">RB_SLP_CLK_UART0</b> (def=0x0)    //    sleep UART0 clock
+</li>
+<li class="content">
+[5]<b style="margin: 20px;">RB_SLP_CLK_UART1</b> (def=0x0)    //    sleep UART1 clock
+</li>
+<li class="content">
+[6]<b style="margin: 20px;">RB_SLP_CLK_UART2</b> (def=0x0)    //    sleep UART2 clock
+</li>
+<li class="content">
+[7]<b style="margin: 20px;">RB_SLP_CLK_UART3</b> (def=0x0)    //    sleep UART3 clock
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x4000100D<b style="margin: 20px;">R8_SLP_CLK_OFF1</b>//   sleep clock off control byte 1</summary>
+<ul>
+<li class="content">
+[0]<b style="margin: 20px;">RB_SLP_CLK_SPI0</b> (def=0x0)    //    sleep SPI0 clock
+</li>
+<li class="content">
+[1]<b style="margin: 20px;">RB_SLP_CLK_SPI1</b> (def=0x0)    //    sleep SPI1 clock
+</li>
+<li class="content">
+[2]<b style="margin: 20px;">RB_SLP_CLK_EMMC</b> (def=0x0)    //    sleep EMMC clock
+</li>
+<li class="content">
+[3]<b style="margin: 20px;">RB_SLP_CLK_HSPI</b> (def=0x0)    //    sleep HSPI clock
+</li>
+<li class="content">
+[4]<b style="margin: 20px;">RB_SLP_CLK_USBHS</b> (def=0x0)    //    sleep USBHS clock
+</li>
+<li class="content">
+[5]<b style="margin: 20px;">RB_SLP_CLK_USBSS</b> (def=0x0)    //    sleep USBSS clock
+</li>
+<li class="content">
+[6]<b style="margin: 20px;">RB_SLP_CLK_SERD</b> (def=0x0)    //    sleep SERD clock
+</li>
+<li class="content">
+[7]<b style="margin: 20px;">RB_SLP_CLK_DVP</b> (def=0x0)    //    sleep DVP clock
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x4000100E<b style="margin: 20px;">R8_SLP_WAKE_CTRL</b>//   wake control</summary>
+<ul>
+<li class="content">
+[0]<b style="margin: 20px;">RB_SLP_USBHS_WAKE</b> (def=0x0)    //    enable USBHS waking
+</li>
+<li class="content">
+[1]<b style="margin: 20px;">RB_SLP_USBSS_WAKE</b> (def=0x0)    //    enable USBSS waking
+</li>
+<li class="content">
+[2]<b style="margin: 20px;">RB_SLP_CLK_ETH</b> (def=0x0)    //    sleep ETH clock
+</li>
+<li class="content">
+[3]<b style="margin: 20px;">RB_SLP_CLK_ECDC</b> (def=0x0)    //    sleep ECDC clock
+</li>
+<li class="content">
+[4]<b style="margin: 20px;">RB_SLP_GPIO_WAKE</b> (def=0x0)    //    enable GPIO waking
+</li>
+<li class="content">
+[5]<b style="margin: 20px;">RB_SLP_ETH_WAKE</b> (def=0x0)    //    enable Eth waking
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x4000100F<b style="margin: 20px;">R8_SLP_POWER_CTRL</b>//   power control</summary>
+<ul>
+<li class="content">
+[0]<b style="margin: 20px;">RB_SLP_USBHS_PWRDN</b> (def=0x0)    //    enable USBHS power down
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40001010<b style="margin: 20px;">R8_XBUS_CONFIG</b>//   external bus configuration</summary>
+<ul>
+<li class="content">
+[0]<b style="margin: 20px;">RB_XBUS_ENABLE</b> (def=0x0)    //    external bus enable
+</li>
+<li class="content">
+[2:3]<b style="margin: 20px;">RB_XBUS_ADDR_OE</b> (def=0x0)    //    external bus address output enable
+</li>
+<li class="content">
+[4:5]<b style="margin: 20px;">RB_XBUS_WIDTH</b> (def=0x0)    //    external bus access pulse width
+</li>
+<li class="content">
+[6]<b style="margin: 20px;">RB_XBUS_HOLD</b> (def=0x0)    //    external bus hold time
+</li>
+<li class="content">
+[7]<b style="margin: 20px;">RB_XBUS_SETUP</b> (def=0x0)    //    external bus setup time
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40001020<b style="margin: 20px;">R16_SERD_ANA_CFG1</b>//   Serdes Analog parameter configuration1</summary>
+<ul>
+<li class="content">
+[0:7]<b style="margin: 20px;">RB_SERD_PLL_CFG</b> (def=0x5A)    //    SerDes PHY internal configuration bit
+</li>
+<li class="content">
+[8]<b style="margin: 20px;">RB_SERD_30M_SEL</b> (def=0x0)    //    SerDes PHY reference clock source seletion
+</li>
+<li class="content">
+[9]<b style="margin: 20px;">RB_SERD_DN_TST</b> (def=0x0)    //    Enable SerDes PHY GXM test pin
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40001024<b style="margin: 20px;">R32_SERD_ANA_CFG2</b>//   Serdes Analog parameter configuration2</summary>
+<ul>
+<li class="content">
+[0:24]<b style="margin: 20px;">RB_SERD_TRX_CFG</b> (def=0x423015)    //    Tx and RX parameter setting
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x4000101C<b style="margin: 20px;">R8_GPIO_INT_FLAG</b>//   GPIO interrupt control</summary>
+<ul>
+<li class="content">
+[0]<b style="margin: 20px;">RB_GPIO_PA2_IF</b> (def=0x0)    //    PA2 pin interrupt flag
+</li>
+<li class="content">
+[1]<b style="margin: 20px;">RB_GPIO_PA3_IF</b> (def=0x0)    //    PA3 pin interrupt flag
+</li>
+<li class="content">
+[2]<b style="margin: 20px;">RB_GPIO_PA4_IF</b> (def=0x0)    //    PA4 pin interrupt flag
+</li>
+<li class="content">
+[3]<b style="margin: 20px;">RB_GPIO_PB3_IF</b> (def=0x0)    //    PB3 pin interrupt flag
+</li>
+<li class="content">
+[4]<b style="margin: 20px;">RB_GPIO_PB4_IF</b> (def=0x0)    //    PB4 pin interrupt flag
+</li>
+<li class="content">
+[5]<b style="margin: 20px;">RB_GPIO_PB11_IF</b> (def=0x0)    //    PB11 pin interrupt flag
+</li>
+<li class="content">
+[6]<b style="margin: 20px;">RB_GPIO_PB12_IF</b> (def=0x0)    //    PB12 pin interrupt flag
+</li>
+<li class="content">
+[7]<b style="margin: 20px;">RB_GPIO_PB15_IF</b> (def=0x0)    //    PB15 pin interrupt flag
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x4000101D<b style="margin: 20px;">R8_GPIO_INT_ENABLE</b>//   GPIO interrupt enable</summary>
+<ul>
+<li class="content">
+[0]<b style="margin: 20px;">RB_GPIO_PA2_IE</b> (def=0x0)    //    PA2 pin interrupt enable
+</li>
+<li class="content">
+[1]<b style="margin: 20px;">RB_GPIO_PA3_IE</b> (def=0x0)    //    PA3 pin interrupt enable
+</li>
+<li class="content">
+[2]<b style="margin: 20px;">RB_GPIO_PA4_IE</b> (def=0x0)    //    PA4 pin interrupt enable
+</li>
+<li class="content">
+[3]<b style="margin: 20px;">RB_GPIO_PB3_IE</b> (def=0x0)    //    PB3 pin interrupt enable
+</li>
+<li class="content">
+[4]<b style="margin: 20px;">RB_GPIO_PB4_IE</b> (def=0x0)    //    PB4 pin interrupt enable
+</li>
+<li class="content">
+[5]<b style="margin: 20px;">RB_GPIO_PB11_IE</b> (def=0x0)    //    PB11 pin interrupt enable
+</li>
+<li class="content">
+[6]<b style="margin: 20px;">RB_GPIO_PB12_IE</b> (def=0x0)    //    PB12 pin interrupt enable
+</li>
+<li class="content">
+[7]<b style="margin: 20px;">RB_GPIO_PB15_IE</b> (def=0x0)    //    PB15 pin interrupt enable
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x4000101E<b style="margin: 20px;">R8_GPIO_INT_MODE</b>//   GPIO interrupt mode</summary>
+<ul>
+<li class="content">
+[0]<b style="margin: 20px;">RB_GPIO_PA2_IM</b> (def=0x0)    //    PA2 pin interrupt mode
+</li>
+<li class="content">
+[1]<b style="margin: 20px;">RB_GPIO_PA3_IM</b> (def=0x0)    //    PA3 pin interrupt mode
+</li>
+<li class="content">
+[2]<b style="margin: 20px;">RB_GPIO_PA4_IM</b> (def=0x0)    //    PA4 pin interrupt mode
+</li>
+<li class="content">
+[3]<b style="margin: 20px;">RB_GPIO_PB3_IM</b> (def=0x0)    //    PB3 pin interrupt mode
+</li>
+<li class="content">
+[4]<b style="margin: 20px;">RB_GPIO_PB4_IM</b> (def=0x0)    //    PB4 pin interrupt mode
+</li>
+<li class="content">
+[5]<b style="margin: 20px;">RB_GPIO_PB11_IM</b> (def=0x0)    //    PB11 pin interrupt mode
+</li>
+<li class="content">
+[6]<b style="margin: 20px;">RB_GPIO_PB12_IM</b> (def=0x0)    //    PB12 pin interrupt mode
+</li>
+<li class="content">
+[7]<b style="margin: 20px;">RB_GPIO_PB15_IM</b> (def=0x0)    //    PB15 pin interrupt mode
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x4000101F<b style="margin: 20px;">R8_GPIO_INT_POLAR</b>//   GPIO interrupt polarity</summary>
+<ul>
+<li class="content">
+[0]<b style="margin: 20px;">RB_GPIO_PA2_IP</b> (def=0x0)    //    PA2 pin interrupt mode
+</li>
+<li class="content">
+[1]<b style="margin: 20px;">RB_GPIO_PA3_IP</b> (def=0x0)    //    PA3 pin interrupt mode
+</li>
+<li class="content">
+[2]<b style="margin: 20px;">RB_GPIO_PA4_IP</b> (def=0x0)    //    PA4 pin interrupt mode
+</li>
+<li class="content">
+[3]<b style="margin: 20px;">RB_GPIO_PB3_IP</b> (def=0x0)    //    PB3 pin interrupt mode
+</li>
+<li class="content">
+[4]<b style="margin: 20px;">RB_GPIO_PB4_IP</b> (def=0x0)    //    PB4 pin interrupt mode
+</li>
+<li class="content">
+[5]<b style="margin: 20px;">RB_GPIO_PB11_IP</b> (def=0x0)    //    PB11 pin interrupt mode
+</li>
+<li class="content">
+[6]<b style="margin: 20px;">RB_GPIO_PB12_IP</b> (def=0x0)    //    PB12 pin interrupt mode
+</li>
+<li class="content">
+[7]<b style="margin: 20px;">RB_GPIO_PB15_IP</b> (def=0x0)    //    PB15 pin interrupt mode
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40001040<b style="margin: 20px;">R32_PA_DIR</b>//   GPIO PA I/O direction</summary>
+<ul>
+<li class="content">
+[0:23]<b style="margin: 20px;">R32_PA_DIR</b> (def=0x0)    //    GPIO PA I/O direction
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40001044<b style="margin: 20px;">R32_PA_PIN</b>//   GPIO PA input</summary>
+<ul>
+<li class="content">
+[0:23]<b style="margin: 20px;">R32_PA_PIN</b> (def=0x0)    //    GPIO PA input
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40001048<b style="margin: 20px;">R32_PA_OUT</b>//   GPIO PA output</summary>
+<ul>
+<li class="content">
+[0:23]<b style="margin: 20px;">R32_PA_OUT</b> (def=0x0)    //    GPIO PA output
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x4000104C<b style="margin: 20px;">R32_PA_CLR</b>//   GPIO PA clear output</summary>
+<ul>
+<li class="content">
+[0:23]<b style="margin: 20px;">R32_PA_CLR</b> (def=0x0)    //    GPIO PA clear output
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40001050<b style="margin: 20px;">R32_PA_PU</b>//   GPIO PA pullup resistance enable</summary>
+<ul>
+<li class="content">
+[0:23]<b style="margin: 20px;">R32_PA_PU</b> (def=0x0)    //    GPIO PA pullup resistance enable
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40001054<b style="margin: 20px;">R32_PA_PD</b>//   GPIO PA output open-drain_input pulldown resistance enable</summary>
+<ul>
+<li class="content">
+[0:23]<b style="margin: 20px;">R32_PA_PD</b> (def=0x0)    //    GPIO PA output open-drain_input pulldown resistance enable
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40001058<b style="margin: 20px;">R32_PA_DRV</b>//   GPIO PA driving capability</summary>
+<ul>
+<li class="content">
+[0:23]<b style="margin: 20px;">R32_PA_DRV</b> (def=0x0)    //    GPIO PA driving capability
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x4000105C<b style="margin: 20px;">R32_PA_SMT</b>//   GPIO PA output slew rate_input schmitt trigger</summary>
+<ul>
+<li class="content">
+[0:23]<b style="margin: 20px;">R32_PA_SMT</b> (def=0x0)    //    GPIO PA output slew rate_input schmitt trigger
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40001060<b style="margin: 20px;">R32_PB_DIR</b>//   GPIO PB I/O direction</summary>
+<ul>
+<li class="content">
+[0:24]<b style="margin: 20px;">R32_PB_DIR</b> (def=0x0)    //    GPIO PB I/O direction
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40001064<b style="margin: 20px;">R32_PB_PIN</b>//   GPIO PB input</summary>
+<ul>
+<li class="content">
+[0:24]<b style="margin: 20px;">R32_PB_PIN</b> (def=0x0)    //    GPIO PB input
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40001068<b style="margin: 20px;">R32_PB_OUT</b>//   GPIO PB output</summary>
+<ul>
+<li class="content">
+[0:24]<b style="margin: 20px;">R32_PB_OUT</b> (def=0x0)    //    GPIO PB output
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x4000106C<b style="margin: 20px;">R32_PB_CLR</b>//   GPIO PB clear output</summary>
+<ul>
+<li class="content">
+[0:24]<b style="margin: 20px;">R32_PB_CLR</b> (def=0x0)    //    GPIO PB clear output
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40001070<b style="margin: 20px;">R32_PB_PU</b>//   GPIO PB pullup resistance enable</summary>
+<ul>
+<li class="content">
+[0:24]<b style="margin: 20px;">R32_PB_PU</b> (def=0x0)    //    GPIO PB pullup resistance enable
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40001074<b style="margin: 20px;">R32_PB_PD</b>//   GPIO PB output open-drain_input pulldown resistance enable</summary>
+<ul>
+<li class="content">
+[0:24]<b style="margin: 20px;">R32_PB_PD</b> (def=0x0)    //    GPIO PB output open-drain_input pulldown resistance enable
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40001078<b style="margin: 20px;">R32_PB_DRV</b>//   GPIO PB driving capability</summary>
+<ul>
+<li class="content">
+[0:24]<b style="margin: 20px;">R32_PB_DRV</b> (def=0x0)    //    GPIO PB driving capability
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x4000107C<b style="margin: 20px;">R32_PB_SMT</b>//   GPIO PB output slew rate_input schmitt trigger</summary>
+<ul>
+<li class="content">
+[0:24]<b style="margin: 20px;">R32_PB_SMT</b> (def=0x0)    //    GPIO PB output slew rate_input schmitt trigger
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40001012<b style="margin: 20px;">R8_PIN_ALTERNATE</b>//   alternate pin control</summary>
+<ul>
+<li class="content">
+[0]<b style="margin: 20px;">RB_PIN_MII</b> (def=0x0)    //    ETH mii interface selection
+</li>
+<li class="content">
+[1]<b style="margin: 20px;">RB_PIN_TMR1</b> (def=0x0)    //    TMR1 alternate pin enable
+</li>
+<li class="content">
+[2]<b style="margin: 20px;">RB_PIN_TMR2</b> (def=0x0)    //    TMR2 alternate pin enable
+</li>
+<li class="content">
+[4]<b style="margin: 20px;">RB_PIN_UART0</b> (def=0x0)    //    RXD0/TXD0 alternate pin enable
+</li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40002000<b style="margin: 20px;">TMR0</b>// TMR0 register</summary>
+<ul>
+<li class="content"><details><summary>0x40002000<b style="margin: 20px;">R8_TMR0_CTRL_MOD</b>//   TMR0 mode control</summary>
+<ul>
+<li class="content">
+[0]<b style="margin: 20px;">RB_TMR_MODE_IN</b> (def=0x0)    //    timer in mode
+</li>
+<li class="content">
+[1]<b style="margin: 20px;">RB_TMR_ALL_CLEAR</b> (def=0x1)    //    force clear timer FIFO and count
+</li>
+<li class="content">
+[2]<b style="margin: 20px;">RB_TMR_COUNT_EN</b> (def=0x0)    //    timer count enable
+</li>
+<li class="content">
+[3]<b style="margin: 20px;">RB_TMR_OUT_EN</b> (def=0x0)    //    timer output enable
+</li>
+<li class="content">
+[4]<b style="margin: 20px;">RB_TMR_OUT_POLAR_RB_TMR_CAP_COUNT</b> (def=0x0)    //    timer PWM output polarity / Count sub-mode
+</li>
+<li class="content">
+[6:7]<b style="margin: 20px;">RB_TMR_PWM_REPEAT_RB_TMR_CAP_EDGE</b> (def=0x0)    //    timer PWM repeat mode / timer capture edge mode
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40002002<b style="margin: 20px;">R8_TMR0_INTER_EN</b>//   TMR0 interrupt enable</summary>
+<ul>
+<li class="content">
+[0]<b style="margin: 20px;">RB_TMR_IE_CYC_END</b> (def=0x0)    //    enable interrupt for timer capture count timeout or PWM cycle end
+</li>
+<li class="content">
+[1]<b style="margin: 20px;">RB_TMR_IE_DATA_ACT</b> (def=0x0)    //    enable interrupt for timer capture input action or PWM trigger
+</li>
+<li class="content">
+[2]<b style="margin: 20px;">RB_TMR_IE_FIFO_HF</b> (def=0x0)    //    enable interrupt for timer FIFO half (capture fifo >=4 or PWM fifo lower than3)
+</li>
+<li class="content">
+[3]<b style="margin: 20px;">RB_TMR_IE_DMA_END</b> (def=0x0)    //    enable interrupt for timer1/2 DMA completion
+</li>
+<li class="content">
+[4]<b style="margin: 20px;">RB_TMR_IE_FIFO_OV</b> (def=0x0)    //    enable interrupt for timer FIFO overflow
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40002006<b style="margin: 20px;">R8_TMR0_INT_FLAG</b>//   TMR0 interrupt flag</summary>
+<ul>
+<li class="content">
+[0]<b style="margin: 20px;">RB_TMR_IF_CYC_END</b> (def=0x0)    //    interrupt flag for timer capture count timeout or PWM cycle end
+</li>
+<li class="content">
+[1]<b style="margin: 20px;">RB_TMR_IF_DATA_ACT</b> (def=0x0)    //    interrupt flag for timer capture input action or PWM trigger
+</li>
+<li class="content">
+[2]<b style="margin: 20px;">RB_TMR_IF_FIFO_HF</b> (def=0x0)    //    interrupt flag for timer FIFO half (capture fifo >=4 or PWM fifo lower than 3)
+</li>
+<li class="content">
+[3]<b style="margin: 20px;">RB_TMR_IF_DMA_END</b> (def=0x0)    //    interrupt flag for timer1/2 DMA completion
+</li>
+<li class="content">
+[4]<b style="margin: 20px;">RB_TMR_IF_FIFO_OV</b> (def=0x0)    //    interrupt flag for timer FIFO overflow
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40002007<b style="margin: 20px;">R8_TMR0_FIFO_COUNT</b>//   TMR0 FIFO count status</summary>
+<ul>
+<li class="content">
+[0:7]<b style="margin: 20px;">R8_TMR0_FIFO_COUNT</b> (def=0x0)    //    TMR0 FIFO count status
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40002008<b style="margin: 20px;">R32_TMR0_COUNT</b>//   TMR0 current count</summary>
+<ul>
+<li class="content">
+[0:31]<b style="margin: 20px;">R32_TMR0_COUNT</b> (def=0x0)    //    TMR0 current count
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x4000200C<b style="margin: 20px;">R32_TMR0_CNT_END</b>//   TMR0 end count value, only low 26 bit</summary>
+<ul>
+<li class="content">
+[0:31]<b style="margin: 20px;">R32_TMR0_COUNT</b> (def=0x0)    //    TMR0 current count
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40002010<b style="margin: 20px;">R32_TMR0_FIFO</b>//   TMR0 FIFO register, only low 26 bit</summary>
+<ul>
+<li class="content">
+[0:31]<b style="margin: 20px;">R32_TMR0_FIFO</b> (def=0x0)    //    TMR0 FIFO current count
+</li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40002400<b style="margin: 20px;">TMR1</b>// TMR1 register</summary>
+<ul>
+<li class="content"><details><summary>0x40002400<b style="margin: 20px;">R8_TMR1_CTRL_MOD</b>//   TMR1 mode control</summary>
+<ul>
+<li class="content">
+[0]<b style="margin: 20px;">RB_TMR_MODE_IN</b> (def=0x0)    //    timer in mode
+</li>
+<li class="content">
+[1]<b style="margin: 20px;">RB_TMR_ALL_CLEAR</b> (def=0x1)    //    force clear timer FIFO and count
+</li>
+<li class="content">
+[2]<b style="margin: 20px;">RB_TMR_COUNT_EN</b> (def=0x0)    //    timer count enable
+</li>
+<li class="content">
+[3]<b style="margin: 20px;">RB_TMR_OUT_EN</b> (def=0x0)    //    timer output enable
+</li>
+<li class="content">
+[4]<b style="margin: 20px;">RB_TMR_OUT_POLAR_RB_TMR_CAP_COUNT</b> (def=0x0)    //    timer PWM output polarity / Count sub-mode
+</li>
+<li class="content">
+[6:7]<b style="margin: 20px;">RB_TMR_PWM_REPEAT_RB_TMR_CAP_EDGE</b> (def=0x0)    //    timer PWM repeat mode / timer capture edge mode
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40002402<b style="margin: 20px;">R8_TMR1_INTER_EN</b>//   TMR1 interrupt enable</summary>
+<ul>
+<li class="content">
+[0]<b style="margin: 20px;">RB_TMR_IE_CYC_END</b> (def=0x0)    //    enable interrupt for timer capture count timeout or PWM cycle end
+</li>
+<li class="content">
+[1]<b style="margin: 20px;">RB_TMR_IE_DATA_ACT</b> (def=0x0)    //    enable interrupt for timer capture input action or PWM trigger
+</li>
+<li class="content">
+[2]<b style="margin: 20px;">RB_TMR_IE_FIFO_HF</b> (def=0x0)    //    enable interrupt for timer FIFO half (capture fifo >=4 or PWM fifo lower than3)
+</li>
+<li class="content">
+[3]<b style="margin: 20px;">RB_TMR_IE_DMA_END</b> (def=0x0)    //    enable interrupt for timer1/2 DMA completion
+</li>
+<li class="content">
+[4]<b style="margin: 20px;">RB_TMR_IE_FIFO_OV</b> (def=0x0)    //    enable interrupt for timer FIFO overflow
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40002406<b style="margin: 20px;">R8_TMR1_INT_FLAG</b>//   TMR1 interrupt flag</summary>
+<ul>
+<li class="content">
+[0]<b style="margin: 20px;">RB_TMR_IF_CYC_END</b> (def=0x0)    //    interrupt flag for timer capture count timeout or PWM cycle end
+</li>
+<li class="content">
+[1]<b style="margin: 20px;">RB_TMR_IF_DATA_ACT</b> (def=0x0)    //    interrupt flag for timer capture input action or PWM trigger
+</li>
+<li class="content">
+[2]<b style="margin: 20px;">RB_TMR_IF_FIFO_HF</b> (def=0x0)    //    interrupt flag for timer FIFO half (capture fifo >=4 or PWM fifo lower than 3)
+</li>
+<li class="content">
+[3]<b style="margin: 20px;">RB_TMR_IF_DMA_END</b> (def=0x0)    //    interrupt flag for timer1/2 DMA completion
+</li>
+<li class="content">
+[4]<b style="margin: 20px;">RB_TMR_IF_FIFO_OV</b> (def=0x0)    //    interrupt flag for timer FIFO overflow
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40002407<b style="margin: 20px;">R8_TMR1_FIFO_COUNT</b>//   TMR1 FIFO count status</summary>
+<ul>
+<li class="content">
+[0:7]<b style="margin: 20px;">R8_TMR1_FIFO_COUNT</b> (def=0x0)    //    TMR FIFO count status
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40002408<b style="margin: 20px;">R32_TMR1_COUNT</b>//   TMR1 current count</summary>
+<ul>
+<li class="content">
+[0:31]<b style="margin: 20px;">R32_TMR1_COUNT</b> (def=0x0)    //    TMR current count
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x4000240C<b style="margin: 20px;">R32_TMR1_CNT_END</b>//   TMR1 end count value, only low 26 bit</summary>
+<ul>
+<li class="content">
+[0:31]<b style="margin: 20px;">R32_TMR1_CNT_END</b> (def=0x0)    //    TMR current count
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40002410<b style="margin: 20px;">R32_TMR1_FIFO</b>//   TMR1 FIFO only low 26 bit</summary>
+<ul>
+<li class="content">
+[0:31]<b style="margin: 20px;">R32_TMR1_FIFO</b> (def=0x0)    //    TMR current count
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40002401<b style="margin: 20px;">R8_TMR1_CTRL_DMA</b>//   TMR1 DMA control</summary>
+<ul>
+<li class="content">
+[0]<b style="margin: 20px;">RB_TMR_DMA_ENABLE</b> (def=0x0)    //    timer1/2 DMA enable
+</li>
+<li class="content">
+[2]<b style="margin: 20px;">RB_TMR_DMA_LOOP</b> (def=0x0)    //    timer1/2 DMA address loop enable
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40002414<b style="margin: 20px;">R32_TMR1_DMA_NOW</b>//   TMR1 DMA current address</summary>
+<ul>
+<li class="content">
+[0:17]<b style="margin: 20px;">R16_TMR1_DMA_NOW</b> (def=0x0)    //    TMR DMA current address
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40002418<b style="margin: 20px;">R32_TMR1_DMA_BEG</b>//   TMR1 DMA begin address</summary>
+<ul>
+<li class="content">
+[0:17]<b style="margin: 20px;">R16_TMR1_DMA_BEG</b> (def=0x0)    //    TMR1 DMA begin address
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x4000241C<b style="margin: 20px;">R32_TMR1_DMA_END</b>//   TMR1 DMA end address</summary>
+<ul>
+<li class="content">
+[0:17]<b style="margin: 20px;">R16_TMR1_DMA_END</b> (def=0x0)    //    TMR1 DMA end address
+</li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40002800<b style="margin: 20px;">TMR2</b>// TMR2 register</summary>
+<ul>
+<li class="content"><details><summary>0x40002800<b style="margin: 20px;">R8_TMR2_CTRL_MOD</b>//   TMR2 mode control</summary>
+<ul>
+<li class="content">
+[0]<b style="margin: 20px;">RB_TMR_MODE_IN</b> (def=0x0)    //    timer in mode
+</li>
+<li class="content">
+[1]<b style="margin: 20px;">RB_TMR_ALL_CLEAR</b> (def=0x1)    //    force clear timer FIFO and count
+</li>
+<li class="content">
+[2]<b style="margin: 20px;">RB_TMR_COUNT_EN</b> (def=0x0)    //    timer count enable
+</li>
+<li class="content">
+[3]<b style="margin: 20px;">RB_TMR_OUT_EN</b> (def=0x0)    //    timer output enable
+</li>
+<li class="content">
+[4]<b style="margin: 20px;">RB_TMR_OUT_POLAR_RB_TMR_CAP_COUNT</b> (def=0x0)    //    timer PWM output polarity / Count sub-mode
+</li>
+<li class="content">
+[6:7]<b style="margin: 20px;">RB_TMR_PWM_REPEAT_RB_TMR_CAP_EDGE</b> (def=0x0)    //    timer PWM repeat mode / timer capture edge mode
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40002802<b style="margin: 20px;">R8_TMR2_INTER_EN</b>//   TMR2 interrupt enable</summary>
+<ul>
+<li class="content">
+[0]<b style="margin: 20px;">RB_TMR_IE_CYC_END</b> (def=0x0)    //    enable interrupt for timer capture count timeout or PWM cycle end
+</li>
+<li class="content">
+[1]<b style="margin: 20px;">RB_TMR_IE_DATA_ACT</b> (def=0x0)    //    enable interrupt for timer capture input action or PWM trigger
+</li>
+<li class="content">
+[2]<b style="margin: 20px;">RB_TMR_IE_FIFO_HF</b> (def=0x0)    //    enable interrupt for timer FIFO half (capture fifo >=4 or PWM fifo lower than3)
+</li>
+<li class="content">
+[3]<b style="margin: 20px;">RB_TMR_IE_DMA_END</b> (def=0x0)    //    enable interrupt for timer1/2 DMA completion
+</li>
+<li class="content">
+[4]<b style="margin: 20px;">RB_TMR_IE_FIFO_OV</b> (def=0x0)    //    enable interrupt for timer FIFO overflow
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40002806<b style="margin: 20px;">R8_TMR2_INT_FLAG</b>//   TMR2 interrupt flag</summary>
+<ul>
+<li class="content">
+[0]<b style="margin: 20px;">RB_TMR_IF_CYC_END</b> (def=0x0)    //    interrupt flag for timer capture count timeout or PWM cycle end
+</li>
+<li class="content">
+[1]<b style="margin: 20px;">RB_TMR_IF_DATA_ACT</b> (def=0x0)    //    interrupt flag for timer capture input action or PWM trigger
+</li>
+<li class="content">
+[2]<b style="margin: 20px;">RB_TMR_IF_FIFO_HF</b> (def=0x0)    //    interrupt flag for timer FIFO half (capture fifo >=4 or PWM fifo lower than 3)
+</li>
+<li class="content">
+[3]<b style="margin: 20px;">RB_TMR_IF_DMA_END</b> (def=0x0)    //    interrupt flag for timer1/2 DMA completion
+</li>
+<li class="content">
+[4]<b style="margin: 20px;">RB_TMR_IF_FIFO_OV</b> (def=0x0)    //    interrupt flag for timer FIFO overflow
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40002807<b style="margin: 20px;">R8_TMR2_FIFO_COUNT</b>//   TMR2 FIFO count status</summary>
+<ul>
+<li class="content">
+[0:7]<b style="margin: 20px;">R8_TMR2_FIFO_COUNT</b> (def=0x0)    //    TMR FIFO count status
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40002808<b style="margin: 20px;">R32_TMR2_COUNT</b>//   TMR2 current count</summary>
+<ul>
+<li class="content">
+[0:31]<b style="margin: 20px;">R32_TMR2_COUNT</b> (def=0x0)    //    TMR current count
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x4000280C<b style="margin: 20px;">R32_TMR2_CNT_END</b>//   TMR2 end count value, only low 26 bit</summary>
+<ul>
+<li class="content">
+[0:31]<b style="margin: 20px;">R32_TMR2_CNT_END</b> (def=0x0)    //    TMR current count
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40002810<b style="margin: 20px;">R32_TMR2_FIFO</b>//   TMR2 end count value, only low 26 bit</summary>
+<ul>
+<li class="content">
+[0:31]<b style="margin: 20px;">R32_TMR2_FIFO</b> (def=0x0)    //    TMR current count
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40002801<b style="margin: 20px;">R8_TMR2_CTRL_DMA</b>//   TMR2 DMA control</summary>
+<ul>
+<li class="content">
+[0]<b style="margin: 20px;">RB_TMR_DMA_ENABLE</b> (def=0x0)    //    timer1/2 DMA enable
+</li>
+<li class="content">
+[2]<b style="margin: 20px;">RB_TMR_DMA_LOOP</b> (def=0x0)    //    timer1/2 DMA address loop enable
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40002814<b style="margin: 20px;">R32_TMR2_DMA_NOW</b>//   TMR2 DMA current address</summary>
+<ul>
+<li class="content">
+[0:17]<b style="margin: 20px;">R16_TMR2_DMA_NOW</b> (def=0x0)    //    TMR DMA current address
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40002818<b style="margin: 20px;">R32_TMR2_DMA_BEG</b>//   TMR2 DMA begin address</summary>
+<ul>
+<li class="content">
+[0:17]<b style="margin: 20px;">R16_TMR2_DMA_BEG</b> (def=0x0)    //    TMR2 DMA begin address
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x4000281C<b style="margin: 20px;">R32_TMR2_DMA_END</b>//   TMR2 DMA end address</summary>
+<ul>
+<li class="content">
+[0:17]<b style="margin: 20px;">R16_TMR2_DMA_END</b> (def=0x0)    //    TMR2 DMA begin address
+</li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40003000<b style="margin: 20px;">UART0</b>// UART0 register</summary>
+<ul>
+<li class="content"><details><summary>0x40003000<b style="margin: 20px;">R8_UART0_MCR</b>//   UART0 modem control</summary>
+<ul>
+<li class="content">
+[0]<b style="margin: 20px;">RB_MCR_DTR</b> (def=0x0)    //    UART0 control DTR
+</li>
+<li class="content">
+[1]<b style="margin: 20px;">RB_MCR_RTS</b> (def=0x0)    //    UART0 control RTS
+</li>
+<li class="content">
+[2]<b style="margin: 20px;">RB_MCR_OUT1</b> (def=0x0)    //    UART0 control OUT1
+</li>
+<li class="content">
+[3]<b style="margin: 20px;">RB_MCR_OUT2</b> (def=0x0)    //    UART control OUT2
+</li>
+<li class="content">
+[4]<b style="margin: 20px;">RB_MCR_LOOP</b> (def=0x0)    //    UART0 enable local loop back
+</li>
+<li class="content">
+[5]<b style="margin: 20px;">RB_MCR_AU_FLOW_EN</b> (def=0x0)    //    UART0 enable autoflow control
+</li>
+<li class="content">
+[6]<b style="margin: 20px;">RB_MCR_TNOW</b> (def=0x0)    //    UART0 enable TNOW output on DTR pin
+</li>
+<li class="content">
+[7]<b style="margin: 20px;">RB_MCR_HALF</b> (def=0x0)    //    UART0 enable half-duplex
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40003001<b style="margin: 20px;">R8_UART0_IER</b>//   UART0 interrupt enable</summary>
+<ul>
+<li class="content">
+[0]<b style="margin: 20px;">RB_IER_RECV_RDY</b> (def=0x0)    //    UART interrupt enable for receiver data ready
+</li>
+<li class="content">
+[1]<b style="margin: 20px;">RB_IER_THR_EMPTY</b> (def=0x0)    //    UART interrupt enable for THR empty
+</li>
+<li class="content">
+[2]<b style="margin: 20px;">RB_IER_LINE_STAT</b> (def=0x0)    //    UART interrupt enable for receiver line status
+</li>
+<li class="content">
+[3]<b style="margin: 20px;">RB_IER_MODEM_CHG</b> (def=0x0)    //    UART0 interrupt enable for modem status change
+</li>
+<li class="content">
+[4]<b style="margin: 20px;">RB_IER_DTR_EN</b> (def=0x0)    //    UART0 DTR/TNOW output pin enable
+</li>
+<li class="content">
+[5]<b style="margin: 20px;">RB_IER_RTS_EN</b> (def=0x0)    //    UART0 RTS output pin enable
+</li>
+<li class="content">
+[6]<b style="margin: 20px;">RB_IER_TXD_EN</b> (def=0x0)    //    UART TXD pin enable
+</li>
+<li class="content">
+[7]<b style="margin: 20px;">RB_IER_RESET</b> (def=0x0)    //    UART software reset control, high action, auto clear
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40003002<b style="margin: 20px;">R8_UART0_FCR</b>//   UART0 FIFO control</summary>
+<ul>
+<li class="content">
+[0]<b style="margin: 20px;">RB_FCR_FIFO_EN</b> (def=0x0)    //    UART FIFO enable
+</li>
+<li class="content">
+[1]<b style="margin: 20px;">RB_FCR_RX_FIFO_CLR</b> (def=0x0)    //    clear UART receiver FIFO, high action, auto clear
+</li>
+<li class="content">
+[2]<b style="margin: 20px;">RB_FCR_TX_FIFO_CLR</b> (def=0x0)    //    clear UART transmitter FIFO, high action, auto clear
+</li>
+<li class="content">
+[6:7]<b style="margin: 20px;">RB_FCR_FIFO_TRIG</b> (def=0x0)    //    UART receiver FIFO trigger level
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40003003<b style="margin: 20px;">R8_UART0_LCR</b>//   UART0 line control</summary>
+<ul>
+<li class="content">
+[0:1]<b style="margin: 20px;">RB_LCR_WORD_SZ</b> (def=0x0)    //    UART word bit length
+</li>
+<li class="content">
+[2]<b style="margin: 20px;">RB_LCR_STOP_BIT</b> (def=0x0)    //    UART stop bit length
+</li>
+<li class="content">
+[3]<b style="margin: 20px;">RB_LCR_PAR_EN</b> (def=0x0)    //    UART parity enable
+</li>
+<li class="content">
+[4:5]<b style="margin: 20px;">RB_LCR_PAR_MOD</b> (def=0x0)    //    UART parity mode
+</li>
+<li class="content">
+[6]<b style="margin: 20px;">RB_LCR_BREAK_EN</b> (def=0x0)    //    UART break control enable
+</li>
+<li class="content">
+[7]<b style="margin: 20px;">RB_LCR_DLAB_RB_LCR_GP_BIT</b> (def=0x0)    //    UART reserved bit / UART general purpose bit
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40003004<b style="margin: 20px;">R8_UART0_IIR</b>//   UART0 interrupt identification</summary>
+<ul>
+<li class="content">
+[0]<b style="margin: 20px;">RB_IIR_NO_INT</b> (def=0x1)    //    UART no interrupt flag
+</li>
+<li class="content">
+[1:3]<b style="margin: 20px;">RB_IIR_INT_MASK</b> (def=0x0)    //    UART interrupt flag bit mask
+</li>
+<li class="content">
+[6:7]<b style="margin: 20px;">RB_IIR_FIFO_ID</b> (def=0x0)    //    UART FIFO enabled flag
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40003005<b style="margin: 20px;">R8_UART0_LSR</b>//   UART0 line status</summary>
+<ul>
+<li class="content">
+[0]<b style="margin: 20px;">RB_LSR_DATA_RDY</b> (def=0x0)    //    UART receiver fifo data ready status
+</li>
+<li class="content">
+[1]<b style="margin: 20px;">RB_LSR_OVER_ERR</b> (def=0x0)    //    UART receiver overrun error
+</li>
+<li class="content">
+[2]<b style="margin: 20px;">RB_LSR_PAR_ERR</b> (def=0x0)    //    UART receiver frame error
+</li>
+<li class="content">
+[3]<b style="margin: 20px;">RB_LSR_FRAME_ERR</b> (def=0x0)    //    UART receiver frame error
+</li>
+<li class="content">
+[4]<b style="margin: 20px;">RB_LSR_BREAK_ERR</b> (def=0x0)    //    UART receiver break error
+</li>
+<li class="content">
+[5]<b style="margin: 20px;">RB_LSR_TX_FIFO_EMP</b> (def=0x0)    //    UART transmitter fifo empty status
+</li>
+<li class="content">
+[6]<b style="margin: 20px;">RB_LSR_TX_ALL_EMP</b> (def=0x1)    //    UART transmitter all empty status
+</li>
+<li class="content">
+[7]<b style="margin: 20px;">RB_LSR_ERR_RX_FIFO</b> (def=0x1)    //    indicate error in UART receiver fifo
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40003006<b style="margin: 20px;">R8_UART0_MSR</b>//   UART0 modem status</summary>
+<ul>
+<li class="content">
+[0]<b style="margin: 20px;">RB_MSR_CTS_CHG</b> (def=0x0)    //    UART0 CTS changed status, high action
+</li>
+<li class="content">
+[1]<b style="margin: 20px;">RB_MSR_DSR_CHG</b> (def=0x0)    //    UART0 DSR changed status, high action
+</li>
+<li class="content">
+[2]<b style="margin: 20px;">RB_MSR_RI_CHG</b> (def=0x0)    //    UART0 RI changed status, high action
+</li>
+<li class="content">
+[3]<b style="margin: 20px;">RB_MSR_DCD_CHG</b> (def=0x0)    //    UART0 DCD changed status, high action
+</li>
+<li class="content">
+[4]<b style="margin: 20px;">RB_MSR_CTS</b> (def=0x0)    //    UART0 CTS action status
+</li>
+<li class="content">
+[5]<b style="margin: 20px;">RB_MSR_DSR</b> (def=0x0)    //    UART0 DSR action status
+</li>
+<li class="content">
+[6]<b style="margin: 20px;">RB_MSR_RI</b> (def=0x0)    //    UART0 RI action status
+</li>
+<li class="content">
+[7]<b style="margin: 20px;">RB_MSR_DCD</b> (def=0x0)    //    UART0 DCD action status
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40003008<b style="margin: 20px;">R8_UART0_RBR_R8_UART0_THR</b>//   UART0 receiver buffer, receiving byte / UART0 transmitter holding, transmittal byte</summary>
+<ul>
+<li class="content">
+[0:7]<b style="margin: 20px;">R8_UART0_RBR_R8_UART0_THR</b> (def=0x0)    //    UART receiver buffer, receiving byte / UART transmitter holding, transmittal byte
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x4000300A<b style="margin: 20px;">R8_UART0_RFC</b>//   UART0 receiver FIFO count</summary>
+<ul>
+<li class="content">
+[0:7]<b style="margin: 20px;">R8_UART_RFC</b> (def=0x0)    //    UART receiver FIFO count
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x4000300B<b style="margin: 20px;">R8_UART0_TFC</b>//   UART0 transmitter FIFO count</summary>
+<ul>
+<li class="content">
+[0:7]<b style="margin: 20px;">R8_UART0_TFC</b> (def=0x0)    //    UART transmitter FIFO count
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x4000300C<b style="margin: 20px;">R16_UART0_DL</b>//   UART0 divisor latch</summary>
+<ul>
+<li class="content">
+[0:15]<b style="margin: 20px;">R16_UART0_DL</b> (def=0x0)    //    UART divisor latch
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x4000300E<b style="margin: 20px;">R8_UART0_DIV</b>//   UART0 pre-divisor latch byte</summary>
+<ul>
+<li class="content">
+[0:7]<b style="margin: 20px;">R8_UART0_ADR</b> (def=0x0)    //    UART pre-divisor latch byte
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x4000300F<b style="margin: 20px;">R8_UART0_ADR</b>//   UART0 slave address</summary>
+<ul>
+<li class="content">
+[0:7]<b style="margin: 20px;">R8_UART0_ADR</b> (def=0xFF)    //    UART0 slave address
+</li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40003400<b style="margin: 20px;">UART1</b>// UART1 register</summary>
+<ul>
+<li class="content"><details><summary>0x40003400<b style="margin: 20px;">R8_UART1_MCR</b>//   UART1 modem control</summary>
+<ul>
+<li class="content">
+[3]<b style="margin: 20px;">RB_MCR_OUT2</b> (def=0x0)    //    UART1 control OUT2
+</li>
+<li class="content">
+[5]<b style="margin: 20px;">RB_MCR_AU_FLOW_EN</b> (def=0x0)    //    UART0 enable autoflow control
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40003401<b style="margin: 20px;">R8_UART1_IER</b>//   UART1 interrupt enable</summary>
+<ul>
+<li class="content">
+[0]<b style="margin: 20px;">RB_IER_RECV_RDY</b> (def=0x0)    //    UART interrupt enable for receiver data ready
+</li>
+<li class="content">
+[1]<b style="margin: 20px;">RB_IER_THR_EMPTY</b> (def=0x0)    //    UART interrupt enable for THR empty
+</li>
+<li class="content">
+[2]<b style="margin: 20px;">RB_IER_LINE_STAT</b> (def=0x0)    //    UART interrupt enable for receiver line status
+</li>
+<li class="content">
+[6]<b style="margin: 20px;">RB_IER_TXD_EN</b> (def=0x0)    //    UART TXD pin enable
+</li>
+<li class="content">
+[7]<b style="margin: 20px;">RB_IER_RESET</b> (def=0x0)    //    UART software reset control, high action, auto clear
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40003402<b style="margin: 20px;">R8_UART1_FCR</b>//   UART1 FIFO control</summary>
+<ul>
+<li class="content">
+[0]<b style="margin: 20px;">RB_FCR_FIFO_EN</b> (def=0x0)    //    UART FIFO enable
+</li>
+<li class="content">
+[1]<b style="margin: 20px;">RB_FCR_RX_FIFO_CLR</b> (def=0x0)    //    clear UART receiver FIFO, high action, auto clear
+</li>
+<li class="content">
+[2]<b style="margin: 20px;">RB_FCR_TX_FIFO_CLR</b> (def=0x0)    //    clear UART transmitter FIFO, high action, auto clear
+</li>
+<li class="content">
+[6:7]<b style="margin: 20px;">RB_FCR_FIFO_TRIG</b> (def=0x0)    //    UART receiver FIFO trigger level
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40003403<b style="margin: 20px;">R8_UART1_LCR</b>//   UART1 line control</summary>
+<ul>
+<li class="content">
+[0:1]<b style="margin: 20px;">RB_LCR_WORD_SZ</b> (def=0x0)    //    UART word bit length
+</li>
+<li class="content">
+[2]<b style="margin: 20px;">RB_LCR_STOP_BIT</b> (def=0x0)    //    UART stop bit length
+</li>
+<li class="content">
+[3]<b style="margin: 20px;">RB_LCR_PAR_EN</b> (def=0x0)    //    UART parity enable
+</li>
+<li class="content">
+[4:5]<b style="margin: 20px;">RB_LCR_PAR_MOD</b> (def=0x0)    //    UART parity mode
+</li>
+<li class="content">
+[6]<b style="margin: 20px;">RB_LCR_BREAK_EN</b> (def=0x0)    //    UART break control enable
+</li>
+<li class="content">
+[7]<b style="margin: 20px;">RB_LCR_DLAB_RB_LCR_GP_BIT</b> (def=0x0)    //    UART reserved bit / UART general purpose bit
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40003404<b style="margin: 20px;">R8_UART1_IIR</b>//   UART1 interrupt identification</summary>
+<ul>
+<li class="content">
+[0]<b style="margin: 20px;">RB_IIR_NO_INT</b> (def=0x1)    //    UART no interrupt flag
+</li>
+<li class="content">
+[1:3]<b style="margin: 20px;">RB_IIR_INT_MASK</b> (def=0x0)    //    UART interrupt flag bit mask
+</li>
+<li class="content">
+[6:7]<b style="margin: 20px;">RB_IIR_FIFO_ID</b> (def=0x0)    //    UART FIFO enabled flag
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40003405<b style="margin: 20px;">R8_UART1_LSR</b>//   UART1 line status</summary>
+<ul>
+<li class="content">
+[0]<b style="margin: 20px;">RB_LSR_DATA_RDY</b> (def=0x0)    //    UART receiver fifo data ready status
+</li>
+<li class="content">
+[1]<b style="margin: 20px;">RB_LSR_OVER_ERR</b> (def=0x0)    //    UART receiver overrun error
+</li>
+<li class="content">
+[2]<b style="margin: 20px;">RB_LSR_PAR_ERR</b> (def=0x0)    //    UART receiver frame error
+</li>
+<li class="content">
+[3]<b style="margin: 20px;">RB_LSR_FRAME_ERR</b> (def=0x0)    //    UART receiver frame error
+</li>
+<li class="content">
+[4]<b style="margin: 20px;">RB_LSR_BREAK_ERR</b> (def=0x0)    //    UART receiver break error
+</li>
+<li class="content">
+[5]<b style="margin: 20px;">RB_LSR_TX_FIFO_EMP</b> (def=0x0)    //    UART transmitter fifo empty status
+</li>
+<li class="content">
+[6]<b style="margin: 20px;">RB_LSR_TX_ALL_EMP</b> (def=0x1)    //    UART transmitter all empty status
+</li>
+<li class="content">
+[7]<b style="margin: 20px;">RB_LSR_ERR_RX_FIFO</b> (def=0x1)    //    indicate error in UART receiver fifo
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40003408<b style="margin: 20px;">R8_UART1_RBR_R8_UART1_THR</b>//   UART1 receiver buffer, receiving byte / UART1 transmitter holding, transmittal byte</summary>
+<ul>
+<li class="content">
+[0:7]<b style="margin: 20px;">R8_UART1_RBR_R8_UART1_THR</b> (def=0x0)    //    UART receiver buffer, receiving byte / UART transmitter holding, transmittal byte
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x4000340A<b style="margin: 20px;">R8_UART1_RFC</b>//   UART1 receiver FIFO count</summary>
+<ul>
+<li class="content">
+[0:7]<b style="margin: 20px;">R8_UART1_RFC</b> (def=0x0)    //    UART receiver FIFO count
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x4000340B<b style="margin: 20px;">R8_UART1_TFC</b>//   UART1 transmitter FIFO count</summary>
+<ul>
+<li class="content">
+[0:7]<b style="margin: 20px;">R8_UART1_TFC</b> (def=0x0)    //    UART transmitter FIFO count
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x4000340C<b style="margin: 20px;">R16_UART1_DL</b>//   UART1 divisor latch</summary>
+<ul>
+<li class="content">
+[0:15]<b style="margin: 20px;">R16_UART1_DL</b> (def=0x0)    //    UART divisor latch
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x4000340E<b style="margin: 20px;">R8_UART1_DIV</b>//   UART1 pre-divisor latch byte</summary>
+<ul>
+<li class="content">
+[0:7]<b style="margin: 20px;">R8_UART1_DIV</b> (def=0x0)    //    UART pre-divisor latch byte
+</li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40003800<b style="margin: 20px;">UART2</b>// UART2 register</summary>
+<ul>
+<li class="content"><details><summary>0x40003800<b style="margin: 20px;">R8_UART2_MCR</b>//   UART2 modem control</summary>
+<ul>
+<li class="content">
+[3]<b style="margin: 20px;">RB_MCR_OUT2</b> (def=0x0)    //    UART2 control OUT2
+</li>
+<li class="content">
+[5]<b style="margin: 20px;">RB_MCR_AU_FLOW_EN</b> (def=0x0)    //    UART0 enable autoflow control
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40003801<b style="margin: 20px;">R8_UART2_IER</b>//   UART2 interrupt enable</summary>
+<ul>
+<li class="content">
+[0]<b style="margin: 20px;">RB_IER_RECV_RDY</b> (def=0x0)    //    UART interrupt enable for receiver data ready
+</li>
+<li class="content">
+[1]<b style="margin: 20px;">RB_IER_THR_EMPTY</b> (def=0x0)    //    UART interrupt enable for THR empty
+</li>
+<li class="content">
+[2]<b style="margin: 20px;">RB_IER_LINE_STAT</b> (def=0x0)    //    UART interrupt enable for receiver line status
+</li>
+<li class="content">
+[6]<b style="margin: 20px;">RB_IER_TXD_EN</b> (def=0x0)    //    UART TXD pin enable
+</li>
+<li class="content">
+[7]<b style="margin: 20px;">RB_IER_RESET</b> (def=0x0)    //    UART software reset control, high action, auto clear
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40003802<b style="margin: 20px;">R8_UART2_FCR</b>//   UART2 FIFO control</summary>
+<ul>
+<li class="content">
+[0]<b style="margin: 20px;">RB_FCR_FIFO_EN</b> (def=0x0)    //    UART FIFO enable
+</li>
+<li class="content">
+[1]<b style="margin: 20px;">RB_FCR_RX_FIFO_CLR</b> (def=0x0)    //    clear UART receiver FIFO, high action, auto clear
+</li>
+<li class="content">
+[2]<b style="margin: 20px;">RB_FCR_TX_FIFO_CLR</b> (def=0x0)    //    clear UART transmitter FIFO, high action, auto clear
+</li>
+<li class="content">
+[6:7]<b style="margin: 20px;">RB_FCR_FIFO_TRIG</b> (def=0x0)    //    UART receiver FIFO trigger level
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40003803<b style="margin: 20px;">R8_UART2_LCR</b>//   UART2 line control</summary>
+<ul>
+<li class="content">
+[0:1]<b style="margin: 20px;">RB_LCR_WORD_SZ</b> (def=0x0)    //    UART word bit length
+</li>
+<li class="content">
+[2]<b style="margin: 20px;">RB_LCR_STOP_BIT</b> (def=0x0)    //    UART stop bit length
+</li>
+<li class="content">
+[3]<b style="margin: 20px;">RB_LCR_PAR_EN</b> (def=0x0)    //    UART parity enable
+</li>
+<li class="content">
+[4:5]<b style="margin: 20px;">RB_LCR_PAR_MOD</b> (def=0x0)    //    UART parity mode
+</li>
+<li class="content">
+[6]<b style="margin: 20px;">RB_LCR_BREAK_EN</b> (def=0x0)    //    UART break control enable
+</li>
+<li class="content">
+[7]<b style="margin: 20px;">RB_LCR_DLAB_RB_LCR_GP_BIT</b> (def=0x0)    //    UART reserved bit / UART general purpose bit
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40003804<b style="margin: 20px;">R8_UART2_IIR</b>//   UART2 interrupt identification</summary>
+<ul>
+<li class="content">
+[0]<b style="margin: 20px;">RB_IIR_NO_INT</b> (def=0x1)    //    UART no interrupt flag
+</li>
+<li class="content">
+[1:3]<b style="margin: 20px;">RB_IIR_INT_MASK</b> (def=0x0)    //    UART interrupt flag bit mask
+</li>
+<li class="content">
+[6:7]<b style="margin: 20px;">RB_IIR_FIFO_ID</b> (def=0x0)    //    UART FIFO enabled flag
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40003805<b style="margin: 20px;">R8_UART2_LSR</b>//   UART2 line status</summary>
+<ul>
+<li class="content">
+[0]<b style="margin: 20px;">RB_LSR_DATA_RDY</b> (def=0x0)    //    UART receiver fifo data ready status
+</li>
+<li class="content">
+[1]<b style="margin: 20px;">RB_LSR_OVER_ERR</b> (def=0x0)    //    UART receiver overrun error
+</li>
+<li class="content">
+[2]<b style="margin: 20px;">RB_LSR_PAR_ERR</b> (def=0x0)    //    UART receiver frame error
+</li>
+<li class="content">
+[3]<b style="margin: 20px;">RB_LSR_FRAME_ERR</b> (def=0x0)    //    UART receiver frame error
+</li>
+<li class="content">
+[4]<b style="margin: 20px;">RB_LSR_BREAK_ERR</b> (def=0x0)    //    UART receiver break error
+</li>
+<li class="content">
+[5]<b style="margin: 20px;">RB_LSR_TX_FIFO_EMP</b> (def=0x0)    //    UART transmitter fifo empty status
+</li>
+<li class="content">
+[6]<b style="margin: 20px;">RB_LSR_TX_ALL_EMP</b> (def=0x1)    //    UART transmitter all empty status
+</li>
+<li class="content">
+[7]<b style="margin: 20px;">RB_LSR_ERR_RX_FIFO</b> (def=0x1)    //    indicate error in UART receiver fifo
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40003808<b style="margin: 20px;">R8_UART2_RBR_R8_UART2_THR</b>//   UART2 receiver buffer, receiving byte / UART2 transmitter holding, transmittal byte</summary>
+<ul>
+<li class="content">
+[0:7]<b style="margin: 20px;">R8_UART2_RBR_R8_UART2_THR</b> (def=0x0)    //    UART receiver buffer, receiving byte / UART transmitter holding, transmittal byte
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x4000380A<b style="margin: 20px;">R8_UART2_RFC</b>//   UART2 receiver FIFO count</summary>
+<ul>
+<li class="content">
+[0:7]<b style="margin: 20px;">R8_UART2_RFC</b> (def=0x0)    //    UART receiver FIFO count
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x4000380B<b style="margin: 20px;">R8_UART2_TFC</b>//   UART2 transmitter FIFO count</summary>
+<ul>
+<li class="content">
+[0:7]<b style="margin: 20px;">R8_UART2_TFC</b> (def=0x0)    //    UART transmitter FIFO count
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x4000380C<b style="margin: 20px;">R16_UART2_DL</b>//   UART2 divisor latch</summary>
+<ul>
+<li class="content">
+[0:15]<b style="margin: 20px;">R16_UART2_DL</b> (def=0x0)    //    UART divisor latch
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x4000380E<b style="margin: 20px;">R8_UART2_DIV</b>//   UART2 pre-divisor latch byte</summary>
+<ul>
+<li class="content">
+[0:7]<b style="margin: 20px;">R8_UART2_DIV</b> (def=0x0)    //    UART pre-divisor latch byte
+</li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40003C00<b style="margin: 20px;">UART3</b>// UART3 register</summary>
+<ul>
+<li class="content"><details><summary>0x40003C00<b style="margin: 20px;">R8_UART3_MCR</b>//   UART3 modem control</summary>
+<ul>
+<li class="content">
+[3]<b style="margin: 20px;">RB_MCR_OUT2</b> (def=0x0)    //    UART3 control OUT2
+</li>
+<li class="content">
+[5]<b style="margin: 20px;">RB_MCR_AU_FLOW_EN</b> (def=0x0)    //    UART0 enable autoflow control
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40003C01<b style="margin: 20px;">R8_UART3_IER</b>//   UART3 interrupt enable</summary>
+<ul>
+<li class="content">
+[0]<b style="margin: 20px;">RB_IER_RECV_RDY</b> (def=0x0)    //    UART interrupt enable for receiver data ready
+</li>
+<li class="content">
+[1]<b style="margin: 20px;">RB_IER_THR_EMPTY</b> (def=0x0)    //    UART interrupt enable for THR empty
+</li>
+<li class="content">
+[2]<b style="margin: 20px;">RB_IER_LINE_STAT</b> (def=0x0)    //    UART interrupt enable for receiver line status
+</li>
+<li class="content">
+[6]<b style="margin: 20px;">RB_IER_TXD_EN</b> (def=0x0)    //    UART TXD pin enable
+</li>
+<li class="content">
+[7]<b style="margin: 20px;">RB_IER_RESET</b> (def=0x0)    //    UART software reset control, high action, auto clear
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40003C02<b style="margin: 20px;">R8_UART3_FCR</b>//   UART3 FIFO control</summary>
+<ul>
+<li class="content">
+[0]<b style="margin: 20px;">RB_FCR_FIFO_EN</b> (def=0x0)    //    UART FIFO enable
+</li>
+<li class="content">
+[1]<b style="margin: 20px;">RB_FCR_RX_FIFO_CLR</b> (def=0x0)    //    clear UART receiver FIFO, high action, auto clear
+</li>
+<li class="content">
+[2]<b style="margin: 20px;">RB_FCR_TX_FIFO_CLR</b> (def=0x0)    //    clear UART transmitter FIFO, high action, auto clear
+</li>
+<li class="content">
+[6:7]<b style="margin: 20px;">RB_FCR_FIFO_TRIG</b> (def=0x0)    //    UART receiver FIFO trigger level
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40003C03<b style="margin: 20px;">R8_UART3_LCR</b>//   UART3 line control</summary>
+<ul>
+<li class="content">
+[0:1]<b style="margin: 20px;">RB_LCR_WORD_SZ</b> (def=0x0)    //    UART word bit length
+</li>
+<li class="content">
+[2]<b style="margin: 20px;">RB_LCR_STOP_BIT</b> (def=0x0)    //    UART stop bit length
+</li>
+<li class="content">
+[3]<b style="margin: 20px;">RB_LCR_PAR_EN</b> (def=0x0)    //    UART parity enable
+</li>
+<li class="content">
+[4:5]<b style="margin: 20px;">RB_LCR_PAR_MOD</b> (def=0x0)    //    UART parity mode
+</li>
+<li class="content">
+[6]<b style="margin: 20px;">RB_LCR_BREAK_EN</b> (def=0x0)    //    UART break control enable
+</li>
+<li class="content">
+[7]<b style="margin: 20px;">RB_LCR_DLAB_RB_LCR_GP_BIT</b> (def=0x0)    //    UART reserved bit / UART general purpose bit
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40003C04<b style="margin: 20px;">R8_UART3_IIR</b>//   UART3 interrupt identification</summary>
+<ul>
+<li class="content">
+[0]<b style="margin: 20px;">RB_IIR_NO_INT</b> (def=0x1)    //    UART no interrupt flag
+</li>
+<li class="content">
+[1:3]<b style="margin: 20px;">RB_IIR_INT_MASK</b> (def=0x0)    //    UART interrupt flag bit mask
+</li>
+<li class="content">
+[6:7]<b style="margin: 20px;">RB_IIR_FIFO_ID</b> (def=0x0)    //    UART FIFO enabled flag
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40003C05<b style="margin: 20px;">R8_UART3_LSR</b>//   UART3 line status</summary>
+<ul>
+<li class="content">
+[0]<b style="margin: 20px;">RB_LSR_DATA_RDY</b> (def=0x0)    //    UART receiver fifo data ready status
+</li>
+<li class="content">
+[1]<b style="margin: 20px;">RB_LSR_OVER_ERR</b> (def=0x0)    //    UART receiver overrun error
+</li>
+<li class="content">
+[2]<b style="margin: 20px;">RB_LSR_PAR_ERR</b> (def=0x0)    //    UART receiver frame error
+</li>
+<li class="content">
+[3]<b style="margin: 20px;">RB_LSR_FRAME_ERR</b> (def=0x0)    //    UART receiver frame error
+</li>
+<li class="content">
+[4]<b style="margin: 20px;">RB_LSR_BREAK_ERR</b> (def=0x0)    //    UART receiver break error
+</li>
+<li class="content">
+[5]<b style="margin: 20px;">RB_LSR_TX_FIFO_EMP</b> (def=0x0)    //    UART transmitter fifo empty status
+</li>
+<li class="content">
+[6]<b style="margin: 20px;">RB_LSR_TX_ALL_EMP</b> (def=0x1)    //    UART transmitter all empty status
+</li>
+<li class="content">
+[7]<b style="margin: 20px;">RB_LSR_ERR_RX_FIFO</b> (def=0x1)    //    indicate error in UART receiver fifo
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40003C08<b style="margin: 20px;">R8_UART3_RBR_R8_UART3_THR</b>//   UART3 receiver buffer, receiving byte / UART3 transmitter holding, transmittal byte</summary>
+<ul>
+<li class="content">
+[0:7]<b style="margin: 20px;">R8_UART3_RBR_R8_UART3_THR</b> (def=0x0)    //    UART receiver buffer, receiving byte / UART transmitter holding, transmittal byte
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40003C0A<b style="margin: 20px;">R8_UART3_RFC</b>//   UART3 receiver FIFO count</summary>
+<ul>
+<li class="content">
+[0:7]<b style="margin: 20px;">R8_UART3_RFC</b> (def=0x0)    //    UART receiver FIFO count
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40003C0B<b style="margin: 20px;">R8_UART3_TFC</b>//   UART3 transmitter FIFO count</summary>
+<ul>
+<li class="content">
+[0:7]<b style="margin: 20px;">R8_UART3_TFC</b> (def=0x0)    //    UART transmitter FIFO count
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40003C0C<b style="margin: 20px;">R16_UART3_DL</b>//   UART3 divisor latch</summary>
+<ul>
+<li class="content">
+[0:15]<b style="margin: 20px;">R16_UART3_DL</b> (def=0x0)    //    UART divisor latch
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40003C0E<b style="margin: 20px;">R8_UART3_DIV</b>//   UART3 pre-divisor latch byte</summary>
+<ul>
+<li class="content">
+[0:7]<b style="margin: 20px;">R8_UART3_DIV</b> (def=0x0)    //    UART pre-divisor latch byte
+</li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40004000<b style="margin: 20px;">SPI0</b>// SPI0 register</summary>
+<ul>
+<li class="content"><details><summary>0x40004000<b style="margin: 20px;">R8_SPI0_CTRL_MOD</b>//   SPI0 mode control</summary>
+<ul>
+<li class="content">
+[0]<b style="margin: 20px;">RB_SPI_MODE_SLAVE</b> (def=0x0)    //    SPI slave mode
+</li>
+<li class="content">
+[1]<b style="margin: 20px;">RB_SPI_ALL_CLEAR</b> (def=0x1)    //    force clear SPI FIFO and count
+</li>
+<li class="content">
+[2]<b style="margin: 20px;">RB_SPI_2WIRE_MOD</b> (def=0x0)    //    SPI enable 2 wire mode
+</li>
+<li class="content">
+[3]<b style="margin: 20px;">RB_SPI_MST_SCK_MOD_RB_SPI_SLV_CMD_MOD</b> (def=0x0)    //    SPI master clock mode _ SPI slave command mode
+</li>
+<li class="content">
+[4]<b style="margin: 20px;">RB_SPI_FIFO_DIR</b> (def=0x0)    //    SPI FIFO direction
+</li>
+<li class="content">
+[5]<b style="margin: 20px;">RB_SPI_SCK_OE</b> (def=0x0)    //    SPI SCK output enable
+</li>
+<li class="content">
+[6]<b style="margin: 20px;">RB_SPI_MOSI_OE</b> (def=0x0)    //    SPI MOSI output enable
+</li>
+<li class="content">
+[7]<b style="margin: 20px;">RB_SPI_MISO_OE</b> (def=0x0)    //    SPI MISO output enable
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40004001<b style="margin: 20px;">R8_SPI0_CTRL_CFG</b>//   SPI0 configuration control</summary>
+<ul>
+<li class="content">
+[0]<b style="margin: 20px;">RB_SPI_DMA_ENABLE</b> (def=0x0)    //    SPI DMA enable
+</li>
+<li class="content">
+[2]<b style="margin: 20px;">RB_SPI_DMA_LOOP</b> (def=0x0)    //    SPI DMA address loop enable
+</li>
+<li class="content">
+[4]<b style="margin: 20px;">RB_SPI_AUTO_IF</b> (def=0x0)    //    enable buffer/FIFO accessing to auto clear RB_SPI_IF_BYTE_END interrupt flag
+</li>
+<li class="content">
+[5]<b style="margin: 20px;">RB_SPI_BIT_ORDER</b> (def=0x0)    //    SPI bit data order
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40004002<b style="margin: 20px;">R8_SPI0_INTER_EN</b>//   SPI0 interrupt enable</summary>
+<ul>
+<li class="content">
+[0]<b style="margin: 20px;">RB_SPI_IE_CNT_END</b> (def=0x0)    //    enable interrupt for SPI total byte count end
+</li>
+<li class="content">
+[1]<b style="margin: 20px;">RB_SPI_IE_BYTE_END</b> (def=0x0)    //    enable interrupt for SPI byte exchanged
+</li>
+<li class="content">
+[2]<b style="margin: 20px;">RB_SPI_IE_FIFO_HF</b> (def=0x0)    //    enable interrupt for SPI FIFO half
+</li>
+<li class="content">
+[3]<b style="margin: 20px;">RB_SPI_IE_DMA_END</b> (def=0x0)    //    enable interrupt for SPI DMA completion
+</li>
+<li class="content">
+[4]<b style="margin: 20px;">RB_SPI_IE_FIFO_OV</b> (def=0x0)    //    enable interrupt for SPI FIFO overflow
+</li>
+<li class="content">
+[7]<b style="margin: 20px;">RB_SPI_IE_FST_BYTE</b> (def=0x0)    //    enable interrupt for SPI slave mode first byte received
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40004003<b style="margin: 20px;">R8_SPI0_CLOCK_DIV_R8_SPI0_SLAVE_PRE</b>//   SPI0 master clock divisor / SPI0 slave preset value</summary>
+<ul>
+<li class="content">
+[0:7]<b style="margin: 20px;">R8_SPI0_CLOCK_DIV_R8_SPI0_SLAVE_PRE</b> (def=0x10)    //    master clock divisor / SPI0 slave preset value
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40004004<b style="margin: 20px;">R8_SPI0_BUFFER</b>//   SPI0 data buffer</summary>
+<ul>
+<li class="content">
+[0:7]<b style="margin: 20px;">R8_SPI0_BUFFER</b> (def=0x0)    //    SPI data buffer
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40004005<b style="margin: 20px;">R8_SPI0_RUN_FLAG</b>//   SPI0 work flag</summary>
+<ul>
+<li class="content">
+[4]<b style="margin: 20px;">RB_SPI_SLV_CMD_ACT</b> (def=0x0)    //    SPI slave command flag
+</li>
+<li class="content">
+[5]<b style="margin: 20px;">RB_SPI_FIFO_READY</b> (def=0x0)    //    SPI FIFO ready status
+</li>
+<li class="content">
+[6]<b style="margin: 20px;">RB_SPI_SLV_CS_LOAD</b> (def=0x0)    //    SPI slave chip-select loading status
+</li>
+<li class="content">
+[7]<b style="margin: 20px;">RB_SPI_SLV_SELECT</b> (def=0x0)    //    SPI slave selection status
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40004006<b style="margin: 20px;">R8_SPI0_INT_FLAG</b>//   SPI0 interrupt flag</summary>
+<ul>
+<li class="content">
+[0]<b style="margin: 20px;">RB_SPI_IF_CNT_END</b> (def=0x0)    //    interrupt flag for SPI total byte count end
+</li>
+<li class="content">
+[1]<b style="margin: 20px;">RB_SPI_IF_BYTE_END</b> (def=0x0)    //    interrupt flag for SPI byte exchanged
+</li>
+<li class="content">
+[2]<b style="margin: 20px;">RB_SPI_IF_FIFO_HF</b> (def=0x0)    //    interrupt flag for SPI FIFO half
+</li>
+<li class="content">
+[3]<b style="margin: 20px;">RB_SPI_IF_DMA_END</b> (def=0x0)    //    interrupt flag for SPI DMA completion
+</li>
+<li class="content">
+[4]<b style="margin: 20px;">RB_SPI_IF_FIFO_OV</b> (def=0x0)    //    interrupt flag for SPI FIFO overflow
+</li>
+<li class="content">
+[6]<b style="margin: 20px;">RB_SPI_FREE</b> (def=0x1)    //    current SPI free status
+</li>
+<li class="content">
+[7]<b style="margin: 20px;">RB_SPI_IF_FST_BYTE</b> (def=0x0)    //    interrupt flag for SPI slave mode first byte received
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40004007<b style="margin: 20px;">R8_SPI0_FIFO_COUNT</b>//   SPI0 FIFO count status</summary>
+<ul>
+<li class="content">
+[0:7]<b style="margin: 20px;">R8_SPI0_FIFO_COUNT</b> (def=0x0)    //    SPI FIFO count status
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x4000400C<b style="margin: 20px;">R16_SPI0_TOTAL_CNT</b>//   SPI0 total byte count, only low 12 bit</summary>
+<ul>
+<li class="content">
+[0:15]<b style="margin: 20px;">R16_SPI0_TOTAL_CNT</b> (def=0x0)    //    SPI total byte count, only low 12 bit
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40004010<b style="margin: 20px;">R8_SPI0_FIFO</b>//   SPI0 FIFO register</summary>
+<ul>
+<li class="content">
+[0:7]<b style="margin: 20px;">R8_SPI0_FIFO</b> (def=0x0)    //    SPI FIFO register
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40004013<b style="margin: 20px;">R8_SPI0_FIFO_COUNT1</b>//   SPI0 FIFO count status</summary>
+<ul>
+<li class="content">
+[0:7]<b style="margin: 20px;">R8_SPI0_FIFO_COUNT1</b> (def=0x0)    //    SPI FIFO count statu
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40004014<b style="margin: 20px;">R32_SPI0_DMA_NOW</b>//   SPI0 DMA current address</summary>
+<ul>
+<li class="content">
+[0:17]<b style="margin: 20px;">R16_SPI0_DMA_NOW</b> (def=0x0)    //    SPI DMA current address
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40004018<b style="margin: 20px;">R32_SPI0_DMA_BEG</b>//   SPI0 DMA begin address</summary>
+<ul>
+<li class="content">
+[0:17]<b style="margin: 20px;">R16_SPI0_DMA_BEG</b> (def=0x0)    //    SPI DMA begin address
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x4000401C<b style="margin: 20px;">R32_SPI0_DMA_END</b>//   SPI0 DMA end address</summary>
+<ul>
+<li class="content">
+[0:17]<b style="margin: 20px;">R16_SPI0_DMA_END</b> (def=0x0)    //    SPI DMA end address
+</li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40004400<b style="margin: 20px;">SPI1</b>// SPI1 register</summary>
+<ul>
+<li class="content"><details><summary>0x40004400<b style="margin: 20px;">R8_SPI1_CTRL_MOD</b>//   SPI1 mode control</summary>
+<ul>
+<li class="content">
+[0]<b style="margin: 20px;">RB_SPI_MODE_SLAVE</b> (def=0x0)    //    SPI slave mode
+</li>
+<li class="content">
+[1]<b style="margin: 20px;">RB_SPI_ALL_CLEAR</b> (def=0x1)    //    force clear SPI FIFO and count
+</li>
+<li class="content">
+[2]<b style="margin: 20px;">RB_SPI_2WIRE_MOD</b> (def=0x0)    //    SPI enable 2 wire mode
+</li>
+<li class="content">
+[3]<b style="margin: 20px;">RB_SPI_MST_SCK_MOD_RB_SPI_SLV_CMD_MOD</b> (def=0x0)    //    SPI master clock mode / SPI slave command mode
+</li>
+<li class="content">
+[4]<b style="margin: 20px;">RB_SPI_FIFO_DIR</b> (def=0x0)    //    SPI FIFO direction
+</li>
+<li class="content">
+[5]<b style="margin: 20px;">RB_SPI_SCK_OE</b> (def=0x0)    //    SPI SCK output enable
+</li>
+<li class="content">
+[6]<b style="margin: 20px;">RB_SPI_MOSI_OE</b> (def=0x0)    //    SPI MOSI output enable
+</li>
+<li class="content">
+[7]<b style="margin: 20px;">RB_SPI_MISO_OE</b> (def=0x0)    //    SPI MISO output enable
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40004401<b style="margin: 20px;">R8_SPI1_CTRL_CFG</b>//   SPI1 configuration control</summary>
+<ul>
+<li class="content">
+[0]<b style="margin: 20px;">RB_SPI_DMA_ENABLE</b> (def=0x0)    //    SPI DMA enable
+</li>
+<li class="content">
+[2]<b style="margin: 20px;">RB_SPI_DMA_LOOP</b> (def=0x0)    //    SPI DMA address loop enable
+</li>
+<li class="content">
+[4]<b style="margin: 20px;">RB_SPI_AUTO_IF</b> (def=0x0)    //    enable buffer/FIFO accessing to auto clear RB_SPI_IF_BYTE_END interrupt flag
+</li>
+<li class="content">
+[5]<b style="margin: 20px;">RB_SPI_BIT_ORDER</b> (def=0x0)    //    SPI bit data order
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40004402<b style="margin: 20px;">R8_SPI1_INTER_EN</b>//   SPI1 interrupt enable</summary>
+<ul>
+<li class="content">
+[0]<b style="margin: 20px;">RB_SPI_IE_CNT_END</b> (def=0x0)    //    enable interrupt for SPI total byte count end
+</li>
+<li class="content">
+[1]<b style="margin: 20px;">RB_SPI_IE_BYTE_END</b> (def=0x0)    //    enable interrupt for SPI byte exchanged
+</li>
+<li class="content">
+[2]<b style="margin: 20px;">RB_SPI_IE_FIFO_HF</b> (def=0x0)    //    enable interrupt for SPI FIFO half
+</li>
+<li class="content">
+[3]<b style="margin: 20px;">RB_SPI_IE_DMA_END</b> (def=0x0)    //    enable interrupt for SPI DMA completion
+</li>
+<li class="content">
+[4]<b style="margin: 20px;">RB_SPI_IE_FIFO_OV</b> (def=0x0)    //    enable interrupt for SPI FIFO overflow
+</li>
+<li class="content">
+[7]<b style="margin: 20px;">RB_SPI_IE_FST_BYTE</b> (def=0x0)    //    enable interrupt for SPI slave mode first byte received
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40004403<b style="margin: 20px;">R8_SPI1_CLOCK_DIV_R8_SPI1_SLAVE_PRE</b>//   SPI1 master clock divisor / SPI0 slave preset value</summary>
+<ul>
+<li class="content">
+[0:7]<b style="margin: 20px;">R8_SPI1_CLOCK_DIV_R8_SPI1_SLAVE_PRESET</b> (def=0x10)    //    master clock divisor / SPI0 slave preset value
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40004404<b style="margin: 20px;">R8_SPI1_BUFFER</b>//   SPI1 data buffer</summary>
+<ul>
+<li class="content">
+[0:7]<b style="margin: 20px;">R8_SPI1_BUFFER</b> (def=0x0)    //    SPI data buffer
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40004405<b style="margin: 20px;">R8_SPI1_RUN_FLAG</b>//   SPI1 work flag</summary>
+<ul>
+<li class="content">
+[4]<b style="margin: 20px;">RB_SPI_SLV_CMD_ACT</b> (def=0x0)    //    SPI slave command flag
+</li>
+<li class="content">
+[5]<b style="margin: 20px;">RB_SPI_FIFO_READY</b> (def=0x0)    //    SPI FIFO ready status
+</li>
+<li class="content">
+[6]<b style="margin: 20px;">RB_SPI_SLV_CS_LOAD</b> (def=0x0)    //    SPI slave chip-select loading status
+</li>
+<li class="content">
+[7]<b style="margin: 20px;">RB_SPI_SLV_SELECT</b> (def=0x0)    //    SPI slave selection status
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40004406<b style="margin: 20px;">R8_SPI1_INT_FLAG</b>//   SPI1 interrupt flag</summary>
+<ul>
+<li class="content">
+[0]<b style="margin: 20px;">RB_SPI_IF_CNT_END</b> (def=0x0)    //    interrupt flag for SPI total byte count end
+</li>
+<li class="content">
+[1]<b style="margin: 20px;">RB_SPI_IF_BYTE_END</b> (def=0x0)    //    interrupt flag for SPI byte exchanged
+</li>
+<li class="content">
+[2]<b style="margin: 20px;">RB_SPI_IF_FIFO_HF</b> (def=0x0)    //    interrupt flag for SPI FIFO half
+</li>
+<li class="content">
+[3]<b style="margin: 20px;">RB_SPI_IF_DMA_END</b> (def=0x0)    //    interrupt flag for SPI DMA completion
+</li>
+<li class="content">
+[4]<b style="margin: 20px;">RB_SPI_IF_FIFO_OV</b> (def=0x0)    //    interrupt flag for SPI FIFO overflow
+</li>
+<li class="content">
+[6]<b style="margin: 20px;">RB_SPI_FREE</b> (def=0x1)    //    current SPI free status
+</li>
+<li class="content">
+[7]<b style="margin: 20px;">RB_SPI_IF_FST_BYTE</b> (def=0x0)    //    interrupt flag for SPI slave mode first byte received
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40004407<b style="margin: 20px;">R8_SPI1_FIFO_COUNT</b>//   SPI1 FIFO count status</summary>
+<ul>
+<li class="content">
+[0:7]<b style="margin: 20px;">R8_SPI1_FIFO_COUNT</b> (def=0x0)    //    SPI FIFO count status
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x4000440C<b style="margin: 20px;">R16_SPI1_TOTAL_CNT</b>//   SPI1 total byte count, only low 12 bit</summary>
+<ul>
+<li class="content">
+[0:15]<b style="margin: 20px;">R16_SPI1_TOTAL_CNT</b> (def=0x0)    //    SPI total byte count, only low 12 bit
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40004410<b style="margin: 20px;">R8_SPI1_FIFO</b>//   SPI1 FIFO register</summary>
+<ul>
+<li class="content">
+[0:7]<b style="margin: 20px;">R8_SPI1_FIFO</b> (def=0x0)    //    SPI FIFO register
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40004413<b style="margin: 20px;">R8_SPI1_FIFO_COUNT1</b>//   SPI0 FIFO count status</summary>
+<ul>
+<li class="content">
+[0:7]<b style="margin: 20px;">R8_SPI1_FIFO_COUNT1</b> (def=0x0)    //    SPI FIFO count statu
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40004414<b style="margin: 20px;">R32_SPI1_DMA_NOW</b>//   SPI1 DMA current address</summary>
+<ul>
+<li class="content">
+[0:17]<b style="margin: 20px;">R16_SPI1_DMA_NOW</b> (def=0x0)    //    SPI DMA current address
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40004418<b style="margin: 20px;">R32_SPI1_DMA_BEG</b>//   SPI1 DMA begin address</summary>
+<ul>
+<li class="content">
+[0:17]<b style="margin: 20px;">R16_SPI1_DMA_BEG</b> (def=0x0)    //    SPI DMA begin address
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x4000441C<b style="margin: 20px;">R32_SPI1_DMA_END</b>//   SPI1 DMA end address</summary>
+<ul>
+<li class="content">
+[0:17]<b style="margin: 20px;">R16_SPI1_DMA_END</b> (def=0x0)    //    SPI DMA end address
+</li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40005000<b style="margin: 20px;">PWMX</b>// PWMX register</summary>
+<ul>
+<li class="content"><details><summary>0x40005000<b style="margin: 20px;">R8_PWM_CTRL_MOD</b>//   PWM mode control</summary>
+<ul>
+<li class="content">
+[0]<b style="margin: 20px;">RB_PWM0_OUT_EN</b> (def=0x0)    //    PWM0 output enable
+</li>
+<li class="content">
+[1]<b style="margin: 20px;">RB_PWM1_OUT_EN</b> (def=0x0)    //    PWM1 output enable
+</li>
+<li class="content">
+[2]<b style="margin: 20px;">RB_PWM2_OUT_EN</b> (def=0x0)    //    PWM2 output enable
+</li>
+<li class="content">
+[3]<b style="margin: 20px;">RB_PWM3_OUT_EN</b> (def=0x0)    //    PWM3 output enable
+</li>
+<li class="content">
+[4]<b style="margin: 20px;">RB_PWM0_POLAR</b> (def=0x0)    //    PWM0 output polarity
+</li>
+<li class="content">
+[5]<b style="margin: 20px;">RB_PWM1_POLAR</b> (def=0x0)    //    PWM1 output polarity
+</li>
+<li class="content">
+[6]<b style="margin: 20px;">RB_PWM2_POLAR</b> (def=0x0)    //    PWM2 output polarity
+</li>
+<li class="content">
+[7]<b style="margin: 20px;">RB_PWM3_POLAR</b> (def=0x0)    //    PWM3 output polarity
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40005001<b style="margin: 20px;">R8_PWM_CTRL_CFG</b>//   PWM configuration control</summary>
+<ul>
+<li class="content">
+[0]<b style="margin: 20px;">RB_PWM_CYCLE_SEL</b> (def=0x0)    //    PWM cycle selection
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40005002<b style="margin: 20px;">R8_PWM_CLOCK_DIV</b>//   PWM clock divisor</summary>
+<ul>
+<li class="content">
+[0:7]<b style="margin: 20px;">R8_PWM_CLOCK_DIV</b> (def=0x0)    //    PWM clock divisor
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40005004<b style="margin: 20px;">R32_PWM_DATA</b>//   PWM data holding</summary>
+<ul>
+<li class="content">
+[0:7]<b style="margin: 20px;">R8_PWM0_DATA</b> (def=0x0)    //    PWM0 data holding
+</li>
+<li class="content">
+[8:15]<b style="margin: 20px;">R8_PWM1_DATA</b> (def=0x0)    //    PWM1 data holding
+</li>
+<li class="content">
+[16:23]<b style="margin: 20px;">R8_PWM2_DATA</b> (def=0x0)    //    PWM2 data holding
+</li>
+<li class="content">
+[24:31]<b style="margin: 20px;">R8_PWM3_DATA</b> (def=0x0)    //    PWM3 data holding
+</li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40006000<b style="margin: 20px;">HSPI</b>// HSPI register</summary>
+<ul>
+<li class="content"><details><summary>0x40006000<b style="margin: 20px;">R8_HSPI_CFG</b>//   parallel if tx/rx cfg</summary>
+<ul>
+<li class="content">
+[0]<b style="margin: 20px;">RB_HSPI_MODE</b> (def=0x0)    //    parallel if mode
+</li>
+<li class="content">
+[1]<b style="margin: 20px;">RB_HSPI_DUALDMA</b> (def=0x1)    //    parallel if dualdma mode enable
+</li>
+<li class="content">
+[2:3]<b style="margin: 20px;">RB_HSPI_MSK_SIZE</b> (def=0x0)    //    parallel if data mode
+</li>
+<li class="content">
+[5]<b style="margin: 20px;">RB_HSPI_TX_TOG_EN</b> (def=0x0)    //    parallel if tx addr toggle enable
+</li>
+<li class="content">
+[6]<b style="margin: 20px;">RB_HSPI_RX_TOG_EN</b> (def=0x0)    //    parallel if rx addr toggle enable
+</li>
+<li class="content">
+[7]<b style="margin: 20px;">RB_HSPI_HW_ACK</b> (def=0x1)    //    parallel if tx ack by hardware
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40006001<b style="margin: 20px;">R8_HSPI_CTRL</b>//   parallel if tx/rx control</summary>
+<ul>
+<li class="content">
+[0]<b style="margin: 20px;">RB_HSPI_ENABLE</b> (def=0x0)    //    parallel if enable
+</li>
+<li class="content">
+[1]<b style="margin: 20px;">RB_HSPI_DMA_EN</b> (def=0x0)    //    parallel if dma enable
+</li>
+<li class="content">
+[2]<b style="margin: 20px;">RB_HSPI_SW_ACT</b> (def=0x0)    //    parallel if transmit software trigger
+</li>
+<li class="content">
+[3]<b style="margin: 20px;">RB_HSPI_ALL_CLR</b> (def=0x1)    //    parallel if all clear
+</li>
+<li class="content">
+[4]<b style="margin: 20px;">RB_HSPI_TRX_RST</b> (def=0x1)    //    parallel if tx and rx logic clear, high action
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40006002<b style="margin: 20px;">R8_HSPI_INT_EN</b>//   parallel if interrupt enable register</summary>
+<ul>
+<li class="content">
+[0]<b style="margin: 20px;">RB_HSPI_IE_T_DONE</b> (def=0x0)    //    parallel if transmit done interrupt enable
+</li>
+<li class="content">
+[1]<b style="margin: 20px;">RB_HSPI_IE_R_DONE</b> (def=0x0)    //    parallel if receive done interrupt enable
+</li>
+<li class="content">
+[2]<b style="margin: 20px;">RB_HSPI_IE_FIFO_OV</b> (def=0x0)    //    parallel if fifo overflow interrupt enable
+</li>
+<li class="content">
+[3]<b style="margin: 20px;">RB_HSPI_IE_B_DONE</b> (def=0x0)    //    parallel if tx burst done interrupt enable
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40006003<b style="margin: 20px;">R8_HSPI_AUX</b>//   parallel if aux</summary>
+<ul>
+<li class="content">
+[0]<b style="margin: 20px;">RB_HSPI_TCK_MOD</b> (def=0x0)    //    parallel if tx clk polar control
+</li>
+<li class="content">
+[1]<b style="margin: 20px;">RB_HSPI_RCK_MOD</b> (def=0x0)    //    parallel if rx clk polar control
+</li>
+<li class="content">
+[2]<b style="margin: 20px;">RB_HSPI_ACK_TX_MOD</b> (def=0x0)    //    parallel if tx ack mode cfg
+</li>
+<li class="content">
+[3:4]<b style="margin: 20px;">RB_HSPI_ACK_CNT_SEL</b> (def=0x0)    //    delay time of parallel if send ack when receive done
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40006004<b style="margin: 20px;">R32_HSPI_TX_ADDR0</b>//   parallel if dma tx addr0</summary>
+<ul>
+<li class="content">
+[0:16]<b style="margin: 20px;">RB_HSPI_TX_ADDR0</b> (def=0x0)    //    parallel if dma tx addr0
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40006008<b style="margin: 20px;">R32_HSPI_TX_ADDR1</b>//   parallel if dma tx addr1</summary>
+<ul>
+<li class="content">
+[0:16]<b style="margin: 20px;">RB_HSPI_TX_ADDR1</b> (def=0x0)    //    parallel if dma tx addr1
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x4000600C<b style="margin: 20px;">R32_HSPI_RX_ADDR0</b>//   parallel if dma rx addr0</summary>
+<ul>
+<li class="content">
+[0:16]<b style="margin: 20px;">RB_HSPI_RX_ADDR0</b> (def=0x0)    //    parallel if dma rx addr0
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40006010<b style="margin: 20px;">R32_HSPI_RX_ADDR1</b>//   parallel if dma rx addr1</summary>
+<ul>
+<li class="content">
+[0:16]<b style="margin: 20px;">RB_HSPI_RX_ADDR1</b> (def=0x0)    //    parallel if dma rx addr1
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40006014<b style="margin: 20px;">R16_HSPI_DMA_LEN0</b>//   parallel if dma length0</summary>
+<ul>
+<li class="content">
+[0:11]<b style="margin: 20px;">RB_HSPI_DMA_LEN0</b> (def=0x0)    //    parallel if dma length0
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40006016<b style="margin: 20px;">R16_HSPI_RX_LEN0</b>//   parallel if receive length0</summary>
+<ul>
+<li class="content">
+[0:11]<b style="margin: 20px;">RB_HSPI_RX_LEN0</b> (def=0x0)    //    parallel if dma length0
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40006018<b style="margin: 20px;">R16_HSPI_DMA_LEN1</b>//   parallel if dma length1</summary>
+<ul>
+<li class="content">
+[0:11]<b style="margin: 20px;">RB_HSPI_DMA_LEN1</b> (def=0x0)    //    parallel if dma length1
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x4000601A<b style="margin: 20px;">R16_HSPI_RX_LEN1</b>//   parallel if receive length1</summary>
+<ul>
+<li class="content">
+[0:11]<b style="margin: 20px;">RB_HSPI_RX_LEN1</b> (def=0x0)    //    parallel if dma length1
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x4000601C<b style="margin: 20px;">R16_HSPI_BURST_CFG</b>//   parallel if tx burst config register</summary>
+<ul>
+<li class="content">
+[0]<b style="margin: 20px;">RB_HSPI_BURST_EN</b> (def=0x0)    //    burst transmit enable
+</li>
+<li class="content">
+[8:15]<b style="margin: 20px;">RB_HSPI_BURST_LEN</b> (def=0x0)    //    burst transmit length
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x4000601E<b style="margin: 20px;">R8_HSPI_BURST_CNT</b>//   parallel if tx burst count</summary>
+<ul>
+<li class="content">
+[0:7]<b style="margin: 20px;">RB_HSPI_BURST_CNT</b> (def=0x0)    //    parallel if tx burst count
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40006020<b style="margin: 20px;">R32_HSPI_UDF0</b>//   parallel if user defined field 0 register</summary>
+<ul>
+<li class="content">
+[0:25]<b style="margin: 20px;">RB_HSPI_UDF0</b> (def=0x0)    //    parallel if user defined field 0 register
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40006024<b style="margin: 20px;">R32_HSPI_UDF1</b>//   parallel if user defined field 1 register</summary>
+<ul>
+<li class="content">
+[0:25]<b style="margin: 20px;">RB_HSPI_UDF1</b> (def=0x0)    //    parallel if user defined field 1 register
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40006028<b style="margin: 20px;">R8_HSPI_INT_FLAG</b>//   parallel if interrupt flag</summary>
+<ul>
+<li class="content">
+[0]<b style="margin: 20px;">RB_HSPI_IF_T_DONE</b> (def=0x0)    //    interrupt flag for parallel if transmit done
+</li>
+<li class="content">
+[1]<b style="margin: 20px;">RB_HSPI_IF_R_DONE</b> (def=0x0)    //    interrupt flag for parallel if receive done
+</li>
+<li class="content">
+[2]<b style="margin: 20px;">RB_HSPI_IF_FIFO_OV</b> (def=0x0)    //    interrupt flag for parallel if FIFO overflow
+</li>
+<li class="content">
+[3]<b style="margin: 20px;">RB_HSPI_IF_B_DONE</b> (def=0x0)    //    interrupt flag for parallel if tx burst done
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40006029<b style="margin: 20px;">R8_HSPI_RTX_STATUS</b>//   parallel rtx status</summary>
+<ul>
+<li class="content">
+[1]<b style="margin: 20px;">RB_HSPI_CRC_ERR</b> (def=0x0)    //    CRC error occur
+</li>
+<li class="content">
+[2]<b style="margin: 20px;">RB_HSPI_NUM_MIS</b> (def=0x0)    //    rx and tx sequence number mismatch
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x4000602A<b style="margin: 20px;">R8_HSPI_TX_SC</b>//   parallel TX sequence ctrl</summary>
+<ul>
+<li class="content">
+[0:3]<b style="margin: 20px;">RB_HSPI_TX_NUM</b> (def=0x0)    //    parallel if tx sequence num
+</li>
+<li class="content">
+[4]<b style="margin: 20px;">RB_HSPI_TX_TOG</b> (def=0x0)    //    parallel if tx addr toggle flag
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x4000602B<b style="margin: 20px;">HSPI_RX_SC</b>//   parallel RX sequence ctrl</summary>
+<ul>
+<li class="content">
+[0:3]<b style="margin: 20px;">RB_HSPI_RX_NUM</b> (def=0x0)    //    parallel if rx sequence num
+</li>
+<li class="content">
+[4]<b style="margin: 20px;">RB_HSPI_RX_TOG</b> (def=0x0)    //    parallel if rx addr toggle flag
+</li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40007000<b style="margin: 20px;">ECDC</b>// ECDC register</summary>
+<ul>
+<li class="content"><details><summary>0x40007000<b style="margin: 20px;">R16_ECEC_CTRL</b>//   ECED AES/SM4 register</summary>
+<ul>
+<li class="content">
+[0]<b style="margin: 20px;">RB_ECDC_KEYEX_EN</b> (def=0x0)    //    enable key expansion
+</li>
+<li class="content">
+[1]<b style="margin: 20px;">RB_ECDC_RDPERI_EN</b> (def=0x0)    //    when write data to dma
+</li>
+<li class="content">
+[2]<b style="margin: 20px;">RB_ECDC_WRPERI_EN</b> (def=0x0)    //    when read data from dma
+</li>
+<li class="content">
+[3]<b style="margin: 20px;">RB_ECDC_MODE_SEL</b> (def=0x0)    //    ECDC mode select
+</li>
+<li class="content">
+[4:6]<b style="margin: 20px;">RB_ECDC_CLKDIV_MASK</b> (def=0x2)    //    Clock divide factor
+</li>
+<li class="content">
+[7]<b style="margin: 20px;">RB_ECDC_WRSRAM_EN</b> (def=0x0)    //    module dma enable
+</li>
+<li class="content">
+[8]<b style="margin: 20px;">RB_ECDC_ALGRM_MOD</b> (def=0x0)    //    Encryption and decryption algorithm mode selection
+</li>
+<li class="content">
+[9]<b style="margin: 20px;">RB_ECDC_CIPHER_MOD</b> (def=0x0)    //    Block cipher mode selection
+</li>
+<li class="content">
+[10:11]<b style="margin: 20px;">RB_ECDC_KLEN_MASK</b> (def=0x0)    //    Key length setting
+</li>
+<li class="content">
+[13]<b style="margin: 20px;">RB_ECDC_DAT_MOD</b> (def=0x0)    //    source data and result data is bit endian
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40007002<b style="margin: 20px;">R8_ECDC_INT_EN</b>//   Interupt enable register</summary>
+<ul>
+<li class="content">
+[0]<b style="margin: 20px;">RB_ECDC_IE_EKDONE</b> (def=0x0)    //    Key extension completion interrupt enable
+</li>
+<li class="content">
+[1]<b style="margin: 20px;">RB_ECDC_IE_SINGLE</b> (def=0x0)    //    Single encryption and decryption completion interrupt enable
+</li>
+<li class="content">
+[2]<b style="margin: 20px;">RB_ECDC_IE_WRSRAM</b> (def=0x0)    //    Memory to memory encryption and decryption completion interrupt enable
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40007006<b style="margin: 20px;">R8_ECDC_INT_FG</b>//   Interupt flag register</summary>
+<ul>
+<li class="content">
+[0]<b style="margin: 20px;">RB_ECDC_IF_EKDONE</b> (def=0x0)    //    Key extension completion interrupt flag
+</li>
+<li class="content">
+[1]<b style="margin: 20px;">RB_ECDC_IF_SINGLE</b> (def=0x0)    //    Single encryption and decryption completion interrupt flag
+</li>
+<li class="content">
+[2]<b style="margin: 20px;">RB_ECDC_IF_WRSRAM</b> (def=0x0)    //    Memory to memory encryption and decryption completion interrupt flag
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40007008<b style="margin: 20px;">R32_ECDC_KEY_255T224</b>//   User key 224-255 register</summary>
+<ul>
+<li class="content">
+[0:31]<b style="margin: 20px;">RB_ECDC_KEY_255T224</b> (def=0x0)    //    User key 224-255 register
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x4000700C<b style="margin: 20px;">R32_ECDC_KEY_223T192</b>//   User key 192-223 register</summary>
+<ul>
+<li class="content">
+[0:31]<b style="margin: 20px;">RB_ECDC_KEY_223T192</b> (def=0x0)    //    User key 192-223 register
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40007010<b style="margin: 20px;">R32_ECDC_KEY_191T160</b>//   User key 160-191 register</summary>
+<ul>
+<li class="content">
+[0:31]<b style="margin: 20px;">RB_ECDC_KEY_191T160</b> (def=0x0)    //    User key 160-191 register
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40007014<b style="margin: 20px;">R32_ECDC_KEY_159T128</b>//   User key 128-159 register</summary>
+<ul>
+<li class="content">
+[0:31]<b style="margin: 20px;">RB_ECDC_KEY_159T128</b> (def=0x0)    //    User key 128-159 register
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40007018<b style="margin: 20px;">R32_ECDC_KEY_127T96</b>//   User key 96-127 register</summary>
+<ul>
+<li class="content">
+[0:31]<b style="margin: 20px;">RB_ECDC_KEY_127T96</b> (def=0x0)    //    User key 96-127 register
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x4000701C<b style="margin: 20px;">R32_ECDC_KEY_95T64</b>//   User key 64-95 register</summary>
+<ul>
+<li class="content">
+[0:31]<b style="margin: 20px;">RB_ECDC_KEY_95T64</b> (def=0x0)    //    User key 64-95 register
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40007020<b style="margin: 20px;">R32_ECDC_KEY_63T32</b>//   User key 32-63 register</summary>
+<ul>
+<li class="content">
+[0:31]<b style="margin: 20px;">RB_ECDC_KEY_63T32</b> (def=0x0)    //    User key 32-63 register
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40007024<b style="margin: 20px;">R32_ECDC_KEY_31T0</b>//   User key 0-31 register</summary>
+<ul>
+<li class="content">
+[0:31]<b style="margin: 20px;">RB_ECDC_KEY_31T0</b> (def=0x0)    //    User key 0-31 register
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40007028<b style="margin: 20px;">R32_ECDC_IV_127T96</b>//   CTR mode count 96-127 register</summary>
+<ul>
+<li class="content">
+[0:31]<b style="margin: 20px;">RB_ECDC_IV_127T96</b> (def=0x0)    //    CTR mode count 96-127 register
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x4000702C<b style="margin: 20px;">R32_ECDC_IV_95T64</b>//   CTR mode count 64-95 register</summary>
+<ul>
+<li class="content">
+[0:31]<b style="margin: 20px;">RB_ECDC_IV_95T64</b> (def=0x0)    //    CTR mode count 64-95 register
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40007030<b style="margin: 20px;">R32_ECDC_IV_63T32</b>//   CTR mode count 32-63 register</summary>
+<ul>
+<li class="content">
+[0:31]<b style="margin: 20px;">RB_ECDC_IV_63T32</b> (def=0x0)    //    CTR mode count 32-63 register
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40007034<b style="margin: 20px;">R32_ECDC_IV_31T0</b>//   CTR mode count 0-31 register</summary>
+<ul>
+<li class="content">
+[0:31]<b style="margin: 20px;">RB_ECDC_IV_31T0</b> (def=0x0)    //    CTR mode count 0-31 register
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40007040<b style="margin: 20px;">R32_ECDC_SGSD_127T96</b>//   Single encryption and decryption of original data 96-127 register</summary>
+<ul>
+<li class="content">
+[0:31]<b style="margin: 20px;">RB_ECDC_SGSD_127T96</b> (def=0x0)    //    Single encryption and decryption of original data 96-127 register
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40007044<b style="margin: 20px;">R32_ECDC_SGSD_95T64</b>//   Single encryption and decryption of original data 64-95 register</summary>
+<ul>
+<li class="content">
+[0:31]<b style="margin: 20px;">RB_ECDC_SGSD_95T64</b> (def=0x0)    //    Single encryption and decryption of original data 64-95 register
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40007048<b style="margin: 20px;">R32_ECDC_SGSD_63T32</b>//   Single encryption and decryption of original data 32-63 register</summary>
+<ul>
+<li class="content">
+[0:31]<b style="margin: 20px;">RB_ECDC_SGSD_63T32</b> (def=0x0)    //    Single encryption and decryption of original data 32-63 register
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x4000704C<b style="margin: 20px;">R32_ECDC_SGSD_31T0</b>//   Single encryption and decryption of original data 0-31 register</summary>
+<ul>
+<li class="content">
+[0:31]<b style="margin: 20px;">RB_ECDC_SGSD_31T0</b> (def=0x0)    //    Single encryption and decryption of original data 0-31 register
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40007050<b style="margin: 20px;">R32_ECDC_SGRT_127T96</b>//   Single encryption and decryption result 96-127 register</summary>
+<ul>
+<li class="content">
+[0:31]<b style="margin: 20px;">RB_ECDC_SGRT_127T96</b> (def=0x0)    //    Single encryption and decryption result 96-127 register
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40007054<b style="margin: 20px;">R32_ECDC_SGRT_95T64</b>//   Single encryption and decryption result 64-95 register</summary>
+<ul>
+<li class="content">
+[0:31]<b style="margin: 20px;">RB_ECDC_SGRT_95T64</b> (def=0x0)    //    Single encryption and decryption result 64-95 register
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40007058<b style="margin: 20px;">R32_ECDC_SGRT_63T32</b>//   Single encryption and decryption result 0-31 register</summary>
+<ul>
+<li class="content">
+[0:31]<b style="margin: 20px;">RB_ECDC_SGRT_63T32</b> (def=0x0)    //    Single encryption and decryption result 0-31 register
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x4000705C<b style="margin: 20px;">RB_ECDC_SGRT_31T0</b>//   Single encryption and decryption result 0-31 register</summary>
+<ul>
+<li class="content">
+[0:31]<b style="margin: 20px;">RB_ECDC_SGRT_31T0</b> (def=0x0)    //    Single encryption and decryption result 0-31 register
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40007060<b style="margin: 20px;">R32_ECDC_SRAM_ADDR</b>//   encryption and decryption sram start address register</summary>
+<ul>
+<li class="content">
+[0:16]<b style="margin: 20px;">RB_ECDC_SRAM_ADDR</b> (def=0x0)    //    encryption and decryption sram start address register
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40007064<b style="margin: 20px;">R32_ECDC_SRAM_LEN</b>//   encryption and decryption sram size register</summary>
+<ul>
+<li class="content">
+[0:12]<b style="margin: 20px;">RB_ECDC_SRAM_LEN</b> (def=0x0)    //    encryption and decryption sram size register
+</li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40008000<b style="margin: 20px;">USBSS</b>// USBSS register (Please refer to subprogram library)</summary>
+<ul>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40009000<b style="margin: 20px;">USBHS</b>// USBHS register</summary>
+<ul>
+<li class="content"><details><summary>0x40009000<b style="margin: 20px;">R8_USB_CTRL</b>//   USB base control</summary>
+<ul>
+<li class="content">
+[0]<b style="margin: 20px;">RB_USB_DMA_EN</b> (def=0x0)    //    DMA enable and DMA interrupt enable for USB
+</li>
+<li class="content">
+[1]<b style="margin: 20px;">RB_USB_CLR_ALL</b> (def=0x1)    //    force clear FIFO and count of USB
+</li>
+<li class="content">
+[2]<b style="margin: 20px;">RB_USB_RESET_SIE</b> (def=0x1)    //    force reset USB SIE, need software clear
+</li>
+<li class="content">
+[3]<b style="margin: 20px;">RB_USB_INT_BUSY</b> (def=0x0)    //    enable automatic responding busy for device mode or automatic pause for host mode during interrupt 
+</li>
+<li class="content">
+[4]<b style="margin: 20px;">RB_DEV_PU_EN</b> (def=0x0)    //    USB device enable and internal pullup resistance enable
+</li>
+<li class="content">
+[5:6]<b style="margin: 20px;">RB_USB_SPTP_MASK</b> (def=0x0)    //    enable USB low speed
+</li>
+<li class="content">
+[7]<b style="margin: 20px;">RB_USB_MODE</b> (def=0x0)    //    enable USB host mode: 0=device mode, 1=host mode
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40009001<b style="margin: 20px;">R8_UHOST_CTRL</b>//   USB host control register</summary>
+<ul>
+<li class="content">
+[0]<b style="margin: 20px;">RB_UH_BUS_RESET</b> (def=0x0)    //    USB host send bus reset signal
+</li>
+<li class="content">
+[1]<b style="margin: 20px;">RB_UH_BUS_SUSPEND</b> (def=0x0)    //    USB host send bus suspend signal
+</li>
+<li class="content">
+[2]<b style="margin: 20px;">RB_UH_BUS_RESUME</b> (def=0x0)    //    USB host suspend state and wake up device
+</li>
+<li class="content">
+[7]<b style="margin: 20px;">RB_UH_AUTOSOF_EN</b> (def=0x0)    //    Automatically generate sof packet enable control 
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40009002<b style="margin: 20px;">R8_USB_INT_EN</b>//   USB interrupt enable</summary>
+<ul>
+<li class="content">
+[0]<b style="margin: 20px;">RB_USB_IE_BUSRST_RB_USB_IE_DETECT</b> (def=0x0)    //    enable interrupt for USB bus reset event for USB device mode / enable interrupt for USB device dete
+</li>
+<li class="content">
+[1]<b style="margin: 20px;">RB_USB_IE_TRANS</b> (def=0x0)    //    enable interrupt for USB transfer completion
+</li>
+<li class="content">
+[2]<b style="margin: 20px;">RB_USB_IE_SUSPEND</b> (def=0x0)    //    enable interrupt for USB suspend or resume event
+</li>
+<li class="content">
+[3]<b style="margin: 20px;">RB_USB_IE_SOF</b> (def=0x0)    //    enable interrupt for host SOF timer action for USB host mode
+</li>
+<li class="content">
+[4]<b style="margin: 20px;">RB_USB_IE_FIFOOV</b> (def=0x0)    //    enable interrupt for FIFO overflow
+</li>
+<li class="content">
+[5]<b style="margin: 20px;">RB_USB_IE_SETUPACT</b> (def=0x0)    //    Setup packet end interrupt
+</li>
+<li class="content">
+[6]<b style="margin: 20px;">RB_USB_IE_ISOACT</b> (def=0x0)    //    Synchronous transmission received control token packet interrupt
+</li>
+<li class="content">
+[7]<b style="margin: 20px;">RB_USB_IE_DEV_NAK</b> (def=0x0)    //    enable interrupt for NAK responded for USB device mode
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40009003<b style="margin: 20px;">R8_USB_DEV_AD</b>//   USB device address</summary>
+<ul>
+<li class="content">
+[0:6]<b style="margin: 20px;">USB_ADDR_MASK</b> (def=0x0)    //    bit mask for USB device address
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40009004<b style="margin: 20px;">R16_USB_FRAME_NO</b>//   USB frame number register</summary>
+<ul>
+<li class="content">
+[0:15]<b style="margin: 20px;">USB_FRAME_NO</b> (def=0x0)    //    USB frame number
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40009006<b style="margin: 20px;">R8_USB_SUSPEND</b>//   USB suspend register</summary>
+<ul>
+<li class="content">
+[1]<b style="margin: 20px;">RB_DEV_WAKEUP</b> (def=0x0)    //    Remote wake-up control bit
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40009008<b style="margin: 20px;">R8_USB_SPD_TYPE</b>//   USB actual speed register</summary>
+<ul>
+<li class="content">
+[0:1]<b style="margin: 20px;">RB_USBSPEED_MASK</b> (def=0x0)    //    USB actual speed
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40009009<b style="margin: 20px;">R8_USB_MIS_ST</b>//   USB miscellaneous status</summary>
+<ul>
+<li class="content">
+[0]<b style="margin: 20px;">RB_USB_SPLIT_EN</b> (def=0x0)    //    RO,indicate host allow SPLIT packet
+</li>
+<li class="content">
+[1]<b style="margin: 20px;">RB_USB_ATTACH</b> (def=0x0)    //    RO, indicate device attached status on USB host
+</li>
+<li class="content">
+[2]<b style="margin: 20px;">RB_USBBUS_SUSPEND</b> (def=0x0)    //    RO, indicate USB suspend status
+</li>
+<li class="content">
+[3]<b style="margin: 20px;">RB_USBBUS_RESET</b> (def=0x0)    //    RO, indicate USB bus reset status
+</li>
+<li class="content">
+[4]<b style="margin: 20px;">RB_USB_FIFO_RDY</b> (def=0x0)    //    RO, indicate USB receiving FIFO ready status (not empty)
+</li>
+<li class="content">
+[5]<b style="margin: 20px;">RB_USB_SIE_FREE</b> (def=0x1)    //    RO, indicate USB SIE free status
+</li>
+<li class="content">
+[6]<b style="margin: 20px;">RB_USB_SOF_ACT</b> (def=0x0)    //    RO, indicate host SOF timer action status for USB host
+</li>
+<li class="content">
+[7]<b style="margin: 20px;">RB_USB_SOF_PRES</b> (def=0x0)    //    RO, indicate host SOF timer presage status
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x4000900A<b style="margin: 20px;">R8_USB_INT_FG</b>//   USB interrupt flag</summary>
+<ul>
+<li class="content">
+[0]<b style="margin: 20px;">RB_USB_IF_BUSRST_RB_USB_IF_DETECT</b> (def=0x0)    //    bus reset event interrupt flag for USB device mode, direct bit address clear or write 1 to clear;de
+</li>
+<li class="content">
+[1]<b style="margin: 20px;">RB_USB_IF_TRANSFER</b> (def=0x0)    //    USB transfer completion interrupt flag, direct bit address clear or write 1 to clear
+</li>
+<li class="content">
+[2]<b style="margin: 20px;">RB_USB_IF_SUSPEND</b> (def=0x0)    //    USB suspend or resume event interrupt flag, direct bit address clear or write 1 to clear
+</li>
+<li class="content">
+[3]<b style="margin: 20px;">RB_USB_IF_HST_SOF</b> (def=0x0)    //    host SOF timer interrupt flag for USB host, direct bit address clear or write 1 to clear
+</li>
+<li class="content">
+[4]<b style="margin: 20px;">RB_USB_IF_FIFOOV</b> (def=0x0)    //    FIFO overflow interrupt flag for USB, direct bit address clear or write 1 to clear
+</li>
+<li class="content">
+[5]<b style="margin: 20px;">RB_USB_IF_SETUOACT</b> (def=0x0)    //    RO, Setup transaction end interrupt flag
+</li>
+<li class="content">
+[6]<b style="margin: 20px;">RB_USB_IF_ISOACT</b> (def=0x0)    //    RO, Synchronous transmission received control token packet interrupt flag
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x4000900B<b style="margin: 20px;">R8_USB_INT_ST</b>//   USB interrupt status</summary>
+<ul>
+<li class="content">
+[0:3]<b style="margin: 20px;">RB_HOST_RES_MASK_RB_DEV_ENDP_MASK</b> (def=0x0)    //    RO, bit mask of current transfer handshake response for USB host mode: 0000=no response, time out f
+</li>
+<li class="content">
+[4:5]<b style="margin: 20px;">RB_DEV_TOKEN_MASK</b> (def=0x0)    //    RO, bit mask of current token PID code received for USB device mode
+</li>
+<li class="content">
+[6]<b style="margin: 20px;">RB_USB_ST_TOGOK</b> (def=0x0)    //    RO, indicate current USB transfer toggle is OK
+</li>
+<li class="content">
+[7]<b style="margin: 20px;">RB_USB_ST_NAK</b> (def=0x0)    //    RO, indicate current USB transfer is NAK received for USB device mode
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x4000900C<b style="margin: 20px;">R6_USB_RX_LEN</b>//   USB receiving length</summary>
+<ul>
+<li class="content">
+[0:15]<b style="margin: 20px;">USB_RX_LEN</b> (def=0x0)    //    length of received bytes
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40009010<b style="margin: 20px;">R8_UEP4_1_MOD</b>//   endpoint 1(9)/4(8/12) mode</summary>
+<ul>
+<li class="content">
+[0]<b style="margin: 20px;">RB_UEP4_BUF_MOD</b> (def=0x0)    //    buffer mode of USB endpoint 4(8/12)
+</li>
+<li class="content">
+[2]<b style="margin: 20px;">RB_UEP4_TX_EN</b> (def=0x0)    //    enable USB endpoint 4(8/12) transmittal (IN)
+</li>
+<li class="content">
+[3]<b style="margin: 20px;">RB_UEP4_RX_EN</b> (def=0x0)    //    enable USB endpoint 4(8/12) receiving (OUT)
+</li>
+<li class="content">
+[4]<b style="margin: 20px;">RB_UEP1_BUF_MOD</b> (def=0x0)    //    buffer mode of USB endpoint 1(9)
+</li>
+<li class="content">
+[6]<b style="margin: 20px;">RB_UEP1_TX_EN</b> (def=0x0)    //    enable USB endpoint 1(9) transmittal (IN)
+</li>
+<li class="content">
+[7]<b style="margin: 20px;">RB_UEP1_RX_EN</b> (def=0x0)    //    enable USB endpoint 1(9) receiving (OUT)
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40009011<b style="margin: 20px;">R8_UEP2_3_MOD_R8_UH_EP_MOD</b>//   endpoint 2(10)/3(11) mode / USB host endpoint mode control register</summary>
+<ul>
+<li class="content">
+[0]<b style="margin: 20px;">RB_UEP2_BUF_MOD_RB_UH_RX_EN</b> (def=0x0)    //    buffer mode of USB endpoint 2(10) / USB host receive endpoint (IN) enable
+</li>
+<li class="content">
+[2]<b style="margin: 20px;">RB_UEP2_TX_EN</b> (def=0x0)    //    enable USB endpoint 2(10) transmittal (IN)
+</li>
+<li class="content">
+[3]<b style="margin: 20px;">RB_UEP2_RX_EN</b> (def=0x0)    //    enable USB endpoint 2(10) receiving (OUT)
+</li>
+<li class="content">
+[4]<b style="margin: 20px;">RB_UEP3_BUF_MOD</b> (def=0x0)    //    buffer mode of USB endpoint 3(11)
+</li>
+<li class="content">
+[6]<b style="margin: 20px;">RB_UEP3_TX_EN_RB_UH_TX_EN</b> (def=0x0)    //    enable USB endpoint 3(11) transmittal (IN) / USB host send endpoint (SETUP/OUT) enable
+</li>
+<li class="content">
+[7]<b style="margin: 20px;">RB_UEP3_RX_EN</b> (def=0x0)    //    enable USB endpoint 3(11) receiving (OUT)
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40009012<b style="margin: 20px;">R8_UEP5_6_MOD</b>//   endpoint 5(13)/6(14) mode</summary>
+<ul>
+<li class="content">
+[0]<b style="margin: 20px;">RB_UEP5_BUF_MOD</b> (def=0x0)    //    buffer mode of USB endpoint 5(13)
+</li>
+<li class="content">
+[2]<b style="margin: 20px;">RB_UEP5_TX_EN</b> (def=0x0)    //    enable USB endpoint 5(13) transmittal (IN)
+</li>
+<li class="content">
+[3]<b style="margin: 20px;">RB_UEP5_RX_EN</b> (def=0x0)    //    enable USB endpoint 5(13) receiving (OUT)
+</li>
+<li class="content">
+[4]<b style="margin: 20px;">RB_UEP6_BUF_MOD</b> (def=0x0)    //    buffer mode of USB endpoint 6(14)
+</li>
+<li class="content">
+[6]<b style="margin: 20px;">RB_UEP6_TX_EN</b> (def=0x0)    //    enable USB endpoint 6(14) transmittal (IN)
+</li>
+<li class="content">
+[7]<b style="margin: 20px;">RB_UEP6_RX_EN</b> (def=0x0)    //    enable USB endpoint 6(14) receiving (OUT)
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40009013<b style="margin: 20px;">R8_UEP7_MOD</b>//   endpoint 7(15) mode</summary>
+<ul>
+<li class="content">
+[0]<b style="margin: 20px;">RB_UEP7_BUF_MOD</b> (def=0x0)    //    buffer mode of USB endpoint 7(15)
+</li>
+<li class="content">
+[2]<b style="margin: 20px;">RB_UEP7_TX_EN</b> (def=0x0)    //    enable USB endpoint 7(15) transmittal (IN)
+</li>
+<li class="content">
+[3]<b style="margin: 20px;">RB_UEP7_RX_EN</b> (def=0x0)    //    enable USB endpoint 7(15) receiving (OUT)
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40009014<b style="margin: 20px;">R32_UEP0_RT_DMA</b>//   endpoint 0 DMA buffer address</summary>
+<ul>
+<li class="content">
+[0:16]<b style="margin: 20px;">UEP0_RT_DMA</b> (def=0x0)    //    endpoint 0 DMA buffer address
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40009018<b style="margin: 20px;">R32_UEP1_RX_DMA</b>//   endpoint 1 DMA buffer address</summary>
+<ul>
+<li class="content">
+[0:16]<b style="margin: 20px;">UEP1_RX_DMA</b> (def=0x0)    //    endpoint 1 DMA buffer address
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x4000901C<b style="margin: 20px;">R32_UEP2_RX_DMA_R32_UH_RX_DMA</b>//   endpoint 2 DMA buffer address / host rx endpoint buffer start address</summary>
+<ul>
+<li class="content">
+[0:16]<b style="margin: 20px;">UEP2_RX_DMA_UH_RX_DMA</b> (def=0x0)    //    endpoint 2 DMA buffer address / host rx endpoint buffer start address
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40009020<b style="margin: 20px;">R32_UEP3_RX_DMA</b>//   endpoint 3 DMA buffer address;host tx endpoint buffer high address</summary>
+<ul>
+<li class="content">
+[0:16]<b style="margin: 20px;">UEP3_RX_DMA</b> (def=0x0)    //    endpoint 3 DMA buffer address
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40009024<b style="margin: 20px;">R32_UEP4_RX_DMA</b>//   endpoint 4 DMA buffer address</summary>
+<ul>
+<li class="content">
+[0:16]<b style="margin: 20px;">UEP4_RX_DMA</b> (def=0x0)    //    endpoint 4 DMA buffer address
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40009028<b style="margin: 20px;">R32_UEP5_RX_DMA</b>//   endpoint 5 DMA buffer address</summary>
+<ul>
+<li class="content">
+[0:16]<b style="margin: 20px;">UEP5_RX_DMA</b> (def=0x0)    //    endpoint 5 DMA buffer address
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x4000902C<b style="margin: 20px;">R32_UEP6_RX_DMA</b>//   endpoint 6 DMA buffer address</summary>
+<ul>
+<li class="content">
+[0:16]<b style="margin: 20px;">UEP6_RX_DMA</b> (def=0x0)    //    endpoint 6 DMA buffer address
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40009030<b style="margin: 20px;">R32_UEP7_RX_DMA</b>//   endpoint 7 DMA buffer address</summary>
+<ul>
+<li class="content">
+[0:16]<b style="margin: 20px;">UEP7_RX_DMA</b> (def=0x0)    //    endpoint 7 DMA buffer address
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40009034<b style="margin: 20px;">R32_UEP1_TX_DMA</b>//   endpoint 1 DMA TX buffer address</summary>
+<ul>
+<li class="content">
+[0:16]<b style="margin: 20px;">UEP1_TX_DMA</b> (def=0x0)    //    endpoint 1 DMA TX buffer address
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40009038<b style="margin: 20px;">R32_UEP2_TX_DMA</b>//   endpoint 2 DMA TX buffer address</summary>
+<ul>
+<li class="content">
+[0:16]<b style="margin: 20px;">UEP2_TX_DMA</b> (def=0x0)    //    endpoint 2 DMA TX buffer address
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x4000903C<b style="margin: 20px;">R32_UEP3_TX_DMA_R32_UH_TX_DMA</b>//   endpoint 3 DMA TX buffer address / host tx endpoint buffer start address</summary>
+<ul>
+<li class="content">
+[0:16]<b style="margin: 20px;">UEP3_TX_DMA_UH_TX_DMA</b> (def=0x0)    //    endpoint 3 DMA TX buffer address / host tx endpoint buffer start address
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40009040<b style="margin: 20px;">R32_UEP4_TX_DMA</b>//   endpoint 4 DMA TX buffer address</summary>
+<ul>
+<li class="content">
+[0:16]<b style="margin: 20px;">UEP4_TX_DMA</b> (def=0x0)    //    endpoint 4 DMA TX buffer address
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40009044<b style="margin: 20px;">R32_UEP5_TX_DMA</b>//   endpoint 5 DMA TX buffer address</summary>
+<ul>
+<li class="content">
+[0:16]<b style="margin: 20px;">UEP5_TX_DMA</b> (def=0x0)    //    endpoint 5 DMA TX buffer address
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40009048<b style="margin: 20px;">R32_UEP6_TX_DMA</b>//   endpoint 6 DMA TX buffer address</summary>
+<ul>
+<li class="content">
+[0:16]<b style="margin: 20px;">UEP6_TX_DMA</b> (def=0x0)    //    endpoint 6 DMA TX buffer address
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x4000904C<b style="margin: 20px;">R32_UEP7_TX_DMA</b>//   endpoint 7 DMA TX buffer address</summary>
+<ul>
+<li class="content">
+[0:16]<b style="margin: 20px;">UEP7_TX_DMA</b> (def=0x0)    //    endpoint 7 DMA TX buffer address
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40009050<b style="margin: 20px;">R16_UEP0_MAX_LEN</b>//   endpoint 0 receive max length</summary>
+<ul>
+<li class="content">
+[0:15]<b style="margin: 20px;">UEP0_MAX_LEN</b> (def=0x0)    //    endpoint 0 receive max length
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40009054<b style="margin: 20px;">R16_UEP1_MAX_LEN</b>//   endpoint 1 receive max length</summary>
+<ul>
+<li class="content">
+[0:15]<b style="margin: 20px;">UEP1_MAX_LEN</b> (def=0x0)    //    endpoint 1 receive max length
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40009058<b style="margin: 20px;">R16_UEP2_MAX_LEN_R16_UH_MAX_LEN</b>//   endpoint 2 receive max length / USB host receive max packet length register</summary>
+<ul>
+<li class="content">
+[0:15]<b style="margin: 20px;">UEP2_MAX_LEN_UH_MAX_LEN</b> (def=0x0)    //    endpoint 2 receive max length / USB host receive max packet length register
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x4000905C<b style="margin: 20px;">R16_UEP3_MAX_LEN</b>//   endpoint 3 receive max length</summary>
+<ul>
+<li class="content">
+[0:15]<b style="margin: 20px;">UEP3_MAX_LEN</b> (def=0x0)    //    endpoint 3 receive max length
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40009060<b style="margin: 20px;">R16_UEP4_MAX_LEN</b>//   endpoint 4 receive max length</summary>
+<ul>
+<li class="content">
+[0:15]<b style="margin: 20px;">UEP4_MAX_LEN</b> (def=0x0)    //    endpoint 4 receive max length
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40009064<b style="margin: 20px;">R16_UEP5_MAX_LEN</b>//   endpoint 5 receive max length</summary>
+<ul>
+<li class="content">
+[0:15]<b style="margin: 20px;">UEP5_MAX_LEN</b> (def=0x0)    //    endpoint 5 receive max length
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40009068<b style="margin: 20px;">R16_UEP6_MAX_LEN</b>//   endpoint 6 receive max length</summary>
+<ul>
+<li class="content">
+[0:15]<b style="margin: 20px;">UEP6_MAX_LEN</b> (def=0x0)    //    endpoint 6 receive max length
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x4000906C<b style="margin: 20px;">R16_UEP7_MAX_LEN</b>//   endpoint 7 receive max length</summary>
+<ul>
+<li class="content">
+[0:15]<b style="margin: 20px;">UEP7_MAX_LEN</b> (def=0x0)    //    endpoint 7 receive max length
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40009070<b style="margin: 20px;">R16_UEP0_T_LEN</b>//   endpoint 0 transmittal length</summary>
+<ul>
+<li class="content">
+[0:15]<b style="margin: 20px;">UEP0_T_LEN</b> (def=0x0)    //    endpoint 0 transmittal length
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40009072<b style="margin: 20px;">R8_UEP0_TX_CTRL</b>//   endpoint 0 tx control</summary>
+<ul>
+<li class="content">
+[0:1]<b style="margin: 20px;">RB_UEP_TRES_MASK</b> (def=0x0)    //     bit mask of handshake response type for USB endpoint X transmittal (IN)
+</li>
+<li class="content">
+[2]<b style="margin: 20px;">RB_UEP_TRES_NO</b> (def=0x0)    //    expected no response
+</li>
+<li class="content">
+[3:4]<b style="margin: 20px;">RB_UEP_T_TOG_MASK</b> (def=0x0)    //    prepared data toggle flag of USB endpoint X transmittal
+</li>
+<li class="content">
+[5]<b style="margin: 20px;">RB_UEP_T_AUTOTOG</b> (def=0x0)    //    enable automatic toggle after successful transfer completion on endpoint 0
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40009073<b style="margin: 20px;">R8_UEP0_RX_CTRL</b>//   endpoint 0 rx control</summary>
+<ul>
+<li class="content">
+[0:1]<b style="margin: 20px;">RB_UEP_RRES_MASK</b> (def=0x0)    //     bit mask of handshake response type for USB endpoint X receiving (OUT)
+</li>
+<li class="content">
+[2]<b style="margin: 20px;">RB_UEP_RRES_NO</b> (def=0x0)    //    prepared no response
+</li>
+<li class="content">
+[3:4]<b style="margin: 20px;">RB_UEP_R_TOG_MASK</b> (def=0x0)    //    expected data toggle flag of USB endpoint X receiving
+</li>
+<li class="content">
+[5]<b style="margin: 20px;">RB_UEP_R_AUTOTOG</b> (def=0x0)    //    enable automatic toggle after successful transfer completion on endpoint
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40009074<b style="margin: 20px;">R16_UEP1_T_LEN</b>//   endpoint 1 transmittal length</summary>
+<ul>
+<li class="content">
+[0:15]<b style="margin: 20px;">UEP1_T_LEN</b> (def=0x0)    //    endpoint 1 transmittal length
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40009076<b style="margin: 20px;">R8_UEP1_TX_CTRL</b>//   endpoint 1 tx control</summary>
+<ul>
+<li class="content">
+[0:1]<b style="margin: 20px;">RB_UEP_TRES_MASK</b> (def=0x0)    //     bit mask of handshake response type for USB endpoint X transmittal (IN)
+</li>
+<li class="content">
+[2]<b style="margin: 20px;">RB_UEP_TRES_NO</b> (def=0x0)    //    expected no response
+</li>
+<li class="content">
+[3:4]<b style="margin: 20px;">RB_UEP_T_TOG_MASK</b> (def=0x0)    //    prepared data toggle flag of USB endpoint X transmittal
+</li>
+<li class="content">
+[5]<b style="margin: 20px;">RB_UEP_T_AUTOTOG</b> (def=0x0)    //    enable automatic toggle after successful transfer completion on endpoint 0
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40009077<b style="margin: 20px;">R8_UEP1_RX_CTRL</b>//   endpoint 1 rx control</summary>
+<ul>
+<li class="content">
+[0:1]<b style="margin: 20px;">RB_UEP_RRES_MASK</b> (def=0x0)    //     bit mask of handshake response type for USB endpoint X receiving (OUT)
+</li>
+<li class="content">
+[2]<b style="margin: 20px;">RB_UEP_RRES_NO</b> (def=0x0)    //    prepared no response
+</li>
+<li class="content">
+[3:4]<b style="margin: 20px;">RB_UEP_R_TOG_MASK</b> (def=0x0)    //    expected data toggle flag of USB endpoint X receiving
+</li>
+<li class="content">
+[5]<b style="margin: 20px;">RB_UEP_R_AUTOTOG</b> (def=0x0)    //    enable automatic toggle after successful transfer completion on endpoint
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40009078<b style="margin: 20px;">R16_UEP2_T_LEN_R16_UH_EP_PID</b>//   endpoint 2 transmittal length / Set usb host token register</summary>
+<ul>
+<li class="content">
+[0:3]<b style="margin: 20px;">RB_UH_EPNUM_MASK_UEP2_T_LEN_0_3</b> (def=0x0)    //    The endpoint number of the target of this operation
+</li>
+<li class="content">
+[4:7]<b style="margin: 20px;">RB_UH_TOKEN_MASK_UEP2_T_LEN_4_7</b> (def=0x0)    //    The token PID packet identification of this USB transfer transaction
+</li>
+<li class="content">
+[8:15]<b style="margin: 20px;">UEP2_T_LEN_8_15</b> (def=0x0)    //    endpoint 2 transmittal length
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x4000907A<b style="margin: 20px;">R8_UEP2_TX_CTRL</b>//   endpoint 2 tx control</summary>
+<ul>
+<li class="content">
+[0:1]<b style="margin: 20px;">RB_UEP_TRES_MASK</b> (def=0x0)    //     bit mask of handshake response type for USB endpoint X transmittal (IN)
+</li>
+<li class="content">
+[2]<b style="margin: 20px;">RB_UEP_TRES_NO</b> (def=0x0)    //    expected no response
+</li>
+<li class="content">
+[3:4]<b style="margin: 20px;">RB_UEP_T_TOG_MASK</b> (def=0x0)    //    prepared data toggle flag of USB endpoint X transmittal
+</li>
+<li class="content">
+[5]<b style="margin: 20px;">RB_UEP_T_AUTOTOG</b> (def=0x0)    //    enable automatic toggle after successful transfer completion on endpoint 0
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x4000907B<b style="margin: 20px;">R8_UEP2_RX_CTRL_R8_UH_RX_CTRL</b>//   endpoint 2 rx control / USb host receive endpoint control register</summary>
+<ul>
+<li class="content">
+[0:1]<b style="margin: 20px;">RB_UEP_RRES_MASK_RB_UH_RRES_MASK</b> (def=0x0)    //     bit mask of handshake response type for USB endpoint X receiving (OUT) / Host reeiver response con
+</li>
+<li class="content">
+[2]<b style="margin: 20px;">RB_UEP_RRES_NO_RB_UH_RRES_NO</b> (def=0x0)    //    prepared no response / Response control bit of host receiver
+</li>
+<li class="content">
+[3:4]<b style="margin: 20px;">RB_UEP_R_TOG_MASK_RB_UH_R_TOG_MASK</b> (def=0x0)    //    expected data toggle flag of USB endpoint X receiving / expected data toggle flag of host receivin
+</li>
+<li class="content">
+[5]<b style="margin: 20px;">RB_UEP_R_AUTOTOG_RB_UH_R_AUTOTOG</b> (def=0x0)    //    enable automatic toggle after successful transfer completion on endpoint / enable automatic toggle 
+</li>
+<li class="content">
+[6]<b style="margin: 20px;">RB_UH_RDATA_NO</b> (def=0x0)    //    expect no data packet, for high speed hub in host mode
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x4000907C<b style="margin: 20px;">R16_UEP3_T_LEN_R16_UH_TX_LEN</b>//   endpoint 3 transmittal length / host transmittal endpoint transmittal length</summary>
+<ul>
+<li class="content">
+[0:15]<b style="margin: 20px;">UEP3_T_LEN_UH_TX_LEN</b> (def=0x0)    //    endpoint 3 transmittal length / host transmittal endpoint transmittal length
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x4000907E<b style="margin: 20px;">R8_UEP3_TX_CTRL_R8_UH_TX_CTRL</b>//   endpoint 3 tx control / host transmittal endpoint control</summary>
+<ul>
+<li class="content">
+[0:1]<b style="margin: 20px;">RB_UEP_TRES_MASK_RB_UH_TRES_MASK</b> (def=0x0)    //     bit mask of handshake response type for USB endpoint X transmittal (IN) / expected handshake respo
+</li>
+<li class="content">
+[2]<b style="margin: 20px;">RB_UEP_TRES_NO_RB_UH_TRES_NO</b> (def=0x0)    //    expected no response / expected no response, 1=enable, 0=disable, for non-zero endpoint isochronous
+</li>
+<li class="content">
+[3:4]<b style="margin: 20px;">RB_UEP_T_TOG_MASK_RB_UH_T_TOG_MASK</b> (def=0x0)    //    prepared data toggle flag of USB endpoint X transmittal / prepared data toggle flag of host transmi
+</li>
+<li class="content">
+[5]<b style="margin: 20px;">RB_UEP_T_AUTOTOG_RB_UH_T_AUTOTOG</b> (def=0x0)    //    enable automatic toggle after successful transfer completion on endpoint 0 / enable automatic toggl
+</li>
+<li class="content">
+[6]<b style="margin: 20px;">RB_UH_TDATA_NO</b> (def=0x0)    //    prepared no data packet, for high speed hub in host mode
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x4000907F<b style="margin: 20px;">R8_UEP3_RX_CTRL</b>//   endpoint 3 rx control</summary>
+<ul>
+<li class="content">
+[0:1]<b style="margin: 20px;">RB_UEP_RRES_MASK</b> (def=0x0)    //     bit mask of handshake response type for USB endpoint X receiving (OUT)
+</li>
+<li class="content">
+[2]<b style="margin: 20px;">RB_UEP_RRES_NO</b> (def=0x0)    //    prepared no response
+</li>
+<li class="content">
+[3:4]<b style="margin: 20px;">RB_UEP_R_TOG_MASK</b> (def=0x0)    //    expected data toggle flag of USB endpoint X receiving
+</li>
+<li class="content">
+[5]<b style="margin: 20px;">RB_UEP_R_AUTOTOG</b> (def=0x0)    //    enable automatic toggle after successful transfer completion on endpoint
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40009080<b style="margin: 20px;">R16_UEP4_T_LEN_R16_UH_SPLIT_DATA</b>//   endpoint 4 transmittal length / USB host Tx SPLIT packet data</summary>
+<ul>
+<li class="content">
+[0:15]<b style="margin: 20px;">UEP4_T_LEN_UH_SPLIT_DATA</b> (def=0x0)    //    endpoint 4 transmittal length / USB host Tx SPLIT packet data
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40009082<b style="margin: 20px;">R8_UEP4_TX_CTRL</b>//   endpoint 4 tx control</summary>
+<ul>
+<li class="content">
+[0:1]<b style="margin: 20px;">RB_UEP_TRES_MASK</b> (def=0x0)    //     bit mask of handshake response type for USB endpoint X transmittal (IN)
+</li>
+<li class="content">
+[2]<b style="margin: 20px;">RB_UEP_TRES_NO</b> (def=0x0)    //    expected no response
+</li>
+<li class="content">
+[3:4]<b style="margin: 20px;">RB_UEP_T_TOG_MASK</b> (def=0x0)    //    prepared data toggle flag of USB endpoint X transmittal
+</li>
+<li class="content">
+[5]<b style="margin: 20px;">RB_UEP_T_AUTOTOG</b> (def=0x0)    //    enable automatic toggle after successful transfer completion on endpoint 0
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40009083<b style="margin: 20px;">R8_UEP4_RX_CTRL</b>//   endpoint 4 rx control</summary>
+<ul>
+<li class="content">
+[0:1]<b style="margin: 20px;">RB_UEP_RRES_MASK</b> (def=0x0)    //     bit mask of handshake response type for USB endpoint X receiving (OUT)
+</li>
+<li class="content">
+[2]<b style="margin: 20px;">RB_UEP_RRES_NO</b> (def=0x0)    //    prepared no response
+</li>
+<li class="content">
+[3:4]<b style="margin: 20px;">RB_UEP_R_TOG_MASK</b> (def=0x0)    //    expected data toggle flag of USB endpoint X receiving
+</li>
+<li class="content">
+[5]<b style="margin: 20px;">RB_UEP_R_AUTOTOG</b> (def=0x0)    //    enable automatic toggle after successful transfer completion on endpoint
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40009084<b style="margin: 20px;">R16_UEP5_T_LEN</b>//   endpoint 5 transmittal length</summary>
+<ul>
+<li class="content">
+[0:15]<b style="margin: 20px;">UEP5_T_LEN</b> (def=0x0)    //    endpoint 5 transmittal length
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40009086<b style="margin: 20px;">R8_UEP5_TX_CTRL</b>//   endpoint 5 tx control</summary>
+<ul>
+<li class="content">
+[0:1]<b style="margin: 20px;">RB_UEP_TRES_MASK</b> (def=0x0)    //     bit mask of handshake response type for USB endpoint X transmittal (IN)
+</li>
+<li class="content">
+[2]<b style="margin: 20px;">RB_UEP_TRES_NO</b> (def=0x0)    //    expected no response
+</li>
+<li class="content">
+[3:4]<b style="margin: 20px;">RB_UEP_T_TOG_MASK</b> (def=0x0)    //    prepared data toggle flag of USB endpoint X transmittal
+</li>
+<li class="content">
+[5]<b style="margin: 20px;">RB_UEP_T_AUTOTOG</b> (def=0x0)    //    enable automatic toggle after successful transfer completion on endpoint 0
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40009087<b style="margin: 20px;">R8_UEP5_RX_CTRL</b>//   endpoint 5 rx control</summary>
+<ul>
+<li class="content">
+[0:1]<b style="margin: 20px;">RB_UEP_RRES_MASK</b> (def=0x0)    //     bit mask of handshake response type for USB endpoint X receiving (OUT)
+</li>
+<li class="content">
+[2]<b style="margin: 20px;">RB_UEP_RRES_NO</b> (def=0x0)    //    prepared no response
+</li>
+<li class="content">
+[3:4]<b style="margin: 20px;">RB_UEP_R_TOG_MASK</b> (def=0x0)    //    expected data toggle flag of USB endpoint X receiving
+</li>
+<li class="content">
+[5]<b style="margin: 20px;">RB_UEP_R_AUTOTOG</b> (def=0x0)    //    enable automatic toggle after successful transfer completion on endpoint
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x40009088<b style="margin: 20px;">R16_UEP6_T_LEN</b>//   endpoint 6 transmittal length</summary>
+<ul>
+<li class="content">
+[0:15]<b style="margin: 20px;">UEP6_T_LEN</b> (def=0x0)    //    endpoint 6 transmittal length
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x4000908A<b style="margin: 20px;">R8_UEP6_TX_CTRL</b>//   endpoint 6 tx control</summary>
+<ul>
+<li class="content">
+[0:1]<b style="margin: 20px;">RB_UEP_TRES_MASK</b> (def=0x0)    //     bit mask of handshake response type for USB endpoint X transmittal (IN)
+</li>
+<li class="content">
+[2]<b style="margin: 20px;">RB_UEP_TRES_NO</b> (def=0x0)    //    expected no response
+</li>
+<li class="content">
+[3:4]<b style="margin: 20px;">RB_UEP_T_TOG_MASK</b> (def=0x0)    //    prepared data toggle flag of USB endpoint X transmittal
+</li>
+<li class="content">
+[5]<b style="margin: 20px;">RB_UEP_T_AUTOTOG</b> (def=0x0)    //    enable automatic toggle after successful transfer completion on endpoint 0
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x4000908B<b style="margin: 20px;">R8_UEP6_RX_CTRL</b>//   endpoint 6 rx control</summary>
+<ul>
+<li class="content">
+[0:1]<b style="margin: 20px;">RB_UEP_RRES_MASK</b> (def=0x0)    //     bit mask of handshake response type for USB endpoint X receiving (OUT)
+</li>
+<li class="content">
+[2]<b style="margin: 20px;">RB_UEP_RRES_NO</b> (def=0x0)    //    prepared no response
+</li>
+<li class="content">
+[3:4]<b style="margin: 20px;">RB_UEP_R_TOG_MASK</b> (def=0x0)    //    expected data toggle flag of USB endpoint X receiving
+</li>
+<li class="content">
+[5]<b style="margin: 20px;">RB_UEP_R_AUTOTOG</b> (def=0x0)    //    enable automatic toggle after successful transfer completion on endpoint
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x4000908C<b style="margin: 20px;">R16_UEP7_T_LEN</b>//   endpoint 7 transmittal length</summary>
+<ul>
+<li class="content">
+[0:15]<b style="margin: 20px;">UEP7_T_LEN</b> (def=0x0)    //    endpoint 7 transmittal length
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x4000908E<b style="margin: 20px;">R8_UEP7_TX_CTRL</b>//   endpoint 7 tx control</summary>
+<ul>
+<li class="content">
+[0:1]<b style="margin: 20px;">RB_UEP_TRES_MASK</b> (def=0x0)    //     bit mask of handshake response type for USB endpoint X transmittal (IN)
+</li>
+<li class="content">
+[2]<b style="margin: 20px;">RB_UEP_TRES_NO</b> (def=0x0)    //    expected no response
+</li>
+<li class="content">
+[3:4]<b style="margin: 20px;">RB_UEP_T_TOG_MASK</b> (def=0x0)    //    prepared data toggle flag of USB endpoint X transmittal
+</li>
+<li class="content">
+[5]<b style="margin: 20px;">RB_UEP_T_AUTOTOG</b> (def=0x0)    //    enable automatic toggle after successful transfer completion on endpoint 0
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x4000908F<b style="margin: 20px;">R8_UEP7_RX_CTRL</b>//   endpoint 7 rx control</summary>
+<ul>
+<li class="content">
+[0:1]<b style="margin: 20px;">RB_UEP_RRES_MASK</b> (def=0x0)    //     bit mask of handshake response type for USB endpoint X receiving (OUT)
+</li>
+<li class="content">
+[2]<b style="margin: 20px;">RB_UEP_RRES_NO</b> (def=0x0)    //    prepared no response
+</li>
+<li class="content">
+[3:4]<b style="margin: 20px;">RB_UEP_R_TOG_MASK</b> (def=0x0)    //    expected data toggle flag of USB endpoint X receiving
+</li>
+<li class="content">
+[5]<b style="margin: 20px;">RB_UEP_R_AUTOTOG</b> (def=0x0)    //    enable automatic toggle after successful transfer completion on endpoint
+</li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x4000B000<b style="margin: 20px;">SERDES</b>// SERDES register (Please refer to subprogram library)</summary>
+<ul>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x4000C000<b style="margin: 20px;">ETH</b>// ETH register (Please refer to subprogram library)</summary>
+<ul>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x4000E000<b style="margin: 20px;">DVP</b>// DVP register</summary>
+<ul>
+<li class="content"><details><summary>0x4000E000<b style="margin: 20px;">R8_DVP_CR0</b>//   DVP control register0</summary>
+<ul>
+<li class="content">
+[0]<b style="margin: 20px;">RB_DVP_ENABLE</b> (def=0x0)    //    DVP enable
+</li>
+<li class="content">
+[1]<b style="margin: 20px;">RB_DVP_V_POLAR</b> (def=0x0)    //    DVP VSYNC polarity control
+</li>
+<li class="content">
+[2]<b style="margin: 20px;">RB_DVP_H_POLAR</b> (def=0x0)    //    DVP HSYNC polarity control
+</li>
+<li class="content">
+[3]<b style="margin: 20px;">RB_DVP_P_POLAR</b> (def=0x0)    //    DVP PCLK polarity control
+</li>
+<li class="content">
+[4:5]<b style="margin: 20px;">RB_DVP_MSK_DAT_MOD</b> (def=0x0)    //    DVP data bit width confguration
+</li>
+<li class="content">
+[6]<b style="margin: 20px;">RB_DVP_JPEG</b> (def=0x0)    //    DVP JPEG mode
+</li>
+<li class="content">
+[7]<b style="margin: 20px;">RB_DVP_RAW_CM</b> (def=0x0)    //    DVP row count mode
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x4000E001<b style="margin: 20px;">R8_DVP_CR1</b>//   DVP control register1</summary>
+<ul>
+<li class="content">
+[0]<b style="margin: 20px;">RB_DVP_DMA_ENABLE</b> (def=0x0)    //    DVP dma enable
+</li>
+<li class="content">
+[1]<b style="margin: 20px;">RB_DVP_ALL_CLR</b> (def=0x1)    //    DVP all clear, high action
+</li>
+<li class="content">
+[2]<b style="margin: 20px;">RB_DVP_RCV_CLR</b> (def=0x1)    //    DVP receive logic clear, high action
+</li>
+<li class="content">
+[3]<b style="margin: 20px;">RB_DVP_BUF_TOG</b> (def=0x0)    //    DVP bug toggle by software
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x4000E002<b style="margin: 20px;">R8_DVP_INT_EN</b>//   DVP interrupt enable register</summary>
+<ul>
+<li class="content">
+[0]<b style="margin: 20px;">RB_DVP_IE_STR_FRM</b> (def=0x0)    //    DVP frame start interrupt enable
+</li>
+<li class="content">
+[1]<b style="margin: 20px;">RB_DVP_IE_ROW_DONE</b> (def=0x0)    //    DVP row received done interrupt enable
+</li>
+<li class="content">
+[2]<b style="margin: 20px;">RB_DVP_IE_FRM_DONE</b> (def=0x0)    //    DVP frame received done interrupt enable
+</li>
+<li class="content">
+[3]<b style="margin: 20px;">RB_DVP_IE_FIFO_OV</b> (def=0x0)    //    DVP receive fifo overflow interrupt enable 
+</li>
+<li class="content">
+[4]<b style="margin: 20px;">RB_DVP_IE_STP_FRM</b> (def=0x0)    //    DVP frame stop interrupt enable 
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x4000E004<b style="margin: 20px;">R16_DVP_ROW_NUM</b>//   DVP row number of a frame indicator register</summary>
+<ul>
+<li class="content">
+[0:15]<b style="margin: 20px;">RB_DVP_ROW_NUM</b> (def=0x0)    //    the number of rows contained in a frame of image data
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x4000E006<b style="margin: 20px;">R16_DVP_COL_NUM</b>//   DVP row number of a frame indicator register</summary>
+<ul>
+<li class="content">
+[0:15]<b style="margin: 20px;">RB_DVP_COL_NUM</b> (def=0x0)    //    the number of PCLK cyccles contained in a row of data in RGB mode
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x4000E008<b style="margin: 20px;">R32_DVP_DMA_BUF0</b>//    DVP dma buffer0 addr</summary>
+<ul>
+<li class="content">
+[0:16]<b style="margin: 20px;">RB_DVP_DMA_BUF0</b> (def=0x0)    //    the receiving address 0 of DMA
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x4000E00C<b style="margin: 20px;">R32_DVP_DMA_BUF1</b>//    DVP dma buffer1 addr</summary>
+<ul>
+<li class="content">
+[0:16]<b style="margin: 20px;">RB_DVP_DMA_BUF1</b> (def=0x0)    //    the receiving address1 of DMA
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x4000E010<b style="margin: 20px;">R8_DVP_INT_FLAG</b>//    DVP interrupt flag register</summary>
+<ul>
+<li class="content">
+[0]<b style="margin: 20px;">RB_DVP_IF_STR_FRM</b> (def=0x0)    //    interrupt flag for DVP frame start
+</li>
+<li class="content">
+[1]<b style="margin: 20px;">RB_DVP_IF_ROW_DONE</b> (def=0x0)    //    interrupt flag for DVP row receive done
+</li>
+<li class="content">
+[2]<b style="margin: 20px;">RB_DVP_IF_FRM_DONE</b> (def=0x0)    //    interrupt flag for DVP frame receive done
+</li>
+<li class="content">
+[3]<b style="margin: 20px;">RB_DVP_IF_FIFO_OV</b> (def=0x0)    //    interrupt flag for DVP receive fifo overflow
+</li>
+<li class="content">
+[4]<b style="margin: 20px;">RB_DVP_IF_STP_FRM</b> (def=0x0)    //    interrupt flag for DVP frame stop
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x4000E011<b style="margin: 20px;">R8_DVP_FIFO_ST</b>//    DVP receive fifo status</summary>
+<ul>
+<li class="content">
+[0]<b style="margin: 20px;">RB_DVP_FIFO_RDY</b> (def=0x0)    //    DVP receive fifo ready
+</li>
+<li class="content">
+[1]<b style="margin: 20px;">RB_DVP_FIFO_FULL</b> (def=0x0)    //    DVP receive fifo full
+</li>
+<li class="content">
+[2]<b style="margin: 20px;">RB_DVP_FIFO_OV</b> (def=0x0)    //    DVP receive fifo overflow
+</li>
+<li class="content">
+[4:6]<b style="margin: 20px;">RB_DVP_MSK_FIFO_CNT</b> (def=0x0)    //    DVP receive fifo count
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x4000E014<b style="margin: 20px;">R16_DVP_ROW_CNT</b>//    DVP row count value</summary>
+<ul>
+<li class="content">
+[0:15]<b style="margin: 20px;">RB_DVP_ROW_CNT</b> (def=0x0)    //    DVP receive fifo full
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x4000E016<b style="margin: 20px;">R16_DVP_COL_CNT</b>//    DVP col count value</summary>
+<ul>
+<li class="content">
+[0:15]<b style="margin: 20px;">RB_DVP_COL_CNT</b> (def=0x0)    //    DVP receive fifo ready
+</li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0xE000E000<b style="margin: 20px;">PFIC</b>// Program Fast Interrupt Controller</summary>
+<ul>
+<li class="content"><details><summary>0xE000E000<b style="margin: 20px;">ISR1</b>//   Interrupt Status Register</summary>
+<ul>
+<li class="content">
+[12:31]<b style="margin: 20px;">INTSTA</b> (def=0x0)    //    Interrupt ID Status
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0xE000E004<b style="margin: 20px;">ISR2</b>//   Interrupt Status Register</summary>
+<ul>
+<li class="content">
+[0:27]<b style="margin: 20px;">INTENSTA</b> (def=0x0)    //    Interrupt ID Status
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0xE000E020<b style="margin: 20px;">IPR1</b>//   Interrupt Pending Register</summary>
+<ul>
+<li class="content">
+[12:31]<b style="margin: 20px;">PENDSTA</b> (def=0x0)    //    PENDSTA
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0xE000E024<b style="margin: 20px;">IPR2</b>//   Interrupt Pending Register</summary>
+<ul>
+<li class="content">
+[0:27]<b style="margin: 20px;">PENDSTA</b> (def=0x0)    //    PENDSTA
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0xE000E040<b style="margin: 20px;">ITHRESDR</b>//   Interrupt Priority Register</summary>
+<ul>
+<li class="content">
+[0:7]<b style="margin: 20px;">THRESHOLD</b> (def=0x0)    //    THRESHOLD
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0xE000E044<b style="margin: 20px;">FIBADDRR</b>//   Interrupt Fast Address Register</summary>
+<ul>
+<li class="content">
+[28:31]<b style="margin: 20px;">BASEADDR</b> (def=0x0)    //    BASEADDR
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0xE000E048<b style="margin: 20px;">CFGR</b>//   Interrupt Config Register</summary>
+<ul>
+<li class="content">
+[0]<b style="margin: 20px;">HWSTKCTRL</b> (def=0x0)    //    HWSTKCTRL
+</li>
+<li class="content">
+[1]<b style="margin: 20px;">NESTCTRL</b> (def=0x0)    //    NESTCTRL
+</li>
+<li class="content">
+[2]<b style="margin: 20px;">NMISET</b> (def=0x0)    //    NMISET
+</li>
+<li class="content">
+[3]<b style="margin: 20px;">NMIRESET</b> (def=0x0)    //    NMIRESET
+</li>
+<li class="content">
+[4]<b style="margin: 20px;">EXCSET</b> (def=0x0)    //    EXCSET
+</li>
+<li class="content">
+[5]<b style="margin: 20px;">EXCRESET</b> (def=0x0)    //    EXCRESET
+</li>
+<li class="content">
+[6]<b style="margin: 20px;">PFICRSET</b> (def=0x0)    //    PFICRSET
+</li>
+<li class="content">
+[7]<b style="margin: 20px;">SYSRESET</b> (def=0x0)    //    SYSRESET
+</li>
+<li class="content">
+[16:31]<b style="margin: 20px;">KEYCODE</b> (def=0x0)    //    KEYCODE
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0xE000E04C<b style="margin: 20px;">GISR</b>//   Interrupt Global Register</summary>
+<ul>
+<li class="content">
+[0:7]<b style="margin: 20px;">NESTSTA</b> (def=0x0)    //    NESTSTA
+</li>
+<li class="content">
+[8]<b style="margin: 20px;">GACTSTA</b> (def=0x0)    //    GACTSTA
+</li>
+<li class="content">
+[9]<b style="margin: 20px;">GPENDSTA</b> (def=0x0)    //    GPENDSTA
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0xE000E060<b style="margin: 20px;">FIFOADDRR0</b>//   Interrupt 0 address Register</summary>
+<ul>
+<li class="content">
+[0:23]<b style="margin: 20px;">OFFADDR0</b> (def=0x0)    //    OFFADDR0
+</li>
+<li class="content">
+[24:31]<b style="margin: 20px;">IRQID0</b> (def=0x0)    //    IRQID0
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0xE000E064<b style="margin: 20px;">FIFOADDRR1</b>//   Interrupt 1 address Register</summary>
+<ul>
+<li class="content">
+[0:23]<b style="margin: 20px;">OFFADDR1</b> (def=0x0)    //    OFFADDR1
+</li>
+<li class="content">
+[24:31]<b style="margin: 20px;">IRQID1</b> (def=0x0)    //    IRQID1
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0xE000E068<b style="margin: 20px;">FIFOADDRR2</b>//   Interrupt 2 address Register</summary>
+<ul>
+<li class="content">
+[0:23]<b style="margin: 20px;">OFFADDR2</b> (def=0x0)    //    OFFADDR2
+</li>
+<li class="content">
+[24:31]<b style="margin: 20px;">IRQID2</b> (def=0x0)    //    IRQID2
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0xE000E06C<b style="margin: 20px;">FIFOADDRR3</b>//   Interrupt 3 address Register</summary>
+<ul>
+<li class="content">
+[0:23]<b style="margin: 20px;">OFFADDR3</b> (def=0x0)    //    OFFADDR3
+</li>
+<li class="content">
+[24:31]<b style="margin: 20px;">IRQID3</b> (def=0x0)    //    IRQID3
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0xE000E100<b style="margin: 20px;">IENR1</b>//   Interrupt Setting Register</summary>
+<ul>
+<li class="content">
+[12:31]<b style="margin: 20px;">INTEN</b> (def=0x0)    //    INTEN
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0xE000E104<b style="margin: 20px;">IENR2</b>//   Interrupt Setting Register</summary>
+<ul>
+<li class="content">
+[0:27]<b style="margin: 20px;">INTEN</b> (def=0x0)    //    INTEN
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0xE000E180<b style="margin: 20px;">IRER1</b>//   Interrupt Clear Register</summary>
+<ul>
+<li class="content">
+[12:31]<b style="margin: 20px;">INTRSET</b> (def=0x0)    //    INTRSET
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0xE000E184<b style="margin: 20px;">IRER2</b>//   Interrupt Clear Register</summary>
+<ul>
+<li class="content">
+[0:27]<b style="margin: 20px;">INTRSET</b> (def=0x0)    //    INTRSET
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0xE000E200<b style="margin: 20px;">IPSR1</b>//   Interrupt Pending Register</summary>
+<ul>
+<li class="content">
+[12:31]<b style="margin: 20px;">PENDSET</b> (def=0x0)    //    PENDSET
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0xE000E204<b style="margin: 20px;">IPSR2</b>//   Interrupt Pending Register</summary>
+<ul>
+<li class="content">
+[0:27]<b style="margin: 20px;">PENDSET</b> (def=0x0)    //    PENDSET
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0xE000E280<b style="margin: 20px;">IPRR1</b>//   Interrupt Pending Clear Register</summary>
+<ul>
+<li class="content">
+[12:31]<b style="margin: 20px;">PENDRESET</b> (def=0x0)    //    PENDRESET
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0xE000E284<b style="margin: 20px;">IPRR2</b>//   Interrupt Pending Clear Register</summary>
+<ul>
+<li class="content">
+[0:27]<b style="margin: 20px;">PENDRESET</b> (def=0x0)    //    PENDRESET
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0xE000E300<b style="margin: 20px;">IACTR1</b>//   Interrupt ACTIVE Register</summary>
+<ul>
+<li class="content">
+[12:31]<b style="margin: 20px;">IACTS</b> (def=0x0)    //    IACTS
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0xE000E304<b style="margin: 20px;">IACTR2</b>//   Interrupt ACTIVE Register</summary>
+<ul>
+<li class="content">
+[0:27]<b style="margin: 20px;">IACTS</b> (def=0x0)    //    IACTS
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0xE000E400<b style="margin: 20px;">IPRIOR0</b>//   Interrupt Priority configuration Register</summary>
+<ul>
+<li class="content">
+[0:31]<b style="margin: 20px;">IPRIOR0</b> (def=0x0)    //    IPRIOR0
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0xE000E420<b style="margin: 20px;">IPRIOR1</b>//   Interrupt Priority configuration Register</summary>
+<ul>
+<li class="content">
+[0:31]<b style="margin: 20px;">IPRIOR1</b> (def=0x0)    //    IPRIOR1
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0xE000E440<b style="margin: 20px;">IPRIOR2</b>//   Interrupt Priority configuration Register</summary>
+<ul>
+<li class="content">
+[0:31]<b style="margin: 20px;">IPRIOR2</b> (def=0x0)    //    IPRIOR2
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0xE000E460<b style="margin: 20px;">IPRIOR3</b>//   Interrupt Priority configuration Register</summary>
+<ul>
+<li class="content">
+[0:31]<b style="margin: 20px;">IPRIOR3</b> (def=0x0)    //    IPRIOR3
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0xE000E480<b style="margin: 20px;">IPRIOR4</b>//   Interrupt Priority configuration Register</summary>
+<ul>
+<li class="content">
+[0:31]<b style="margin: 20px;">IPRIOR4</b> (def=0x0)    //    IPRIOR4
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0xE000E4A0<b style="margin: 20px;">IPRIOR5</b>//   Interrupt Priority configuration Register</summary>
+<ul>
+<li class="content">
+[0:31]<b style="margin: 20px;">IPRIOR5</b> (def=0x0)    //    IPRIOR5
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0xE000E4C0<b style="margin: 20px;">IPRIOR6</b>//   Interrupt Priority configuration Register</summary>
+<ul>
+<li class="content">
+[0:31]<b style="margin: 20px;">IPRIOR6</b> (def=0x0)    //    IPRIOR6
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0xE000E4E0<b style="margin: 20px;">IPRIOR7</b>//   Interrupt Priority configuration Register</summary>
+<ul>
+<li class="content">
+[0:31]<b style="margin: 20px;">IPRIOR7</b> (def=0x0)    //    IPRIOR7
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0xE000E500<b style="margin: 20px;">IPRIOR8</b>//   Interrupt Priority configuration Register</summary>
+<ul>
+<li class="content">
+[0:31]<b style="margin: 20px;">IPRIOR8</b> (def=0x0)    //    IPRIOR8
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0xE000E520<b style="margin: 20px;">IPRIOR9</b>//   Interrupt Priority configuration Register</summary>
+<ul>
+<li class="content">
+[0:31]<b style="margin: 20px;">IPRIOR9</b> (def=0x0)    //    IPRIOR9
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0xE000E540<b style="margin: 20px;">IPRIOR10</b>//   Interrupt Priority configuration Register</summary>
+<ul>
+<li class="content">
+[0:31]<b style="margin: 20px;">IPRIOR10</b> (def=0x0)    //    IPRIOR10
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0xE000E560<b style="margin: 20px;">IPRIOR11</b>//   Interrupt Priority configuration Register</summary>
+<ul>
+<li class="content">
+[0:31]<b style="margin: 20px;">IPRIOR11</b> (def=0x0)    //    IPRIOR11
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0xE000E580<b style="margin: 20px;">IPRIOR12</b>//   Interrupt Priority configuration Register</summary>
+<ul>
+<li class="content">
+[0:31]<b style="margin: 20px;">IPRIOR12</b> (def=0x0)    //    IPRIOR12
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0xE000E5A0<b style="margin: 20px;">IPRIOR13</b>//   Interrupt Priority configuration Register</summary>
+<ul>
+<li class="content">
+[0:31]<b style="margin: 20px;">IPRIOR13</b> (def=0x0)    //    IPRIOR13
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0xE000E5C0<b style="margin: 20px;">IPRIOR14</b>//   Interrupt Priority configuration Register</summary>
+<ul>
+<li class="content">
+[0:31]<b style="margin: 20px;">IPRIOR14</b> (def=0x0)    //    IPRIOR14
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0xE000E5E0<b style="margin: 20px;">IPRIOR15</b>//   Interrupt Priority configuration Register</summary>
+<ul>
+<li class="content">
+[0:31]<b style="margin: 20px;">IPRIOR15</b> (def=0x0)    //    IPRIOR15
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0xE000E600<b style="margin: 20px;">IPRIOR16</b>//   Interrupt Priority configuration Register</summary>
+<ul>
+<li class="content">
+[0:31]<b style="margin: 20px;">IPRIOR16</b> (def=0x0)    //    IPRIOR16
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0xE000E620<b style="margin: 20px;">IPRIOR17</b>//   Interrupt Priority configuration Register</summary>
+<ul>
+<li class="content">
+[0:31]<b style="margin: 20px;">IPRIOR17</b> (def=0x0)    //    IPRIOR17
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0xE000E640<b style="margin: 20px;">IPRIOR18</b>//   Interrupt Priority configuration Register</summary>
+<ul>
+<li class="content">
+[0:31]<b style="margin: 20px;">IPRIOR18</b> (def=0x0)    //    IPRIOR18
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0xE000E660<b style="margin: 20px;">IPRIOR19</b>//   Interrupt Priority configuration Register</summary>
+<ul>
+<li class="content">
+[0:31]<b style="margin: 20px;">IPRIOR19</b> (def=0x0)    //    IPRIOR19
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0xE000E680<b style="margin: 20px;">IPRIOR20</b>//   Interrupt Priority configuration Register</summary>
+<ul>
+<li class="content">
+[0:31]<b style="margin: 20px;">IPRIOR20</b> (def=0x0)    //    IPRIOR20
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0xE000E6A0<b style="margin: 20px;">IPRIOR21</b>//   Interrupt Priority configuration Register</summary>
+<ul>
+<li class="content">
+[0:31]<b style="margin: 20px;">IPRIOR21</b> (def=0x0)    //    IPRIOR21
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0xE000E6C0<b style="margin: 20px;">IPRIOR22</b>//   Interrupt Priority configuration Register</summary>
+<ul>
+<li class="content">
+[0:31]<b style="margin: 20px;">IPRIOR22</b> (def=0x0)    //    IPRIOR22
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0xE000E6E0<b style="margin: 20px;">IPRIOR23</b>//   Interrupt Priority configuration Register</summary>
+<ul>
+<li class="content">
+[0:31]<b style="margin: 20px;">IPRIOR23</b> (def=0x0)    //    IPRIOR23
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0xE000E700<b style="margin: 20px;">IPRIOR24</b>//   Interrupt Priority configuration Register</summary>
+<ul>
+<li class="content">
+[0:31]<b style="margin: 20px;">IPRIOR24</b> (def=0x0)    //    IPRIOR24
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0xE000E720<b style="margin: 20px;">IPRIOR25</b>//   Interrupt Priority configuration Register</summary>
+<ul>
+<li class="content">
+[0:31]<b style="margin: 20px;">IPRIOR25</b> (def=0x0)    //    IPRIOR25
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0xE000E740<b style="margin: 20px;">IPRIOR26</b>//   Interrupt Priority configuration Register</summary>
+<ul>
+<li class="content">
+[0:31]<b style="margin: 20px;">IPRIOR26</b> (def=0x0)    //    IPRIOR26
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0xE000E760<b style="margin: 20px;">IPRIOR27</b>//   Interrupt Priority configuration Register</summary>
+<ul>
+<li class="content">
+[0:31]<b style="margin: 20px;">IPRIOR27</b> (def=0x0)    //    IPRIOR27
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0xE000E780<b style="margin: 20px;">IPRIOR28</b>//   Interrupt Priority configuration Register</summary>
+<ul>
+<li class="content">
+[0:31]<b style="margin: 20px;">IPRIOR28</b> (def=0x0)    //    IPRIOR28
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0xE000E7A0<b style="margin: 20px;">IPRIOR29</b>//   Interrupt Priority configuration Register</summary>
+<ul>
+<li class="content">
+[0:31]<b style="margin: 20px;">IPRIOR29</b> (def=0x0)    //    IPRIOR29
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0xE000E7C0<b style="margin: 20px;">IPRIOR30</b>//   Interrupt Priority configuration Register</summary>
+<ul>
+<li class="content">
+[0:31]<b style="margin: 20px;">IPRIOR30</b> (def=0x0)    //    IPRIOR30
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0xE000E7E0<b style="margin: 20px;">IPRIOR31</b>//   Interrupt Priority configuration Register</summary>
+<ul>
+<li class="content">
+[0:31]<b style="margin: 20px;">IPRIOR31</b> (def=0x0)    //    IPRIOR31
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0xE000E800<b style="margin: 20px;">IPRIOR32</b>//   Interrupt Priority configuration Register</summary>
+<ul>
+<li class="content">
+[0:31]<b style="margin: 20px;">IPRIOR32</b> (def=0x0)    //    IPRIOR32
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0xE000E820<b style="margin: 20px;">IPRIOR33</b>//   Interrupt Priority configuration Register</summary>
+<ul>
+<li class="content">
+[0:31]<b style="margin: 20px;">IPRIOR33</b> (def=0x0)    //    IPRIOR33
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0xE000E840<b style="margin: 20px;">IPRIOR34</b>//   Interrupt Priority configuration Register</summary>
+<ul>
+<li class="content">
+[0:31]<b style="margin: 20px;">IPRIOR34</b> (def=0x0)    //    IPRIOR34
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0xE000E860<b style="margin: 20px;">IPRIOR35</b>//   Interrupt Priority configuration Register</summary>
+<ul>
+<li class="content">
+[0:31]<b style="margin: 20px;">IPRIOR35</b> (def=0x0)    //    IPRIOR35
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0xE000E880<b style="margin: 20px;">IPRIOR36</b>//   Interrupt Priority configuration Register</summary>
+<ul>
+<li class="content">
+[0:31]<b style="margin: 20px;">IPRIOR36</b> (def=0x0)    //    IPRIOR36
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0xE000E8A0<b style="margin: 20px;">IPRIOR37</b>//   Interrupt Priority configuration Register</summary>
+<ul>
+<li class="content">
+[0:31]<b style="margin: 20px;">IPRIOR37</b> (def=0x0)    //    IPRIOR37
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0xE000E8C0<b style="margin: 20px;">IPRIOR38</b>//   Interrupt Priority configuration Register</summary>
+<ul>
+<li class="content">
+[0:31]<b style="margin: 20px;">IPRIOR38</b> (def=0x0)    //    IPRIOR38
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0xE000E8E0<b style="margin: 20px;">IPRIOR39</b>//   Interrupt Priority configuration Register</summary>
+<ul>
+<li class="content">
+[0:31]<b style="margin: 20px;">IPRIOR39</b> (def=0x0)    //    IPRIOR39
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0xE000E900<b style="margin: 20px;">IPRIOR40</b>//   Interrupt Priority configuration Register</summary>
+<ul>
+<li class="content">
+[0:31]<b style="margin: 20px;">IPRIOR40</b> (def=0x0)    //    IPRIOR40
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0xE000E920<b style="margin: 20px;">IPRIOR41</b>//   Interrupt Priority configuration Register</summary>
+<ul>
+<li class="content">
+[0:31]<b style="margin: 20px;">IPRIOR41</b> (def=0x0)    //    IPRIOR41
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0xE000E940<b style="margin: 20px;">IPRIOR42</b>//   Interrupt Priority configuration Register</summary>
+<ul>
+<li class="content">
+[0:31]<b style="margin: 20px;">IPRIOR42</b> (def=0x0)    //    IPRIOR42
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0xE000E960<b style="margin: 20px;">IPRIOR43</b>//   Interrupt Priority configuration Register</summary>
+<ul>
+<li class="content">
+[0:31]<b style="margin: 20px;">IPRIOR43</b> (def=0x0)    //    IPRIOR43
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0xE000E980<b style="margin: 20px;">IPRIOR44</b>//   Interrupt Priority configuration Register</summary>
+<ul>
+<li class="content">
+[0:31]<b style="margin: 20px;">IPRIOR44</b> (def=0x0)    //    IPRIOR44
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0xE000E9A0<b style="margin: 20px;">IPRIOR45</b>//   Interrupt Priority configuration Register</summary>
+<ul>
+<li class="content">
+[0:31]<b style="margin: 20px;">IPRIOR45</b> (def=0x0)    //    IPRIOR45
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0xE000E9C0<b style="margin: 20px;">IPRIOR46</b>//   Interrupt Priority configuration Register</summary>
+<ul>
+<li class="content">
+[0:31]<b style="margin: 20px;">IPRIOR46</b> (def=0x0)    //    IPRIOR46
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0xE000E9E0<b style="margin: 20px;">IPRIOR47</b>//   Interrupt Priority configuration Register</summary>
+<ul>
+<li class="content">
+[0:31]<b style="margin: 20px;">IPRIOR47</b> (def=0x0)    //    IPRIOR47
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0xE000EA00<b style="margin: 20px;">IPRIOR48</b>//   Interrupt Priority configuration Register</summary>
+<ul>
+<li class="content">
+[0:31]<b style="margin: 20px;">IPRIOR48</b> (def=0x0)    //    IPRIOR48
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0xE000EA20<b style="margin: 20px;">IPRIOR49</b>//   Interrupt Priority configuration Register</summary>
+<ul>
+<li class="content">
+[0:31]<b style="margin: 20px;">IPRIOR49</b> (def=0x0)    //    IPRIOR49
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0xE000EA40<b style="margin: 20px;">IPRIOR50</b>//   Interrupt Priority configuration Register</summary>
+<ul>
+<li class="content">
+[0:31]<b style="margin: 20px;">IPRIOR50</b> (def=0x0)    //    IPRIOR50
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0xE000EA60<b style="margin: 20px;">IPRIOR51</b>//   Interrupt Priority configuration Register</summary>
+<ul>
+<li class="content">
+[0:31]<b style="margin: 20px;">IPRIOR51</b> (def=0x0)    //    IPRIOR51
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0xE000EA80<b style="margin: 20px;">IPRIOR52</b>//   Interrupt Priority configuration Register</summary>
+<ul>
+<li class="content">
+[0:31]<b style="margin: 20px;">IPRIOR52</b> (def=0x0)    //    IPRIOR52
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0xE000EAA0<b style="margin: 20px;">IPRIOR53</b>//   Interrupt Priority configuration Register</summary>
+<ul>
+<li class="content">
+[0:31]<b style="margin: 20px;">IPRIOR53</b> (def=0x0)    //    IPRIOR53
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0xE000EAC0<b style="margin: 20px;">IPRIOR54</b>//   Interrupt Priority configuration Register</summary>
+<ul>
+<li class="content">
+[0:31]<b style="margin: 20px;">IPRIOR54</b> (def=0x0)    //    IPRIOR54
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0xE000EAE0<b style="margin: 20px;">IPRIOR55</b>//   Interrupt Priority configuration Register</summary>
+<ul>
+<li class="content">
+[0:31]<b style="margin: 20px;">IPRIOR55</b> (def=0x0)    //    IPRIOR55
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0xE000EB00<b style="margin: 20px;">IPRIOR56</b>//   Interrupt Priority configuration Register</summary>
+<ul>
+<li class="content">
+[0:31]<b style="margin: 20px;">IPRIOR56</b> (def=0x0)    //    IPRIOR56
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0xE000EB20<b style="margin: 20px;">IPRIOR57</b>//   Interrupt Priority configuration Register</summary>
+<ul>
+<li class="content">
+[0:31]<b style="margin: 20px;">IPRIOR57</b> (def=0x0)    //    IPRIOR57
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0xE000EB40<b style="margin: 20px;">IPRIOR58</b>//   Interrupt Priority configuration Register</summary>
+<ul>
+<li class="content">
+[0:31]<b style="margin: 20px;">IPRIOR58</b> (def=0x0)    //    IPRIOR58
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0xE000EB60<b style="margin: 20px;">IPRIOR59</b>//   Interrupt Priority configuration Register</summary>
+<ul>
+<li class="content">
+[0:31]<b style="margin: 20px;">IPRIOR59</b> (def=0x0)    //    IPRIOR59
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0xE000EB80<b style="margin: 20px;">IPRIOR60</b>//   Interrupt Priority configuration Register</summary>
+<ul>
+<li class="content">
+[0:31]<b style="margin: 20px;">IPRIOR60</b> (def=0x0)    //    IPRIOR60
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0xE000EBA0<b style="margin: 20px;">IPRIOR61</b>//   Interrupt Priority configuration Register</summary>
+<ul>
+<li class="content">
+[0:31]<b style="margin: 20px;">IPRIOR61</b> (def=0x0)    //    IPRIOR61
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0xE000EBC0<b style="margin: 20px;">IPRIOR62</b>//   Interrupt Priority configuration Register</summary>
+<ul>
+<li class="content">
+[0:31]<b style="margin: 20px;">IPRIOR62</b> (def=0x0)    //    IPRIOR62
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0xE000EBE0<b style="margin: 20px;">IPRIOR63</b>//   Interrupt Priority configuration Register</summary>
+<ul>
+<li class="content">
+[0:31]<b style="margin: 20px;">IPRIOR63</b> (def=0x0)    //    IPRIOR63
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0xE000ED10<b style="margin: 20px;">SCTLR</b>//   System Control Register</summary>
+<ul>
+<li class="content">
+[1]<b style="margin: 20px;">SLEEPONEXIT</b> (def=0x0)    //    SLEEPONEXIT
+</li>
+<li class="content">
+[2]<b style="margin: 20px;">SLEEPDEEP</b> (def=0x0)    //    SLEEPDEEP
+</li>
+<li class="content">
+[3]<b style="margin: 20px;">WFITOWFE</b> (def=0x0)    //    WFITOWFE
+</li>
+<li class="content">
+[4]<b style="margin: 20px;">SEVONPEND</b> (def=0x0)    //    SEVONPEND
+</li>
+<li class="content">
+[5]<b style="margin: 20px;">SETEVENT</b> (def=0x0)    //    SETEVENT
+</li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0xE000F000<b style="margin: 20px;">Systick</b>// Systick register</summary>
+<ul>
+<li class="content"><details><summary>0xE000F000<b style="margin: 20px;">STK_CTLR</b>//   Systick counter control register</summary>
+<ul>
+<li class="content">
+[0]<b style="margin: 20px;">STE</b> (def=0x0)    //    Systick counter enable
+</li>
+<li class="content">
+[1]<b style="margin: 20px;">STIE</b> (def=0x0)    //    Systick counter interrupt enable
+</li>
+<li class="content">
+[2]<b style="margin: 20px;">STCLK</b> (def=0x0)    //    System counter clock Source selection
+</li>
+<li class="content">
+[8]<b style="margin: 20px;">STRELOAD</b> (def=0x0)    //    System counter reload control
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0xE000F004<b style="margin: 20px;">STK_CNTL</b>//   Systick counter low register</summary>
+<ul>
+<li class="content">
+[0:31]<b style="margin: 20px;">CNTL</b> (def=0x0)    //    CNTL
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0xE000F008<b style="margin: 20px;">STK_CNTH</b>//   Systick counter high register</summary>
+<ul>
+<li class="content">
+[0:31]<b style="margin: 20px;">CNTH</b> (def=0x0)    //    CNTH
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0xE000F00C<b style="margin: 20px;">STK_CMPLR</b>//   Systick compare low register</summary>
+<ul>
+<li class="content">
+[0:31]<b style="margin: 20px;">CMPL</b> (def=0x0)    //    CMPL
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0xE000F010<b style="margin: 20px;">STK_CMPHR</b>//   Systick compare high register</summary>
+<ul>
+<li class="content">
+[0:31]<b style="margin: 20px;">CMPH</b> (def=0x0)    //    CMPH
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0xE000F014<b style="margin: 20px;">STK_CNTFG</b>//   Systick counter flag</summary>
+<ul>
+<li class="content">
+[0]<b style="margin: 20px;">SWIE</b> (def=0x0)    //    System soft interrupt enable
+</li>
+<li class="content">
+[1]<b style="margin: 20px;">CNTIF</b> (def=0x0)    //    Systick counter clear zero flag
+</li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x4000A000<b style="margin: 20px;">EMMC</b>// EMMC register</summary>
+<ul>
+<li class="content"><details><summary>0x4000A038<b style="margin: 20px;">R16_EMMC_CLK_DIV</b>//   SD clock divider register</summary>
+<ul>
+<li class="content">
+[0:4]<b style="margin: 20px;">RB_EMMC_DIV_MASK</b> (def=0x13)    //    clk div
+</li>
+<li class="content">
+[8]<b style="margin: 20px;">RB_EMMC_CLKOE</b> (def=0x0)    //    chip output sdclk oe
+</li>
+<li class="content">
+[9]<b style="margin: 20px;">RB_EMMC_CLKMode</b> (def=0x1)    //    EMMC clock frequency mode selection bit
+</li>
+<li class="content">
+[10]<b style="margin: 20px;">RB_EMMC_PHASEINV</b> (def=0x0)    //    invert chip output sdclk phase
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x4000A000<b style="margin: 20px;">R32_EMMC_ARGUMENT</b>//   SD 32bits command argument register</summary>
+<ul>
+<li class="content">
+[0:31]<b style="margin: 20px;">EMMC_ARGUMENT</b> (def=0x0)    //    32 bit command parameter register
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x4000A004<b style="margin: 20px;">R16_EMMC_CMD_SET</b>//   SD 16bits cmd setting register</summary>
+<ul>
+<li class="content">
+[0:5]<b style="margin: 20px;">RB_EMMC_CMDIDX_MASK</b> (def=0x0)    //    the index number of the currently sent command
+</li>
+<li class="content">
+[8:9]<b style="margin: 20px;">RB_EMMC_RPTY_MASK</b> (def=0x0)    //    current respone type
+</li>
+<li class="content">
+[10]<b style="margin: 20px;">RB_EMMC_CKCRC</b> (def=0x0)    //    check the response CRC
+</li>
+<li class="content">
+[11]<b style="margin: 20px;">RB_EMMC_CKIDX</b> (def=0x0)    //    check the response command index
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x4000A008<b style="margin: 20px;">R32_EMMC_RESPONSE0</b>//   SD 128bits response register, [31:0] 32bits </summary>
+<ul>
+<li class="content">
+[0:31]<b style="margin: 20px;">R32_EMMC_RESPONSE0</b> (def=0x0)    //    response parameter register
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x4000A00C<b style="margin: 20px;">R32_EMMC_RESPONSE1</b>//   SD 128bits response register, [63:32] 32bits </summary>
+<ul>
+<li class="content">
+[0:31]<b style="margin: 20px;">R32_EMMC_RESPONSE1</b> (def=0x0)    //    response parameter register
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x4000A010<b style="margin: 20px;">R32_EMMC_RESPONSE2</b>//   SD 128bits response register, [95:64] 32bits </summary>
+<ul>
+<li class="content">
+[0:31]<b style="margin: 20px;">R32_EMMC_RESPONSE2</b> (def=0x0)    //    response parameter register
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x4000A014<b style="margin: 20px;">R32_EMMC_RESPONSE3</b>//   SD 128bits response register, [127:96] 32bits </summary>
+<ul>
+<li class="content">
+[0:31]<b style="margin: 20px;">R32_EMMC_RESPONSE3</b> (def=0x0)    //    response parameter register
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x4000A014<b style="margin: 20px;">R32_EMMC_WRITE_CONT</b>//   Multiplexing register of the EMMC_RESPONSE3,[127:96] 32bits</summary>
+<ul>
+<li class="content">
+[0:31]<b style="margin: 20px;">R32_EMMC_WRITE_CONT</b> (def=0x0)    //    response parameter register
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x4000A018<b style="margin: 20px;">R8_EMMC_CONTROL</b>//   SD 8bits control register</summary>
+<ul>
+<li class="content">
+[0:1]<b style="margin: 20px;">RB_EMMC_LW_MASK</b> (def=0x1)    //    effctive data width for sending or receiving data 
+</li>
+<li class="content">
+[2]<b style="margin: 20px;">RB_EMMC_ALL_CLR</b> (def=0x1)    //    reset all the inner logic, default is valid
+</li>
+<li class="content">
+[3]<b style="margin: 20px;">RB_EMMC_DMAEN</b> (def=0x0)    //    enable the dma
+</li>
+<li class="content">
+[4]<b style="margin: 20px;">RB_EMMC_RST_LGC</b> (def=0x1)    //    reset the data tran/recv logic
+</li>
+<li class="content">
+[5]<b style="margin: 20px;">RB_EMMC_NEGSMP</b> (def=0x0)    //    controller use nagedge sample cmd
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x4000A01C<b style="margin: 20px;">R8_EMMC_TIMEOUT</b>//   SD 8bits data timeout value</summary>
+<ul>
+<li class="content">
+[0:3]<b style="margin: 20px;">RB_EMMC_TOCNT_MASK</b> (def=0xC)    //    response data timeout configuration 
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x4000A020<b style="margin: 20px;">R32_EMMC_STATUS</b>//   SD status</summary>
+<ul>
+<li class="content">
+[0:15]<b style="margin: 20px;">MASK_BLOCK_NUM</b> (def=0x0)    //    the number of blocks successfully transmitted in the current multi-block transmission 
+</li>
+<li class="content">
+[16]<b style="margin: 20px;">RB_EMMC_CMDSTA</b> (def=0x0)    //    indicate cmd line is high level now 
+</li>
+<li class="content">
+[17]<b style="margin: 20px;">RB_EMMC_DAT0STA</b> (def=0x0)    //    indicate dat[0] line is high level now
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x4000A024<b style="margin: 20px;">R16_EMMC_INT_FG</b>//   SD 16bits interrupt flag register</summary>
+<ul>
+<li class="content">
+[0]<b style="margin: 20px;">RB_EMMC_IF_RE_TMOUT</b> (def=0x0)    //    indicate when expect the response, timeout 
+</li>
+<li class="content">
+[1]<b style="margin: 20px;">RB_EMMC_IF_RECRC_WR</b> (def=0x0)    //    indicate CRC error of the response 
+</li>
+<li class="content">
+[2]<b style="margin: 20px;">RB_EMMC_IF_REIDX_ER</b> (def=0x0)    //    indicate INDEX error of the response 
+</li>
+<li class="content">
+[3]<b style="margin: 20px;">RB_EMMC_IF_CMDDONE</b> (def=0x0)    //    when cmd hasn't response, indicate cmd has been sent, when cmd has a response, indicate cmd has bee
+</li>
+<li class="content">
+[4]<b style="margin: 20px;">RB_EMMC_IF_DATTMO</b> (def=0x0)    //    data line busy timeout 
+</li>
+<li class="content">
+[5]<b style="margin: 20px;">RB_EMMC_IF_TRANERR</b> (def=0x0)    //    last block have encountered a CRC error 
+</li>
+<li class="content">
+[6]<b style="margin: 20px;">RB_EMMC_IF_TRANDONE</b> (def=0x0)    //    all the blocks have been tran/recv successfully 
+</li>
+<li class="content">
+[7]<b style="margin: 20px;">RB_EMMC_IF_BKGAP</b> (def=0x0)    //    every block gap interrupt when multiple read/write, allow drive change the DMA address at this mome
+</li>
+<li class="content">
+[8]<b style="margin: 20px;">RB_EMMC_IF_FIFO_OV</b> (def=0x0)    //    fifo overflow, when write sd, indicate empty overflow, when read sd, indicate full overflow
+</li>
+<li class="content">
+[9]<b style="margin: 20px;">RB_EMMC_IF_SDIOINT</b> (def=0x0)    //    interrupt from SDIO card inside 
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x4000A028<b style="margin: 20px;">R16_EMMC_INT_EN</b>//   SD 16bits interrupt enable register</summary>
+<ul>
+<li class="content">
+[0]<b style="margin: 20px;">RB_EMMC_IE_RE_TMOUT</b> (def=0x0)    //    command response timeout interrupt enable
+</li>
+<li class="content">
+[1]<b style="margin: 20px;">RB_EMMC_IE_RECRC_WR</b> (def=0x0)    //    response CRC check error interrupt enable 
+</li>
+<li class="content">
+[2]<b style="margin: 20px;">RB_EMMC_IE_REIDX_ER</b> (def=0x0)    //    response index check error interrupt enable
+</li>
+<li class="content">
+[3]<b style="margin: 20px;">RB_EMMC_IE_CMDDONE</b> (def=0x0)    //    command completion interrupt enable
+</li>
+<li class="content">
+[4]<b style="margin: 20px;">RB_EMMC_IE_DATTMO</b> (def=0x0)    //    data timeout interrupt enable
+</li>
+<li class="content">
+[5]<b style="margin: 20px;">RB_EMMC_IE_TRANERR</b> (def=0x0)    //    blocks transfer CRC error interrupt enable
+</li>
+<li class="content">
+[6]<b style="margin: 20px;">RB_EMMC_IE_TRANDONE</b> (def=0x0)    //    all blocks transfer complete interrupt enable
+</li>
+<li class="content">
+[7]<b style="margin: 20px;">RB_EMMC_IE_BKGAP</b> (def=0x0)    //    single block transmission completion interrupt enable
+</li>
+<li class="content">
+[8]<b style="margin: 20px;">RB_EMMC_IE_FIFO_OV</b> (def=0x0)    //    FIFO overflow interrupt enable
+</li>
+<li class="content">
+[9]<b style="margin: 20px;">RB_EMMC_IE_SDIOINT</b> (def=0x0)    //    SDIO card interrupt enable
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x4000A02C<b style="margin: 20px;">R32_EMMC_DMA_BEG1</b>//   SD 16bits DMA start address register when to operate</summary>
+<ul>
+<li class="content">
+[0:16]<b style="margin: 20px;">RB_EMMC_DMAAD1_MASK</b> (def=0x0)    //    start address of read-write data buffer,the lower 4 bits are fixed to 0
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x4000A030<b style="margin: 20px;">R32_EMMC_BLOCK_CFG</b>//   SD 32bits data counter, [15:0] number of blocks this time will tran/recv, [27:16] block sise(byte n</summary>
+<ul>
+<li class="content">
+[0:15]<b style="margin: 20px;">RB_EMMC_BKNUM_MASK</b> (def=0x0)    //    the number of blocks to be transferred
+</li>
+<li class="content">
+[16:27]<b style="margin: 20px;">RB_EMMC_BKSIZE_MASK</b> (def=0x0)    //    single block transfer size
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x4000A034<b style="margin: 20px;">R32_EMMC_TRAN_MODE</b>//   SD TRANSFER MODE register</summary>
+<ul>
+<li class="content">
+[0]<b style="margin: 20px;">RB_EMMC_DMA_DIR</b> (def=0x0)    //    set DMA direction is controller to emmc card
+</li>
+<li class="content">
+[1]<b style="margin: 20px;">RB_EMMC_GAP_STOP</b> (def=0x0)    //    clock stop mode after block completion
+</li>
+<li class="content">
+[2]<b style="margin: 20px;">RB_EMMC_MODE_BOOT</b> (def=0x0)    //    enable emmc boot mode
+</li>
+<li class="content">
+[4]<b style="margin: 20px;">RB_EMMC_AUTOGAPSTOP</b> (def=0x0)    //    enable auto set bTM_GAP_STOP when tran start
+</li>
+<li class="content">
+[6:7]<b style="margin: 20px;">RB_EMMC_FIFO_RDY</b> (def=0x0)    //    FIFO ready select signal when writing EMMC
+</li>
+<li class="content">
+[8:14]<b style="margin: 20px;">RB_EMMC_DMATN_CNT</b> (def=0x0)    //    in double buffer mode,set the block count value of buffer switch
+</li>
+<li class="content">
+[16]<b style="margin: 20px;">RB_EMMC_DULEDMA_EN</b> (def=0x0)    //    enable double buffer dma
+</li>
+</ul>
+</details></li>
+<li class="content"><details><summary>0x4000A03C<b style="margin: 20px;">R32_EMMC_DMA_BEG2</b>//   SD 16bits DMA start address register when to operate</summary>
+<ul>
+<li class="content">
+[0:16]<b style="margin: 20px;">RB_EMMC_DMAAD2_MASK</b> (def=0x0)    //    start address of read-write data buffer,the lower 4 bits are fixed to 0
+</li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+</ul>
+
+  </body>
+</html>
