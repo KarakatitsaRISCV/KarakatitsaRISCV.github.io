@@ -1,4 +1,5 @@
 <head>
+<title>Pintable</title>
 
 <style type="text/css">
   /*body {
@@ -128,14 +129,15 @@ function SelectColor(linenum){
 }
 
 function SelectMCU(){
-  let mcu = document.getElementById("mcuselected").value;
+  let mcu = document.getElementById("mcuselected");
   let tables = document.getElementsByTagName("table");
   for(let i=0; i<tables.length; i++){
-    tables[i].hidden = (tables[i].attributes.name.value != mcu);
+    tables[i].hidden = (tables[i].attributes.name.value != mcu.value);
   }
   Periph_Vis_update();
   package_draw();
   tbl_col_update();
+  document.title = mcu.children[mcu.selectedIndex].firstChild.data + " - Pins";
 }
 
 function Periph_Vis_update(){
@@ -287,11 +289,12 @@ function tbl_import(str){
 }
 
 function SaveToFile(){
+  let mcu = document.getElementById("mcuselected");
   let text = tbl_export();
   let blob = new Blob([text], { type: 'text/plain' });
   let link = document.createElement('a');
   link.href = URL.createObjectURL(blob);
-  let filename = document.getElementById("mcuselected").value + ".pincfg";
+  let filename = mcu.children[mcu.selectedIndex].firstChild.data + ".pincfg";
   link.download = filename;
   link.click();
 }

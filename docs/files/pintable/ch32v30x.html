@@ -1,4 +1,5 @@
 <head>
+<title>Pintable</title>
 
 <style type="text/css">
   /*body {
@@ -128,14 +129,15 @@ function SelectColor(linenum){
 }
 
 function SelectMCU(){
-  let mcu = document.getElementById("mcuselected").value;
+  let mcu = document.getElementById("mcuselected");
   let tables = document.getElementsByTagName("table");
   for(let i=0; i<tables.length; i++){
-    tables[i].hidden = (tables[i].attributes.name.value != mcu);
+    tables[i].hidden = (tables[i].attributes.name.value != mcu.value);
   }
   Periph_Vis_update();
   package_draw();
   tbl_col_update();
+  document.title = mcu.children[mcu.selectedIndex].firstChild.data + " - Pins";
 }
 
 function Periph_Vis_update(){
@@ -287,11 +289,12 @@ function tbl_import(str){
 }
 
 function SaveToFile(){
+  let mcu = document.getElementById("mcuselected");
   let text = tbl_export();
   let blob = new Blob([text], { type: 'text/plain' });
   let link = document.createElement('a');
   link.href = URL.createObjectURL(blob);
-  let filename = document.getElementById("mcuselected").value + ".pincfg";
+  let filename = mcu.children[mcu.selectedIndex].firstChild.data + ".pincfg";
   link.download = filename;
   link.click();
 }
@@ -2332,10 +2335,10 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
 <label for="Per.UART">UART</label><input type="checkbox" class="controls" id="Per.UART" name="UART" checked onclick="SelectPeriph('UART');"/>
 <label for="Per.SPI">SPI</label><input type="checkbox" class="controls" id="Per.SPI" name="SPI" checked onclick="SelectPeriph('SPI');"/>
 <label for="Per.I2C">I2C</label><input type="checkbox" class="controls" id="Per.I2C" name="I2C" checked onclick="SelectPeriph('I2C');"/>
-<label for="Per.CAN">CAN</label><input type="checkbox" class="controls" id="Per.CAN" name="CAN" checked onclick="SelectPeriph('CAN');"/>
 <label for="Per.USB">USB</label><input type="checkbox" class="controls" id="Per.USB" name="USB" checked onclick="SelectPeriph('USB');"/>
 <label for="Per.Ethernet">Ethernet</label><input type="checkbox" class="controls" id="Per.Ethernet" name="Ethernet" checked onclick="SelectPeriph('Ethernet');"/>
 <label for="Per.SDIO">SDIO</label><input type="checkbox" class="controls" id="Per.SDIO" name="SDIO" checked onclick="SelectPeriph('SDIO');"/>
+<label for="Per.CAN">CAN</label><input type="checkbox" class="controls" id="Per.CAN" name="CAN" checked onclick="SelectPeriph('CAN');"/>
 <label for="Per.FSMC">FSMC</label><input type="checkbox" class="controls" id="Per.FSMC" name="FSMC" checked onclick="SelectPeriph('FSMC');"/>
 <label for="Per.I2S">I2S</label><input type="checkbox" class="controls" id="Per.I2S" name="I2S" checked onclick="SelectPeriph('I2S');"/>
 <label for="Per.DVP">DVP</label><input type="checkbox" class="controls" id="Per.DVP" name="DVP" checked onclick="SelectPeriph('DVP');"/>
@@ -2369,10 +2372,10 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <th><div>UART</div></th>
       <th><div>SPI</div></th>
       <th><div>I2C</div></th>
-      <th><div>CAN</div></th>
       <th><div>USB</div></th>
       <th><div>Ethernet</div></th>
       <th><div>SDIO</div></th>
+      <th><div>CAN</div></th>
       <th><div>FSMC</div></th>
       <th><div>I2S</div></th>
       <th><div>DVP</div></th>
@@ -2593,8 +2596,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>MII_CRS, RGMII_RXD2</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
@@ -2615,8 +2618,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>MII_RX_CLK, RMII_REF_CLK, RGMII_RXD3</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
@@ -2637,8 +2640,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>MII_MDIO, RMII_MDIO, RGMII_GTXC</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
@@ -2659,8 +2662,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>MII_COL, RGMII_TXEN</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
@@ -2747,8 +2750,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div>1_MOSI</div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>MII_RX_DV, RMII_CRS_DV, RGMII_TXD0</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
@@ -2769,8 +2772,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>MII_RXD2, RGMII_TXD3</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
@@ -2791,8 +2794,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>MII_RXD3, RGMII_125IN</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
@@ -2835,8 +2838,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div>2_SCL</div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>MII_RX_ER</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
@@ -2857,8 +2860,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div>2_SDA</div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>MII_TX_EN, RMII_TX_EN</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
@@ -2922,10 +2925,10 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div>3_CK</div></td>
       <td><div>2_NSS</div></td>
       <td><div>2_SMBA</div></td>
-      <td><div>2_RX</div></td>
       <td><div></div></td>
       <td><div>MII_TXD0, RMII_TXD0, RGMII_MDC</div></td>
       <td><div></div></td>
+      <td><div>2_RX</div></td>
       <td><div></div></td>
       <td><div>2_WS</div></td>
       <td><div></div></td>
@@ -2944,10 +2947,10 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div>3_CTS, <span class="hltext">3_CTS<sup>1</sup></span></div></td>
       <td><div>2_SCK</div></td>
       <td><div></div></td>
-      <td><div>2_TX</div></td>
       <td><div></div></td>
       <td><div>MII_TXD1, RMII.TXD1, RGMII_MDIO</div></td>
       <td><div></div></td>
+      <td><div>2_TX</div></td>
       <td><div></div></td>
       <td><div>2_CK</div></td>
       <td><div></div></td>
@@ -2968,8 +2971,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>D0</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
@@ -2990,8 +2993,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>D1</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div>2_SD</div></td>
       <td><div></div></td>
@@ -3032,8 +3035,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div>1_TX, <span class="hltext">1_RTS<sup>2</sup></span></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>OTG_VBUS</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
@@ -3054,8 +3057,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div>1_RX, <span class="hltext">1_CK<sup>2</sup></span></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>OTG_ID</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
@@ -3076,10 +3079,10 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div>1_CTS, <span class="hltext">1_CTS<sup>1</sup></span></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div>1_RX</div></td>
       <td><div>OTG_D-</div></td>
       <td><div></div></td>
       <td><div></div></td>
+      <td><div>1_RX</div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
@@ -3098,10 +3101,10 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div>1_RTS, <span class="hltext">1_RTS<sup>1</sup></span></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div>1_TX</div></td>
       <td><div>OTG_D+</div></td>
       <td><div></div></td>
       <td><div></div></td>
+      <td><div>1_TX</div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
@@ -3274,10 +3277,10 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div><span class="hltext">5_RX<sup>1</sup></span></div></td>
       <td><div>3_MOSI, <span class="hltext">1_MOSI<sup>1</sup></span></div></td>
       <td><div>1_SMBA</div></td>
-      <td><div><span class="hltext">2_RX<sup>1</sup></span></div></td>
       <td><div></div></td>
       <td><div>MII_PPS_OUT, RMII_PPS_OUT</div></td>
       <td><div></div></td>
+      <td><div><span class="hltext">2_RX<sup>1</sup></span></div></td>
       <td><div></div></td>
       <td><div>3_SD</div></td>
       <td><div></div></td>
@@ -3296,10 +3299,10 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div><span class="hltext">1_TX<sup>1</sup></span></div></td>
       <td><div></div></td>
       <td><div>1_SCL</div></td>
-      <td><div><span class="hltext">2_TX<sup>1</sup></span></div></td>
       <td><div>HS_D-</div></td>
       <td><div></div></td>
       <td><div></div></td>
+      <td><div><span class="hltext">2_TX<sup>1</sup></span></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
@@ -3318,8 +3321,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div><span class="hltext">1_RX<sup>1</sup></span></div></td>
       <td><div></div></td>
       <td><div>1_SDA</div></td>
-      <td><div></div></td>
       <td><div>HS_D+</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div>NADV</div></td>
@@ -3362,10 +3365,10 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div><span class="hltext">6_TX<sup>1</sup></span></div></td>
       <td><div></div></td>
       <td><div><span class="hltext">1_SCL<sup>1</sup></span></div></td>
-      <td><div><span class="hltext">1_RX<sup>2</sup></span></div></td>
       <td><div></div></td>
       <td><div>MII_TXD3</div></td>
       <td><div>D4</div></td>
+      <td><div><span class="hltext">1_RX<sup>2</sup></span></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div>D6</div></td>
@@ -3384,10 +3387,10 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div><span class="hltext">6_RX<sup>1</sup></span></div></td>
       <td><div></div></td>
       <td><div><span class="hltext">1_SDA<sup>1</sup></span></div></td>
-      <td><div><span class="hltext">1_TX<sup>2</sup></span></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div>D5</div></td>
+      <td><div><span class="hltext">1_TX<sup>2</sup></span></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div>D7</div></td>
@@ -3454,10 +3457,10 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <th><div>UART</div></th>
       <th><div>SPI</div></th>
       <th><div>I2C</div></th>
-      <th><div>CAN</div></th>
       <th><div>USB</div></th>
       <th><div>Ethernet</div></th>
       <th><div>SDIO</div></th>
+      <th><div>CAN</div></th>
       <th><div>FSMC</div></th>
       <th><div>I2S</div></th>
       <th><div>DVP</div></th>
@@ -3634,8 +3637,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>RGMII_RXC</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
@@ -3656,8 +3659,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>MII_MDC, RMII_MDC, RGMII_RXCTL</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
@@ -3678,8 +3681,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>MII_TXD2, RGMII_RXD0</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
@@ -3700,8 +3703,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>MII_TX_CLK, RGMII_RXD1</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
@@ -3766,8 +3769,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>MII_CRS, RGMII_RXD2</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
@@ -3788,8 +3791,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>MII_RX_CLK, RMII_REF_CLK, RGMII_RXD3</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
@@ -3810,8 +3813,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>MII_MDIO, RMII_MDIO, RGMII_GTXC</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
@@ -3832,8 +3835,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>MII_COL, RGMII_TXEN</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
@@ -3964,8 +3967,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div>1_MOSI</div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>MII_RX_DV, RMII_CRS_DV, RGMII_TXD0</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
@@ -3986,8 +3989,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>MII_RXD0, RMII_RXD0, RGMII_TXD1</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
@@ -4008,8 +4011,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>MII_RXD1, RMII_RXD1, RGMII_TXD2</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
@@ -4030,8 +4033,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>MII_RXD2, RGMII_TXD3</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
@@ -4052,8 +4055,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>MII_RXD3, RGMII_125IN</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
@@ -4096,8 +4099,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div>2_SCL</div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>MII_RX_ER</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
@@ -4118,8 +4121,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div>2_SDA</div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>MII_TX_EN, RMII_TX_EN</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
@@ -4183,10 +4186,10 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div>3_CK</div></td>
       <td><div>2_NSS</div></td>
       <td><div>2_SMBA</div></td>
-      <td><div>2_RX</div></td>
       <td><div></div></td>
       <td><div>MII_TXD0, RMII_TXD0, RGMII_MDC</div></td>
       <td><div></div></td>
+      <td><div>2_RX</div></td>
       <td><div></div></td>
       <td><div>2_WS</div></td>
       <td><div></div></td>
@@ -4205,10 +4208,10 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div>3_CTS, <span class="hltext">3_CTS<sup>1</sup></span></div></td>
       <td><div>2_SCK</div></td>
       <td><div></div></td>
-      <td><div>2_TX</div></td>
       <td><div></div></td>
       <td><div>MII_TXD1, RMII.TXD1, RGMII_MDIO</div></td>
       <td><div></div></td>
+      <td><div>2_TX</div></td>
       <td><div></div></td>
       <td><div>2_CK</div></td>
       <td><div></div></td>
@@ -4229,8 +4232,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>D0</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
@@ -4251,8 +4254,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>D1</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div>2_SD</div></td>
       <td><div></div></td>
@@ -4272,9 +4275,9 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>RXP</div></td>
       <td><div>D6</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div>2_MCK</div></td>
       <td><div></div></td>
@@ -4294,9 +4297,9 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>RXN</div></td>
       <td><div>D7</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div>3_MCK</div></td>
       <td><div></div></td>
@@ -4316,9 +4319,9 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>TXP</div></td>
       <td><div>D0</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div>D2</div></td>
@@ -4338,9 +4341,9 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>TXN</div></td>
       <td><div>DI</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div>D3</div></td>
@@ -4381,8 +4384,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div>1_TX, <span class="hltext">1_RTS<sup>2</sup></span></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>OTG_VBUS</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
@@ -4403,8 +4406,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div>1_RX, <span class="hltext">1_CK<sup>2</sup></span></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>OTG_ID</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
@@ -4425,10 +4428,10 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div>1_CTS, <span class="hltext">1_CTS<sup>1</sup></span></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div>1_RX</div></td>
       <td><div>OTG_D-</div></td>
       <td><div></div></td>
       <td><div></div></td>
+      <td><div>1_RX</div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
@@ -4447,10 +4450,10 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div>1_RTS, <span class="hltext">1_RTS<sup>1</sup></span></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div>1_TX</div></td>
       <td><div>OTG_D+</div></td>
       <td><div></div></td>
       <td><div></div></td>
+      <td><div>1_TX</div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
@@ -4581,8 +4584,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>D2</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div><span class="hltext">3_CK<sup>1</sup></span></div></td>
       <td><div>D8</div></td>
@@ -4603,8 +4606,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>D3</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div>D4</div></td>
@@ -4625,8 +4628,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>CK</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div><span class="hltext">3_SD<sup>1</sup></span></div></td>
       <td><div>D9</div></td>
@@ -4647,8 +4650,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>CMD</div></td>
+      <td><div></div></td>
       <td><div>NADV</div></td>
       <td><div></div></td>
       <td><div>D11</div></td>
@@ -4711,10 +4714,10 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div><span class="hltext">5_RX<sup>1</sup></span></div></td>
       <td><div>3_MOSI, <span class="hltext">1_MOSI<sup>1</sup></span></div></td>
       <td><div>1_SMBA</div></td>
-      <td><div><span class="hltext">2_RX<sup>1</sup></span></div></td>
       <td><div></div></td>
       <td><div>MII_PPS_OUT, RMII_PPS_OUT</div></td>
       <td><div></div></td>
+      <td><div><span class="hltext">2_RX<sup>1</sup></span></div></td>
       <td><div></div></td>
       <td><div>3_SD</div></td>
       <td><div></div></td>
@@ -4733,10 +4736,10 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div><span class="hltext">1_TX<sup>1</sup></span></div></td>
       <td><div></div></td>
       <td><div>1_SCL</div></td>
-      <td><div><span class="hltext">2_TX<sup>1</sup></span></div></td>
       <td><div>HS_D-</div></td>
       <td><div></div></td>
       <td><div></div></td>
+      <td><div><span class="hltext">2_TX<sup>1</sup></span></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
@@ -4755,8 +4758,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div><span class="hltext">1_RX<sup>1</sup></span></div></td>
       <td><div></div></td>
       <td><div>1_SDA</div></td>
-      <td><div></div></td>
       <td><div>HS_D+</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div>NADV</div></td>
@@ -4799,10 +4802,10 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div><span class="hltext">6_TX<sup>1</sup></span></div></td>
       <td><div></div></td>
       <td><div><span class="hltext">1_SCL<sup>1</sup></span></div></td>
-      <td><div><span class="hltext">1_RX<sup>2</sup></span></div></td>
       <td><div></div></td>
       <td><div>MII_TXD3</div></td>
       <td><div>D4</div></td>
+      <td><div><span class="hltext">1_RX<sup>2</sup></span></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div>D6</div></td>
@@ -4821,10 +4824,10 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div><span class="hltext">6_RX<sup>1</sup></span></div></td>
       <td><div></div></td>
       <td><div><span class="hltext">1_SDA<sup>1</sup></span></div></td>
-      <td><div><span class="hltext">1_TX<sup>2</sup></span></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div>D5</div></td>
+      <td><div><span class="hltext">1_TX<sup>2</sup></span></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div>D7</div></td>
@@ -4891,10 +4894,10 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <th><div>UART</div></th>
       <th><div>SPI</div></th>
       <th><div>I2C</div></th>
-      <th><div>CAN</div></th>
       <th><div>USB</div></th>
       <th><div>Ethernet</div></th>
       <th><div>SDIO</div></th>
+      <th><div>CAN</div></th>
       <th><div>FSMC</div></th>
       <th><div>I2S</div></th>
       <th><div>DVP</div></th>
@@ -5225,8 +5228,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>RGMII_RXC</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
@@ -5247,8 +5250,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>MII_MDC, RMII_MDC, RGMII_RXCTL</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
@@ -5269,8 +5272,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>MII_TXD2, RGMII_RXD0</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
@@ -5291,8 +5294,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>MII_TX_CLK, RGMII_RXD1</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
@@ -5401,8 +5404,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>MII_CRS, RGMII_RXD2</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
@@ -5423,8 +5426,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>MII_RX_CLK, RMII_REF_CLK, RGMII_RXD3</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
@@ -5445,8 +5448,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>MII_MDIO, RMII_MDIO, RGMII_GTXC</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
@@ -5467,8 +5470,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>MII_COL, RGMII_TXEN</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
@@ -5599,8 +5602,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div>1_MOSI</div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>MII_RX_DV, RMII_CRS_DV, RGMII_TXD0</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
@@ -5621,8 +5624,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>MII_RXD0, RMII_RXD0, RGMII_TXD1</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
@@ -5643,8 +5646,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>MII_RXD1, RMII_RXD1, RGMII_TXD2</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
@@ -5665,8 +5668,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>MII_RXD2, RGMII_TXD3</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
@@ -5687,8 +5690,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>MII_RXD3, RGMII_125IN</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
@@ -5929,8 +5932,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div>2_SCL</div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>MII_RX_ER</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
@@ -5951,8 +5954,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div>2_SDA</div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>MII_TX_EN, RMII_TX_EN</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
@@ -6016,10 +6019,10 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div>3_CK</div></td>
       <td><div>2_NSS</div></td>
       <td><div>2_SMBA</div></td>
-      <td><div>2_RX</div></td>
       <td><div></div></td>
       <td><div>MII_TXD0, RMII_TXD0, RGMII_MDC</div></td>
       <td><div></div></td>
+      <td><div>2_RX</div></td>
       <td><div></div></td>
       <td><div>2_WS</div></td>
       <td><div></div></td>
@@ -6038,10 +6041,10 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div>3_CTS, <span class="hltext">3_CTS<sup>1</sup></span></div></td>
       <td><div>2_SCK</div></td>
       <td><div></div></td>
-      <td><div>2_TX</div></td>
       <td><div></div></td>
       <td><div>MII_TXD1, RMII.TXD1, RGMII_MDIO</div></td>
       <td><div></div></td>
+      <td><div>2_TX</div></td>
       <td><div></div></td>
       <td><div>2_CK</div></td>
       <td><div></div></td>
@@ -6062,8 +6065,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>D0</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
@@ -6084,8 +6087,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>D1</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div>2_SD</div></td>
       <td><div></div></td>
@@ -6105,8 +6108,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div><span class="hltext">MII_RX_DV<sup>1</sup></span>, <span class="hltext">RMII_CRS_DV<sup>1</sup></span></div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div>D13</div></td>
       <td><div></div></td>
@@ -6127,8 +6130,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div><span class="hltext">MII_RXD0<sup>1</sup></span>, <span class="hltext">RMII_RXD0<sup>1</sup></span></div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div>D14</div></td>
       <td><div></div></td>
@@ -6149,8 +6152,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div><span class="hltext">MII_RXD1<sup>1</sup></span>, <span class="hltext">RMII_RXD1<sup>1</sup></span></div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div>D15</div></td>
       <td><div></div></td>
@@ -6171,8 +6174,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div><span class="hltext">MII_RXD2<sup>1</sup></span></div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div>A16</div></td>
       <td><div></div></td>
@@ -6193,8 +6196,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div><span class="hltext">MII_RXD3</span></div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div>A17</div></td>
       <td><div></div></td>
@@ -6281,9 +6284,9 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>RXP</div></td>
       <td><div>D6</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div>2_MCK</div></td>
       <td><div></div></td>
@@ -6303,9 +6306,9 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>RXN</div></td>
       <td><div>D7</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div>3_MCK</div></td>
       <td><div></div></td>
@@ -6325,9 +6328,9 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>TXP</div></td>
       <td><div>D0</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div>D2</div></td>
@@ -6347,9 +6350,9 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>TXN</div></td>
       <td><div>DI</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div>D3</div></td>
@@ -6390,8 +6393,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div>1_TX, <span class="hltext">1_RTS<sup>2</sup></span></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>OTG_VBUS</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
@@ -6412,8 +6415,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div>1_RX, <span class="hltext">1_CK<sup>2</sup></span></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>OTG_ID</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
@@ -6434,10 +6437,10 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div>1_CTS, <span class="hltext">1_CTS<sup>1</sup></span></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div>1_RX</div></td>
       <td><div>OTG_D-</div></td>
       <td><div></div></td>
       <td><div></div></td>
+      <td><div>1_RX</div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
@@ -6456,10 +6459,10 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div>1_RTS, <span class="hltext">1_RTS<sup>1</sup></span></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div>1_TX</div></td>
       <td><div>OTG_D+</div></td>
       <td><div></div></td>
       <td><div></div></td>
+      <td><div>1_TX</div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
@@ -6612,8 +6615,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>D2</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div><span class="hltext">3_CK<sup>1</sup></span></div></td>
       <td><div>D8</div></td>
@@ -6634,8 +6637,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>D3</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div>D4</div></td>
@@ -6656,8 +6659,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>CK</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div><span class="hltext">3_SD<sup>1</sup></span></div></td>
       <td><div>D9</div></td>
@@ -6676,10 +6679,10 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
       <td><div><span class="hltext">1_RX<sup>3</sup></span></div></td>
-      <td><div></div></td>
-      <td><div></div></td>
-      <td><div></div></td>
       <td><div>D2</div></td>
       <td><div></div></td>
       <td><div></div></td>
@@ -6698,10 +6701,10 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
       <td><div><span class="hltext">1_TX<sup>3</sup></span></div></td>
-      <td><div></div></td>
-      <td><div></div></td>
-      <td><div></div></td>
       <td><div>D3</div></td>
       <td><div></div></td>
       <td><div></div></td>
@@ -6722,8 +6725,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>CMD</div></td>
+      <td><div></div></td>
       <td><div>NADV</div></td>
       <td><div></div></td>
       <td><div>D11</div></td>
@@ -6896,10 +6899,10 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div><span class="hltext">5_RX<sup>1</sup></span></div></td>
       <td><div>3_MOSI, <span class="hltext">1_MOSI<sup>1</sup></span></div></td>
       <td><div>1_SMBA</div></td>
-      <td><div><span class="hltext">2_RX<sup>1</sup></span></div></td>
       <td><div></div></td>
       <td><div>MII_PPS_OUT, RMII_PPS_OUT</div></td>
       <td><div></div></td>
+      <td><div><span class="hltext">2_RX<sup>1</sup></span></div></td>
       <td><div></div></td>
       <td><div>3_SD</div></td>
       <td><div></div></td>
@@ -6918,10 +6921,10 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div><span class="hltext">1_TX<sup>1</sup></span></div></td>
       <td><div></div></td>
       <td><div>1_SCL</div></td>
-      <td><div><span class="hltext">2_TX<sup>1</sup></span></div></td>
       <td><div>HS_D-</div></td>
       <td><div></div></td>
       <td><div></div></td>
+      <td><div><span class="hltext">2_TX<sup>1</sup></span></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
@@ -6940,8 +6943,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div><span class="hltext">1_RX<sup>1</sup></span></div></td>
       <td><div></div></td>
       <td><div>1_SDA</div></td>
-      <td><div></div></td>
       <td><div>HS_D+</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div>NADV</div></td>
@@ -6984,10 +6987,10 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div><span class="hltext">6_TX<sup>1</sup></span></div></td>
       <td><div></div></td>
       <td><div><span class="hltext">1_SCL<sup>1</sup></span></div></td>
-      <td><div><span class="hltext">1_RX<sup>2</sup></span></div></td>
       <td><div></div></td>
       <td><div>MII_TXD3</div></td>
       <td><div>D4</div></td>
+      <td><div><span class="hltext">1_RX<sup>2</sup></span></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div>D6</div></td>
@@ -7006,10 +7009,10 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div><span class="hltext">6_RX<sup>1</sup></span></div></td>
       <td><div></div></td>
       <td><div><span class="hltext">1_SDA<sup>1</sup></span></div></td>
-      <td><div><span class="hltext">1_TX<sup>2</sup></span></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div>D5</div></td>
+      <td><div><span class="hltext">1_TX<sup>2</sup></span></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div>D7</div></td>
@@ -7120,10 +7123,10 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <th><div>UART</div></th>
       <th><div>SPI</div></th>
       <th><div>I2C</div></th>
-      <th><div>CAN</div></th>
       <th><div>USB</div></th>
       <th><div>Ethernet</div></th>
       <th><div>SDIO</div></th>
+      <th><div>CAN</div></th>
       <th><div>FSMC</div></th>
       <th><div>I2S</div></th>
       <th><div>DVP</div></th>
@@ -7168,8 +7171,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div>1_SCK</div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>MII_RX_CLK, RMII_REF_CLK, RGMII_RXD3</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
@@ -7190,8 +7193,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div>2_SCL</div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>MII_RX_ER</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
@@ -7212,8 +7215,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div>2_SDA</div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>MII_TX_EN, RMII_TX_EN</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
@@ -7233,10 +7236,10 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div>3_CK</div></td>
       <td><div>2_NSS</div></td>
       <td><div>2_SMBA</div></td>
-      <td><div>2_RX</div></td>
       <td><div></div></td>
       <td><div>MII_TXD0, RMII_TXD0, RGMII_MDC</div></td>
       <td><div></div></td>
+      <td><div>2_RX</div></td>
       <td><div></div></td>
       <td><div>2_WS</div></td>
       <td><div></div></td>
@@ -7255,10 +7258,10 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div>3_CTS, <span class="hltext">3_CTS<sup>1</sup></span></div></td>
       <td><div>2_SCK</div></td>
       <td><div></div></td>
-      <td><div>2_TX</div></td>
       <td><div></div></td>
       <td><div>MII_TXD1, RMII.TXD1, RGMII_MDIO</div></td>
       <td><div></div></td>
+      <td><div>2_TX</div></td>
       <td><div></div></td>
       <td><div>2_CK</div></td>
       <td><div></div></td>
@@ -7279,8 +7282,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>D0</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
@@ -7301,8 +7304,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>D1</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div>2_SD</div></td>
       <td><div></div></td>
@@ -7322,9 +7325,9 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>RXP</div></td>
       <td><div>D6</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div>2_MCK</div></td>
       <td><div></div></td>
@@ -7344,9 +7347,9 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>RXN</div></td>
       <td><div>D7</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div>3_MCK</div></td>
       <td><div></div></td>
@@ -7366,9 +7369,9 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>TXP</div></td>
       <td><div>D0</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div>D2</div></td>
@@ -7388,9 +7391,9 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>TXN</div></td>
       <td><div>DI</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div>D3</div></td>
@@ -7409,8 +7412,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div>1_TX, <span class="hltext">1_RTS<sup>2</sup></span>, <span class="hltext">3_TX<sup>2</sup></span></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>OTG_VBUS</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
@@ -7475,10 +7478,10 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div><span class="hltext">1_TX<sup>1</sup></span></div></td>
       <td><div></div></td>
       <td><div>1_SCL</div></td>
-      <td><div><span class="hltext">2_TX<sup>1</sup></span></div></td>
       <td><div>HS_D-</div></td>
       <td><div></div></td>
       <td><div></div></td>
+      <td><div><span class="hltext">2_TX<sup>1</sup></span></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
@@ -7497,8 +7500,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div><span class="hltext">1_RX<sup>1</sup></span></div></td>
       <td><div></div></td>
       <td><div>1_SDA</div></td>
-      <td><div></div></td>
       <td><div>HS_D+</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div>NADV</div></td>
@@ -7589,10 +7592,10 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <th><div>UART</div></th>
       <th><div>SPI</div></th>
       <th><div>I2C</div></th>
-      <th><div>CAN</div></th>
       <th><div>USB</div></th>
       <th><div>Ethernet</div></th>
       <th><div>SDIO</div></th>
+      <th><div>CAN</div></th>
       <th><div>FSMC</div></th>
       <th><div>I2S</div></th>
       <th><div>DVP</div></th>
@@ -7681,8 +7684,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>MII_TXD2, RGMII_RXD0</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
@@ -7703,8 +7706,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>MII_TX_CLK, RGMII_RXD1</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
@@ -7747,8 +7750,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div>1_NSS, <span class="hltext">3_NSS<sup>1</sup></span></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>MII_RX_CLK, RMII_REF_CLK, RGMII_RXD3</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div><span class="hltext">3_WS<sup>1</sup></span></div></td>
@@ -7813,8 +7816,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div>1_MOSI</div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>MII_RX_DV, RMII_CRS_DV, RGMII_TXD0</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
@@ -7835,8 +7838,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div>2_SCL</div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>MII_RX_ER</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
@@ -7857,8 +7860,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div>2_SDA</div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>MII_TX_EN, RMII_TX_EN</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
@@ -7878,10 +7881,10 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div>3_CK</div></td>
       <td><div>2_NSS</div></td>
       <td><div>2_SMBA</div></td>
-      <td><div>2_RX</div></td>
       <td><div></div></td>
       <td><div>MII_TXD0, RMII_TXD0, RGMII_MDC</div></td>
       <td><div></div></td>
+      <td><div>2_RX</div></td>
       <td><div></div></td>
       <td><div>2_WS</div></td>
       <td><div></div></td>
@@ -7900,10 +7903,10 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div>3_CTS, <span class="hltext">3_CTS<sup>1</sup></span></div></td>
       <td><div>2_SCK</div></td>
       <td><div></div></td>
-      <td><div>2_TX</div></td>
       <td><div></div></td>
       <td><div>MII_TXD1, RMII.TXD1, RGMII_MDIO</div></td>
       <td><div></div></td>
+      <td><div>2_TX</div></td>
       <td><div></div></td>
       <td><div>2_CK</div></td>
       <td><div></div></td>
@@ -7924,8 +7927,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>D0</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
@@ -7946,8 +7949,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>D1</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div>2_SD</div></td>
       <td><div></div></td>
@@ -7967,9 +7970,9 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>TXP</div></td>
       <td><div>D0</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div>D2</div></td>
@@ -7989,9 +7992,9 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>TXN</div></td>
       <td><div>DI</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div>D3</div></td>
@@ -8100,8 +8103,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>D2</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div><span class="hltext">3_CK<sup>1</sup></span></div></td>
       <td><div>D8</div></td>
@@ -8122,8 +8125,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>D3</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div>D4</div></td>
@@ -8144,8 +8147,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>CK</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div><span class="hltext">3_SD<sup>1</sup></span></div></td>
       <td><div>D9</div></td>
@@ -8166,8 +8169,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>CMD</div></td>
+      <td><div></div></td>
       <td><div>NADV</div></td>
       <td><div></div></td>
       <td><div>D11</div></td>
@@ -8186,10 +8189,10 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div><span class="hltext">1_TX<sup>1</sup></span></div></td>
       <td><div></div></td>
       <td><div>1_SCL</div></td>
-      <td><div><span class="hltext">2_TX<sup>1</sup></span></div></td>
       <td><div>HS_D-</div></td>
       <td><div></div></td>
       <td><div></div></td>
+      <td><div><span class="hltext">2_TX<sup>1</sup></span></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
@@ -8208,8 +8211,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div><span class="hltext">1_RX<sup>1</sup></span></div></td>
       <td><div></div></td>
       <td><div>1_SDA</div></td>
-      <td><div></div></td>
       <td><div>HS_D+</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div>NADV</div></td>
@@ -8256,10 +8259,10 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <th><div>UART</div></th>
       <th><div>SPI</div></th>
       <th><div>I2C</div></th>
-      <th><div>CAN</div></th>
       <th><div>USB</div></th>
       <th><div>Ethernet</div></th>
       <th><div>SDIO</div></th>
+      <th><div>CAN</div></th>
       <th><div>FSMC</div></th>
       <th><div>I2S</div></th>
       <th><div>DVP</div></th>
@@ -8348,8 +8351,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>RGMII_RXC</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
@@ -8370,8 +8373,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>MII_MDC, RMII_MDC, RGMII_RXCTL</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
@@ -8392,8 +8395,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>MII_TXD2, RGMII_RXD0</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
@@ -8414,8 +8417,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>MII_TX_CLK, RGMII_RXD1</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
@@ -8480,8 +8483,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>MII_CRS, RGMII_RXD2</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
@@ -8502,8 +8505,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>MII_RX_CLK, RMII_REF_CLK, RGMII_RXD3</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
@@ -8524,8 +8527,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>MII_MDIO, RMII_MDIO, RGMII_GTXC</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
@@ -8546,8 +8549,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>MII_COL, RGMII_TXEN</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
@@ -8634,8 +8637,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div>1_MOSI</div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>MII_RX_DV, RMII_CRS_DV, RGMII_TXD0</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
@@ -8656,8 +8659,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>MII_RXD0, RMII_RXD0, RGMII_TXD1</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
@@ -8678,8 +8681,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>MII_RXD1, RMII_RXD1, RGMII_TXD2</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
@@ -8700,8 +8703,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>MII_RXD2, RGMII_TXD3</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
@@ -8722,8 +8725,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>MII_RXD3, RGMII_125IN</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
@@ -8766,8 +8769,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div>2_SCL</div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>MII_RX_ER</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
@@ -8788,8 +8791,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div>2_SDA</div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>MII_TX_EN, RMII_TX_EN</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
@@ -8853,10 +8856,10 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div>3_CK</div></td>
       <td><div>2_NSS</div></td>
       <td><div>2_SMBA</div></td>
-      <td><div>2_RX</div></td>
       <td><div></div></td>
       <td><div>MII_TXD0, RMII_TXD0, RGMII_MDC</div></td>
       <td><div></div></td>
+      <td><div>2_RX</div></td>
       <td><div></div></td>
       <td><div>2_WS</div></td>
       <td><div></div></td>
@@ -8875,10 +8878,10 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div>3_CTS, <span class="hltext">3_CTS<sup>1</sup></span></div></td>
       <td><div>2_SCK</div></td>
       <td><div></div></td>
-      <td><div>2_TX</div></td>
       <td><div></div></td>
       <td><div>MII_TXD1, RMII.TXD1, RGMII_MDIO</div></td>
       <td><div></div></td>
+      <td><div>2_TX</div></td>
       <td><div></div></td>
       <td><div>2_CK</div></td>
       <td><div></div></td>
@@ -8899,8 +8902,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>D0</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
@@ -8921,8 +8924,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>D1</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div>2_SD</div></td>
       <td><div></div></td>
@@ -8942,9 +8945,9 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>RXP</div></td>
       <td><div>D6</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div>2_MCK</div></td>
       <td><div></div></td>
@@ -8985,8 +8988,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div>1_TX, <span class="hltext">1_RTS<sup>2</sup></span></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>OTG_VBUS</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
@@ -9007,8 +9010,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div>1_RX, <span class="hltext">1_CK<sup>2</sup></span></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>OTG_ID</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
@@ -9029,10 +9032,10 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div>1_CTS, <span class="hltext">1_CTS<sup>1</sup></span></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div>1_RX</div></td>
       <td><div>OTG_D-</div></td>
       <td><div></div></td>
       <td><div></div></td>
+      <td><div>1_RX</div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
@@ -9051,10 +9054,10 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div>1_RTS, <span class="hltext">1_RTS<sup>1</sup></span></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div>1_TX</div></td>
       <td><div>OTG_D+</div></td>
       <td><div></div></td>
       <td><div></div></td>
+      <td><div>1_TX</div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
@@ -9183,10 +9186,10 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div><span class="hltext">5_RX<sup>1</sup></span></div></td>
       <td><div>3_MOSI, <span class="hltext">1_MOSI<sup>1</sup></span></div></td>
       <td><div>1_SMBA</div></td>
-      <td><div><span class="hltext">2_RX<sup>1</sup></span></div></td>
       <td><div></div></td>
       <td><div>MII_PPS_OUT, RMII_PPS_OUT</div></td>
       <td><div></div></td>
+      <td><div><span class="hltext">2_RX<sup>1</sup></span></div></td>
       <td><div></div></td>
       <td><div>3_SD</div></td>
       <td><div></div></td>
@@ -9205,10 +9208,10 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div><span class="hltext">1_TX<sup>1</sup></span></div></td>
       <td><div></div></td>
       <td><div>1_SCL</div></td>
-      <td><div><span class="hltext">2_TX<sup>1</sup></span></div></td>
       <td><div>HS_D-</div></td>
       <td><div></div></td>
       <td><div></div></td>
+      <td><div><span class="hltext">2_TX<sup>1</sup></span></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
@@ -9227,8 +9230,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div><span class="hltext">1_RX<sup>1</sup></span></div></td>
       <td><div></div></td>
       <td><div>1_SDA</div></td>
-      <td><div></div></td>
       <td><div>HS_D+</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div>NADV</div></td>
@@ -9249,10 +9252,10 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div><span class="hltext">6_TX<sup>1</sup></span></div></td>
       <td><div></div></td>
       <td><div><span class="hltext">1_SCL<sup>1</sup></span></div></td>
-      <td><div><span class="hltext">1_RX<sup>2</sup></span></div></td>
       <td><div></div></td>
       <td><div>MII_TXD3</div></td>
       <td><div>D4</div></td>
+      <td><div><span class="hltext">1_RX<sup>2</sup></span></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div>D6</div></td>
@@ -9271,10 +9274,10 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div><span class="hltext">6_RX<sup>1</sup></span></div></td>
       <td><div></div></td>
       <td><div><span class="hltext">1_SDA<sup>1</sup></span></div></td>
-      <td><div><span class="hltext">1_TX<sup>2</sup></span></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div>D5</div></td>
+      <td><div><span class="hltext">1_TX<sup>2</sup></span></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div>D7</div></td>
@@ -9341,10 +9344,10 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <th><div>UART</div></th>
       <th><div>SPI</div></th>
       <th><div>I2C</div></th>
-      <th><div>CAN</div></th>
       <th><div>USB</div></th>
       <th><div>Ethernet</div></th>
       <th><div>SDIO</div></th>
+      <th><div>CAN</div></th>
       <th><div>FSMC</div></th>
       <th><div>I2S</div></th>
       <th><div>DVP</div></th>
@@ -9521,8 +9524,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>RGMII_RXC</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
@@ -9543,8 +9546,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>MII_MDC, RMII_MDC, RGMII_RXCTL</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
@@ -9565,8 +9568,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>MII_TXD2, RGMII_RXD0</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
@@ -9587,8 +9590,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>MII_TX_CLK, RGMII_RXD1</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
@@ -9653,8 +9656,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>MII_CRS, RGMII_RXD2</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
@@ -9675,8 +9678,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>MII_RX_CLK, RMII_REF_CLK, RGMII_RXD3</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
@@ -9697,8 +9700,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>MII_MDIO, RMII_MDIO, RGMII_GTXC</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
@@ -9763,8 +9766,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>MII_COL, RGMII_TXEN</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
@@ -9851,8 +9854,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div>1_MOSI</div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>MII_RX_DV, RMII_CRS_DV, RGMII_TXD0</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
@@ -9873,8 +9876,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>MII_RXD0, RMII_RXD0, RGMII_TXD1</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
@@ -9895,8 +9898,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>MII_RXD1, RMII_RXD1, RGMII_TXD2</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
@@ -9917,8 +9920,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>MII_RXD2, RGMII_TXD3</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
@@ -9939,8 +9942,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>MII_RXD3, RGMII_125IN</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
@@ -9983,8 +9986,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div>2_SCL</div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>MII_RX_ER</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
@@ -10005,8 +10008,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div>2_SDA</div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>MII_TX_EN, RMII_TX_EN</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
@@ -10071,8 +10074,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div><span class="hltext">MII_RX_DV<sup>1</sup></span>, <span class="hltext">RMII_CRS_DV<sup>1</sup></span></div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div>D13</div></td>
       <td><div></div></td>
@@ -10093,8 +10096,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div><span class="hltext">MII_RXD0<sup>1</sup></span>, <span class="hltext">RMII_RXD0<sup>1</sup></span></div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div>D14</div></td>
       <td><div></div></td>
@@ -10114,10 +10117,10 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div>3_CK</div></td>
       <td><div>2_NSS</div></td>
       <td><div>2_SMBA</div></td>
-      <td><div>2_RX</div></td>
       <td><div></div></td>
       <td><div>MII_TXD0, RMII_TXD0, RGMII_MDC</div></td>
       <td><div></div></td>
+      <td><div>2_RX</div></td>
       <td><div></div></td>
       <td><div>2_WS</div></td>
       <td><div></div></td>
@@ -10136,10 +10139,10 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div>3_CTS, <span class="hltext">3_CTS<sup>1</sup></span></div></td>
       <td><div>2_SCK</div></td>
       <td><div></div></td>
-      <td><div>2_TX</div></td>
       <td><div></div></td>
       <td><div>MII_TXD1, RMII.TXD1, RGMII_MDIO</div></td>
       <td><div></div></td>
+      <td><div>2_TX</div></td>
       <td><div></div></td>
       <td><div>2_CK</div></td>
       <td><div></div></td>
@@ -10160,8 +10163,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>D0</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
@@ -10182,8 +10185,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>D1</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div>2_SD</div></td>
       <td><div></div></td>
@@ -10203,9 +10206,9 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>RXP</div></td>
       <td><div>D6</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div>2_MCK</div></td>
       <td><div></div></td>
@@ -10225,9 +10228,9 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>RXN</div></td>
       <td><div>D7</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div>3_MCK</div></td>
       <td><div></div></td>
@@ -10247,9 +10250,9 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>TXP</div></td>
       <td><div>D0</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div>D2</div></td>
@@ -10269,9 +10272,9 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>TXN</div></td>
       <td><div>DI</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div>D3</div></td>
@@ -10312,8 +10315,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div>1_TX, <span class="hltext">1_RTS<sup>2</sup></span></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>OTG_VBUS</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
@@ -10334,8 +10337,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div>1_RX, <span class="hltext">1_CK<sup>2</sup></span></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>OTG_ID</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
@@ -10356,10 +10359,10 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div>1_CTS, <span class="hltext">1_CTS<sup>1</sup></span></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div>1_RX</div></td>
       <td><div>OTG_D-</div></td>
       <td><div></div></td>
       <td><div></div></td>
+      <td><div>1_RX</div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
@@ -10378,10 +10381,10 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div>1_RTS, <span class="hltext">1_RTS<sup>1</sup></span></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div>1_TX</div></td>
       <td><div>OTG_D+</div></td>
       <td><div></div></td>
       <td><div></div></td>
+      <td><div>1_TX</div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
@@ -10534,8 +10537,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>D2</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div><span class="hltext">3_CK<sup>1</sup></span></div></td>
       <td><div>D8</div></td>
@@ -10556,8 +10559,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>D3</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div>D4</div></td>
@@ -10578,8 +10581,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>CK</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div><span class="hltext">3_SD<sup>1</sup></span></div></td>
       <td><div>D9</div></td>
@@ -10600,8 +10603,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
-      <td><div></div></td>
       <td><div>CMD</div></td>
+      <td><div></div></td>
       <td><div>NADV</div></td>
       <td><div></div></td>
       <td><div>D11</div></td>
@@ -10664,10 +10667,10 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div><span class="hltext">5_RX<sup>1</sup></span></div></td>
       <td><div>3_MOSI, <span class="hltext">1_MOSI<sup>1</sup></span></div></td>
       <td><div>1_SMBA</div></td>
-      <td><div><span class="hltext">2_RX<sup>1</sup></span></div></td>
       <td><div></div></td>
       <td><div>MII_PPS_OUT, RMII_PPS_OUT</div></td>
       <td><div></div></td>
+      <td><div><span class="hltext">2_RX<sup>1</sup></span></div></td>
       <td><div></div></td>
       <td><div>3_SD</div></td>
       <td><div></div></td>
@@ -10686,10 +10689,10 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div><span class="hltext">1_TX<sup>1</sup></span></div></td>
       <td><div></div></td>
       <td><div>1_SCL</div></td>
-      <td><div><span class="hltext">2_TX<sup>1</sup></span></div></td>
       <td><div>HS_D-</div></td>
       <td><div></div></td>
       <td><div></div></td>
+      <td><div><span class="hltext">2_TX<sup>1</sup></span></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
@@ -10708,8 +10711,8 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div><span class="hltext">1_RX<sup>1</sup></span></div></td>
       <td><div></div></td>
       <td><div>1_SDA</div></td>
-      <td><div></div></td>
       <td><div>HS_D+</div></td>
+      <td><div></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div>NADV</div></td>
@@ -10752,10 +10755,10 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div><span class="hltext">6_TX<sup>1</sup></span></div></td>
       <td><div></div></td>
       <td><div><span class="hltext">1_SCL<sup>1</sup></span></div></td>
-      <td><div><span class="hltext">1_RX<sup>2</sup></span></div></td>
       <td><div></div></td>
       <td><div>MII_TXD3</div></td>
       <td><div>D4</div></td>
+      <td><div><span class="hltext">1_RX<sup>2</sup></span></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div>D6</div></td>
@@ -10774,10 +10777,10 @@ function package_draw_CH32V307VCT6_LQFP100(ctx, tbl, x, y, scale){
       <td><div><span class="hltext">6_RX<sup>1</sup></span></div></td>
       <td><div></div></td>
       <td><div><span class="hltext">1_SDA<sup>1</sup></span></div></td>
-      <td><div><span class="hltext">1_TX<sup>2</sup></span></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div>D5</div></td>
+      <td><div><span class="hltext">1_TX<sup>2</sup></span></div></td>
       <td><div></div></td>
       <td><div></div></td>
       <td><div>D7</div></td>

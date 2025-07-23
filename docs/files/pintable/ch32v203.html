@@ -1,6 +1,10 @@
 <head>
+<title>Pintable</title>
 
 <style type="text/css">
+  /*body {
+    overflow: hidden;
+  }*/
   table{
     border-collapse: collapse; /* Убираем двойные линии между ячейками */ 
   }
@@ -38,19 +42,19 @@ input[type="text"]{
   position: relative;
   width: 70%;
   float: left;
-  height: 100%;
+  height: 80%;
 }
 
 #col-2 {
   position: relative;
   width: 30%;
   float: right;
-  height: 100%;
+  height: 80%;
 }
 .table_wrapper{
   display: block;
   overflow-x: auto;
-  height: 80%;
+  height: 100%;
   white-space: nowrap;
 }
 
@@ -125,14 +129,15 @@ function SelectColor(linenum){
 }
 
 function SelectMCU(){
-  let mcu = document.getElementById("mcuselected").value;
+  let mcu = document.getElementById("mcuselected");
   let tables = document.getElementsByTagName("table");
   for(let i=0; i<tables.length; i++){
-    tables[i].hidden = (tables[i].attributes.name.value != mcu);
+    tables[i].hidden = (tables[i].attributes.name.value != mcu.value);
   }
   Periph_Vis_update();
   package_draw();
   tbl_col_update();
+  document.title = mcu.children[mcu.selectedIndex].firstChild.data + " - Pins";
 }
 
 function Periph_Vis_update(){
@@ -169,9 +174,33 @@ function OnLoad(){
   tbl_col_update();
 }
 
+var comment_event = false;
+function href_onclick(name){
+let det = document.getElementById("details_comments");
+  comment_event = true;
+  det.setAttribute("open","");
+  console.log(name);
+  for(let i=0; i<det.children.length; i++){
+    if(det.children[i].id != name){
+      det.children[i].style = "";
+    }else{
+      console.log("found");
+      det.children[i].style = "background-color:powderblue;";
+    }
+  }
+}
+
+function comm_ontoggle(){
+  if(comment_event){comment_event=false; return;}
+  let det = document.getElementById("details_comments");
+  for(let i=0; i<det.children.length; i++){
+    det.children[i].style = "";
+  }
+}
+
 function tbl_export(){
-  let mcu = document.getElementById("mcuselected").value;
-  let tbl = document.getElementsByName(mcu);
+  let mcu = document.getElementById("mcuselected");
+  let tbl = document.getElementsByName(mcu.value);
   
   let lin = tbl[0].children[0].children[0].children;
   let idx_col = -1, idx_pn = -1, idx_comm=-1;
@@ -181,7 +210,7 @@ function tbl_export(){
     if(lin[i].className == "tbl_comment")idx_comm = i;
   }
   
-  let res = mcu + "\n";
+  let res = mcu.children[mcu.selectedIndex].firstChild.data + "\n";
   
   let col = -1;
   let cur = tbl[0].children[1].children;
@@ -205,12 +234,22 @@ function tbl_export(){
 function tbl_import(str){
   let arr = str.split("\n");
   let name = arr[0];
-  let tbl = document.getElementsByName(name);
-  if(tbl.length == 0){
+  
+  let mcu = document.getElementById("mcuselected");
+  let idx = -1;
+  for(let i=0; i<mcu.children.length; i++){
+    if(mcu.children[i].firstChild.data == name){
+      mcu.selectedIndex = i;
+      idx = i;
+      break;
+    }
+  }
+  
+  if(idx < 0){
     alert("MCU [" + name + "] not found");
     return;
   }
-  document.getElementById("mcuselected").value = name;
+  let tbl = document.getElementsByName(mcu.value);
   
   let linenum = 1;
   
@@ -250,32 +289,35 @@ function tbl_import(str){
 }
 
 function SaveToFile(){
+  let mcu = document.getElementById("mcuselected");
   let text = tbl_export();
   let blob = new Blob([text], { type: 'text/plain' });
   let link = document.createElement('a');
   link.href = URL.createObjectURL(blob);
-  let filename = document.getElementById("mcuselected").value + ".pincfg";
+  let filename = mcu.children[mcu.selectedIndex].firstChild.data + ".pincfg";
   link.download = filename;
   link.click();
 }
 
 function LoadFromFile(){
-  var file = document.getElementById("LoadFile").files[0];
+  let ui = document.getElementById("LoadFile");
+  var file = ui.files[0];
   if(!file){return;}
   const reader = new FileReader();
   function LoadFromFile_done(){
     tbl_import(reader.result);
+    ui.value = ""
   }
   reader.onload = LoadFromFile_done;
   reader.readAsText(file);
 }
 
-var cnv_x=0, cnv_y=0, cnv_scale=1;
+var cnv_x=1, cnv_y=1, cnv_scale=1;
 var cnv_dx=0, cnv_dy=0;
 
 function cnv_procdrag(event){
   if( event.buttons & 4){
-    cnv_x = 0; cnv_y = 0; cnv_scale = 1; package_draw();
+    cnv_x = 1; cnv_y = 1; cnv_scale = 1; package_draw();
   }
   if( event.buttons & 1){
     cnv_x += event.clientX-cnv_dx;
@@ -326,7 +368,7 @@ function package_draw(){
 
   let w = canvas.parentNode.clientWidth;
   let h = canvas.parentNode.clientHeight;
-  if(w < h)scale = w; else scale = h;
+  if(w < h)scale = w-2; else scale = h-2;
   canvas.width = w;
   canvas.height = h;
   scale *= cnv_scale;
@@ -7507,7 +7549,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
 </div>
 </div>
 <div id="col-2">
-  <canvas style="position:fixed; top:100px; left:70%" id="canvas" onmousemove="cnv_procdrag(event);" onwheel="cnv_wheel(event);">Package</canvas>
+  <canvas id="canvas" onmousemove="cnv_procdrag(event);" onwheel="cnv_wheel(event);">Package</canvas>
 </div>
 
 

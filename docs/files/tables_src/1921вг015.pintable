@@ -1,0 +1,102 @@
+Packages: LQFP100[LQFP-100_14x14mm_P0.5mm]
+MCU: 1921вг015[LQFP100]
+Periph: GPIO[P]; TIM; Analog[A]; UART; CAN; I2C; SPI; WKUP; вскрыт.[AT]
+
+# Service pins: SRV.[F/O].name.  Example: SRV.F.VCC, SRV.O.Boot_TX
+
+Content:
+| Name | 1921вг015 | Periph |
+|------|-----------|--------|
+| PA0  | 77       | P.PA0; UART.[0_RX]1; TIM.[2.0]2 |
+| PA1  | 78      | P.PA1; UART.[0_TX]1; TIM.[2.1]2 |
+| PA2  | 79     | P.PA2; UART.[1_RX]1; TIM.[2.2]2 |
+| PA3  | 80    | P.PA2; UART.[1_TX]1; TIM.[2.3]2 |
+| PA4  | 81   | P.PA4; UART.[2_RX]1; TIM.[1_CCIA]2; SPI.[Q_CLK]3 |
+| PA5  | 82  | P.PA5; UART.[2_TX]1; TIM.[1_CCIB]2; SPI.[Q_FSS]3 |
+| PA6  | 83 | P.PA6; UART.[3_RX]1; TIM.[1.0]2; SPI.[Q_IO0]3 |
+| PA7  | 84 | P.PA7; UART.[3_TX]1; TIM.[1.1]2; SPI.[Q_IO1]3 |
+| PA8  | 85 | P.PA8; UART.[4_RX]1; TIM.[1.2]2; SPI.[Q_IO2]3 |
+| PA9  | 86 | P.PA9; UART.[4_TX]1; TIM.[1.3]2; SPI.[Q_IO3]3 |
+| PA10 | 87 | P.PA10; SPI.[Q_CLK]1; UART.[0_CTS]2; UART.[1_RX]3 |
+| PA11 | 88 | P.PA11; SPI.[Q_FSS]1; UART.[0_DCD]2; UART.[1_TX]3 |
+| PA12 | 89 | P.PA12; SPI.[Q_IO0]1; UART.[0_DSR]2; UART.[2_RX]3 |
+| PA13 | 90 | P.PA13; SPI.[Q_IO1]1; UART.[0_RI]2; UART.[2_TX]3 |
+| PA14 | 91 | P.PA14; SPI.[Q_IO2]1; UART.[0_RTS]2; UART.[3_RX]3 |
+| PA15 | 92 | P.PA15; SPI.[Q_IO3]1; UART.[0_DTR]2; UART.[3_TX]3 |
+| PB0  | 53 | P.PB0; SPI.[0_CLK]1; UART.[1_CTS]2; UART.[4_RX]3 |
+| PB1  | 54 | P.PB1; SPI.[0_FSS]1; UART.[1_DCD]2; UART.[4_TX]3 |
+| PB2  | 55 | P.PB2; SPI.[0_RX]1; UART.[1_DSR]2; TIM.[32_EXTIN]3 |
+| PB3  | 56 | P.PB3; SPI.[0_TX]1; UART.[1_RI]2; TIM.[0_EXTIN]3 |
+| PB4  | 57 | P.PB4; SPI.[1_CLK]1; UART.[1_RTS]2; TIM.[1_EXTIN]3 |
+| PB5  | 58 | P.PB5; SPI.[1_FSS]1; UART.[1_DTR]2; TIM.[2_EXTIM]3 |
+| PB6  | 59 | P.PB6; SPI.[1_RX]1; UART.[2_CTS]2; UART.[0_RX]3 |
+| PB7  | 60 | P.PB7; SPI.[1_TX]1; UART.[2_DCD]2; UART.[0_TX]3 |
+| PB8  | 62 | P.PB8; CAN.[0_RX]1; UART.[2_DSR]2; TIM.[1.0]3 |
+| PB9  | 63 | P.PB9; CAN.[0_TX]1; UART.[2_RI]2; TIM.[1.1]3 |
+| PB10 | 64 | P.PB10; CAN.[1_RX]1; UART.[2_RTS]2; TIM.[1.2]3 |
+| PB11 | 65 | P.PB11; CAN.[1_TX]1; UART.[2_DTR]2; TIM.[1.3]3 |
+| PB12 | 66 | P.PB12; A.[CMP_out0]1; UART.[3_CTS]2; TIM.[1_CCIA]3 |
+| PB13 | 67 | P.PB13; A.[CMP_out1]1; UART.[3_DCD]2; TIM.[1_CCIB]3 |
+| PB14 | 68 | P.PB14; TIM.[32_CCIA]1; UART.[3_DSR]2; A.[CMP_out0]3 |
+| PB15 | 69 | P.PB15; TIM.[32_CCIB]1; UART.[3_RI]2; A.[CMP_out1]3 |
+| PC0  | 34 | P.PC0; TIM.[32.0]1; UART.[3_RTS]2 |
+| PC1  | 35 | P.PC1; TIM.[32.1]1; UART.[3_DTR]2 |
+| PC2  | 36 | P.PC2; TIM.[32.2]1; UART.[4_CTS]2 |
+| PC3  | 37 | P.PC3; TIM.[32.3]1; UART.[4_DCD]2 |
+| PC4  | 38 | P.PC4; TIM.[32_EXTIN]1; UART.[4_DSR]2 |
+| PC5  | 39 | P.PC5; TIM.[0_EXTIN]1; UART.[4_RI]2 |
+| PC6  | 40 | P.PC6; TIM.[0.0]1; UART.[4_RTS]2 |
+| PC7  | 41 | P.PC7; TIM.[0.1]1; UART.[4_DTR]2; CLKOUT |
+| PC8  | 42 | P.PC8; TIM.[0.2]1; CAN.[0_RX]2 |
+| PC9  | 43 | P.PC9; TIM.[0.3]1; CAN.[0_TX]2 |
+| PC10 | 44 | P.PC10; TIM.[0_CCIA]1; CAN.[1_RX]2 |
+| PC11 | 45 | P.PC11; TIM.[0_CCIB]1; CAN.[1_TX]2 |
+| PC12 | 46 | P.PC12; I2C.[SCL]1; TIM.[1_EXTIN]2 |
+| PC13 | 47 | P.PC13; I2C.[SDA]1; TIM.[2_EXTIN]2 |
+| PC14 | 48 | P.PC14; TIM.[2_CCIA]1; I2C.[SCL]2 |
+| PC15 | 49 | P.PC15; TIM.[2_CCIB]1; I2C.[SDA]2 |
+|OSC_IN|  9 | SRV.F.OSC_IN |
+|OSC_OUT|10 | SRV.F.OSC_OUT |
+| RST  | 95 | SRV.F.RST |
+| TCK  | 73 | SRV.F.TCK |
+| TDI  | 72 | SRV.F.TDI |
+| TDO  | 71 | SRV.F.TDO |
+| TMS  | 70 | SRV.F.TMS |
+| TRST | 76 | SRV.F.TRST |
+|SERVEN| 50 | SRV.F.SERVEN | Очень важный вывод! Позволяет раскирпичить микросхему, если будете неаккуратны, например, с WAKECFG
+|OSC32_IN|97| SRV.F.OSC32_IN |
+|OSC32_OUT|96|SRV.F.OSC32_OUT |
+|USB_D-| 31 | USB_D- |
+|USB_D+| 30 | USB_D+ |
+|CMP_INP0| 6 | A.CMP_inP0 |
+|CMP_INN0|  5 | A.CMP_inN0 |
+|CMP_INP1 |  8 | A.CMP_inP1 |
+|CMP_INN1 |  7 | A.CMP_inN1 |
+| AT_IN0  |  1 | AT.0 |
+| AT_IN1  |  2 | AT.1 |
+| AT_IN2  |  3 | AT.2 |
+| AT_OUT  |  4 | AT.OUT |
+| WKUP0   |100 | WKUP.0 |
+| WKUP1   | 99 | WKUP.1 |
+| WKUP2   | 98 | WKUP.2 |
+| ADC_0   | 21 | A.0 |
+| ADC_1   | 22 | A.1 |
+| ADC_2   | 23 | A.2 |
+| ADC_3   | 24 | A.3 |
+| ADC_4   | 26 | A.4 |
+| ADC_5   | 27 | A.5 |
+| ADC_6   | 28 | A.6 |
+| ADC_7   | 29 | A.7 |
+| GND1    | 94; 74; 52; 32; 11 | SRV.F.GND |
+| VCC     | 93; 75; 61; 51; 33; 16; 12 | SRV.F.VCC |
+| VBAT    | 14 | SRV.F.VBAT |
+| VAON_CAP| 13 | SRV.F.VAON_CAP | COMM[1]
+|VCORE_CAP| 17 | SRV.F.VCORE_CAP | COMM[1]
+| VBAT_CAP| 15 | SRV.F.VBAT_CAP | COMM[1]
+| VCC2    | 19 | SRV.F.VCC |
+| GND2    | 20 | SRV.F.GND |
+| AREF    | 18 | SRV.F.AREF | COMM[2]
+|SDADC_CAP| 25 | SRV.F.SDADC_CAP | COMM[1]
+
+Comment1 Вывод подключения конденсатора
+Comment2 Опорное напряжение ADCSRA (не SDADC!)
