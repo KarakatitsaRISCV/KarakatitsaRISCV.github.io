@@ -1,0 +1,29 @@
+Packages: DIP20[DIP-20_W7.62mm]; SOIC20[SOIC-20W_7.5x12.8mm_P1.27mm]; QFN32[QFN-32-1EP_5x5mm_P0.5mm_EP3.1x3.1mm];
+MCU: ATtiny261_MU[QFN32]; ATtiny261_PU[DIP20]; ATtiny261_SU[SOIC20]
+Periph: GPIO[P]; TIM; Analog[A]; SPI; I2C; INT; USI
+
+# Service pins: SRV.[F/O].name.  Example: SRV.F.VCC, SRV.O.Boot_TX
+
+Content:
+| Name | [DIP20];[SOIC20] | [QFN32] | Periph |
+|------|------------------|---------|--------|
+| PB0  |       1          |    30   | P.PB0; SPI.MOSI; USI.DI; I2C.SDA; TIM.OC1An; INT.PC8 |
+| PB1  |       2          |    31   | P.PB1; SPI.MISO; USI.DO; TIM.OC1A; INT.PC9 |
+| PB2  |       3          |    32   | P.PB2; SPI.SCK; USI.USCK; I2C.SCL; TIM.OC1Bn; INT.PC10 |
+| PB3  |       4          |     2   | P.PB3; TIM.OC1B; INT.PC11 |
+| VCC  |       5          |     4   | SRV.F.VCC |
+| GND  |       6          |     5   | SRV.F.GND |
+| PB4  |       7          |     7   | P.PB4; A.7; TIM.OC1Dn; SRV.O.CLKI; SRV.O.XTAL1; INT.PC12 |
+| PB5  |       8          |     8   | P.PB5; A.8; TIM.OC1D; SRV.O.CLKO; SRV.O.XTAL2; INT.PC13 |
+| PB6  |       9          |    10   | P.PB6; A.9; INT.0; TIM.T0; INT.PC14 |
+| PB7  |      10          |    11   | P.PB7; A.10; SRV.O.RST; INT.PC15 |
+| PA7  |      11          |    13   | P.PA7; A.6; A.AIN1; INT.PC17 |
+| PA6  |      12          |    14   | P.PA6; A.5; A.AIN0; INT.PC6 |
+| PA5  |      13          |    15   | P.PA5; A.4; A.AIN2; INT.PC5 |
+| PA4  |      14          |    17   | P.PA4; A.3; TIM.ICP0; INT.PC4 |
+| AVCC |      15          |    18   | SRV.F.AVCC |
+| AGND |      16          |    21   | SRV.F.AGND |
+| PA3  |      17          |    22   | P.PA3; SRV.O.AREF; INT.PC3 |
+| PA2  |      18          |    23   | P.PA2; A.2; INT.1; USI.USCK; I2C.SCL; INT.PC2 |
+| PA1  |      19          |    25   | P.PA1; A.1; USI.DO; INT.PC1 |
+| PA0  |      20          |    26   | P.PA0; A.0; USI.DI; I2C.SDA; INT.PC0 |

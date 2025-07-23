@@ -1,9 +1,10 @@
 <head>
+<title>Pintable</title>
 
 <style type="text/css">
-  body {
+  /*body {
     overflow: hidden;
-  }
+  }*/
   table{
     border-collapse: collapse; /* Убираем двойные линии между ячейками */ 
   }
@@ -11,7 +12,7 @@
     border: 1px solid black; /* Параметры рамки */ 
     width:auto;
     text-align: center;
-  }
+    text-shadow: 0 0 1px #ffffff;  }
   th{
     background: #b0e0e6; /* Цвет фона */ 
     position: sticky; top: 0; /*Зафиксировать заголовок*/
@@ -20,8 +21,10 @@
     border: none !important; /* В результате границы становятся абсолютно незаметными */ 
   }
   .hltext{
+    padding: 1px;
+    border: 2px dotted #ffffff;
     color: #000000;
-    background-color:#ff808080;
+    background-color:#c0c0c080;
   }
   input[type="checkbox"]{
     margin-right: 20px;
@@ -41,19 +44,19 @@ input[type="text"]{
   position: relative;
   width: 70%;
   float: left;
-  height: 100%;
+  height: 80%;
 }
 
 #col-2 {
   position: relative;
   width: 30%;
   float: right;
-  height: 100%;
+  height: 80%;
 }
 .table_wrapper{
   display: block;
   overflow-x: auto;
-  height: 80%;
+  height: 100%;
   white-space: nowrap;
 }
 
@@ -83,29 +86,30 @@ function SelectPeriph(name){
     if(hdr.children[i].children.length < 2)continue;
     hdr.children[i].children[idx].hidden = hid;
   }
+  UnusedVisible();
 }
 
-function SrvVisible(){
+function UnusedVisible(){
   let mcu = document.getElementById("mcuselected").value;
-  let tbl = document.getElementsByName(mcu);
-  let ctl = document.getElementById("srvsel").value;
-  let sh_F=true, sh_O=true;
-  let check = document.getElementsByName("Service")[0];
-  if(ctl == "srv_show"){sh_F=true; sh_O=true;}
-  if(ctl == "srv_opt"){sh_F=false; sh_O=true;}
-  if(ctl == "srv_hide"){sh_F=false; sh_O=false;}
-  tbl = tbl[0].children[1].children;
-  for(let i=0; i<tbl.length; i++){
-    if(tbl[i].className == "tbl_srv_F"){
-      tbl[i].hidden = !sh_F;
-    }else if(tbl[i].className == "tbl_srv_O"){
-      tbl[i].hidden = !sh_O;
-    }else{
+  let tbl = document.getElementsByName(mcu)[0];
+  tbl = tbl.children[1].children;
+  if(document.getElementById("hideempty").checked){
+    for(let i=0; i<tbl.length; i++){
+      let vis = false;
+      let lin = tbl[i].children;
+      for(let j=2; j<lin.length-3; j++){
+        if(lin[j].hidden)continue;
+        if(lin[j].textContent == "")continue;
+        vis = true;
+        break;
+      }
+      tbl[i].hidden = !vis;
+    }
+  }else{
+    for(let i=0; i<tbl.length; i++){
       tbl[i].hidden = false;
     }
   }
-  check.checked = sh_O;
-  SelectPeriph('Service');
 }
 
 function SelectColor(linenum){
@@ -127,20 +131,35 @@ function SelectColor(linenum){
   package_draw();
 }
 
+function PN_input(){
+  package_draw();
+}
+
 function SelectMCU(){
-  let mcu = document.getElementById("mcuselected").value;
+  let mcu = document.getElementById("mcuselected");
   let tables = document.getElementsByTagName("table");
   for(let i=0; i<tables.length; i++){
-    tables[i].hidden = (tables[i].attributes.name.value != mcu);
+    tables[i].hidden = (tables[i].attributes.name.value != mcu.value);
   }
   Periph_Vis_update();
   package_draw();
   tbl_col_update();
+  document.title = mcu.children[mcu.selectedIndex].firstChild.data + " - Pins";
 }
 
 function Periph_Vis_update(){
-  SrvVisible();
   for(let i=0; i<controls.length; i++){
+    SelectPeriph(controls[i].name);
+  }
+}
+
+function HideAll(){
+  let check = false;
+  for(let i=0; i<controls.length; i++){
+    check |= controls[i].checked;
+  }
+  for(let i=0; i<controls.length; i++){
+    controls[i].checked = !check;
     SelectPeriph(controls[i].name);
   }
 }
@@ -170,6 +189,28 @@ function OnLoad(){
   SelectMCU();
   Periph_Vis_update();
   tbl_col_update();
+}
+
+var comment_event = false;
+function href_onclick(name){
+let det = document.getElementById("details_comments");
+  comment_event = true;
+  det.setAttribute("open","");
+  for(let i=0; i<det.children.length; i++){
+    if(det.children[i].id != name){
+      det.children[i].style = "";
+    }else{
+      det.children[i].style = "background-color:powderblue;";
+    }
+  }
+}
+
+function comm_ontoggle(){
+  if(comment_event){comment_event=false; return;}
+  let det = document.getElementById("details_comments");
+  for(let i=0; i<det.children.length; i++){
+    det.children[i].style = "";
+  }
 }
 
 function tbl_export(){
@@ -263,11 +304,12 @@ function tbl_import(str){
 }
 
 function SaveToFile(){
+  let mcu = document.getElementById("mcuselected");
   let text = tbl_export();
   let blob = new Blob([text], { type: 'text/plain' });
   let link = document.createElement('a');
   link.href = URL.createObjectURL(blob);
-  let filename = document.getElementById("mcuselected").value + ".pincfg";
+  let filename = mcu.children[mcu.selectedIndex].firstChild.data + ".pincfg";
   link.download = filename;
   link.click();
 }
@@ -311,7 +353,7 @@ function cnv_wheel(event){
   }else{
     ds = 1.1;
   }
-  let X = event.clientX-canvas.offsetLeft, Y = event.clientY-canvas.offsetTop;
+  let X = event.clientX-canvas.parentNode.offsetLeft, Y = event.clientY-canvas.parentNode.offsetTop;
   cnv_x = cnv_x*ds + X*(1-ds);
   cnv_y = cnv_y*ds + Y*(1-ds);
   cnv_scale *= ds;
@@ -329,6 +371,7 @@ function package_draw(){
   const ctx = canvas.getContext("2d");
   let mcu = document.getElementById("mcuselected").value 
   let tbl = document.getElementsByName(mcu);
+  let drawnames = document.getElementById("pinnames").checked;
   let x=cnv_x, y=cnv_y, scale=500;
 
   let w = canvas.parentNode.clientWidth;
@@ -348,7 +391,7 @@ function package_draw(){
         ctx.restore();
         pkg_draw_prev = i;
       }
-      funcs[i][1](ctx, tbl[0].children[1].children, x, y, scale); 
+      funcs[i][1](ctx, tbl[0].children[1].children, x, y, scale, drawnames); 
       break;
     }
   }
@@ -361,7 +404,7 @@ function table_onmouse(idx){
   package_draw();
 }
 
-function pack_html_draw(ctx, tbl, x, y, scale, font_sz, pins, pin_names, graph){
+function pack_html_draw(ctx, tbl, x, y, scale, font_sz, pins, pin_names, drawnames, graph){
   const patternCanvas = document.createElement("canvas");
   const patternContext = patternCanvas.getContext("2d");
   patternCanvas.width = 10;
@@ -375,10 +418,10 @@ function pack_html_draw(ctx, tbl, x, y, scale, font_sz, pins, pin_names, graph){
 
 //draw pads
   for(let i=0; i<pins.length; i++){
-    let col = "rgb(200 200 200)";
+    let col = "rgb(220 220 220)";
     let idx = pin_names[i][4];
     if((idx >= 0)&&(idx < tbl.length)){
-      if(tbl[idx].bgcolor != ""){
+      if((tbl[idx].bgColor)&&(tbl[idx].bgcolor != "")){
         col = tbl[idx].bgColor;
       }
     }
@@ -410,6 +453,7 @@ function pack_html_draw(ctx, tbl, x, y, scale, font_sz, pins, pin_names, graph){
   for(let i=0; i<pin_names.length; i++){
     let name = pin_names[i][3];
     let idx = pin_names[i][4];
+    if(drawnames && (idx>=0)&&(idx<tbl.length)){name = tbl[idx].children[1].children[0].textContent;}
     if((colnum >= 0) && (idx >= 0) && (idx < tbl.length)){
       let val = tbl[idx].children[colnum].children[0].value;
       if(val != "")name = val;
@@ -439,7 +483,7 @@ function pack_html_draw(ctx, tbl, x, y, scale, font_sz, pins, pin_names, graph){
   ctx.stroke();
 }
 
-function package_draw_ATtiny261_MU_QFN32(ctx, tbl, x, y, scale){
+function package_draw_ATtiny261_MU_QFN32(ctx, tbl, x, y, scale, drawnames){
   const pins = [
     ['r', 0.598558, 0.598558, 0.133013, 0.133013],//0
     ['r', 0.268429, 0.268429, 0.133013, 0.133013],//1
@@ -494,39 +538,39 @@ function package_draw_ATtiny261_MU_QFN32(ctx, tbl, x, y, scale){
     ['h', 0.500000, 0.665064, "", -1], //6
     ['h', 0.500000, 0.334936, "", -1], //7
     ['h', 0.334936, 0.500000, "", -1], //8
-    ['h', 0.109375, 0.219551, "1", 0], //9
-    ['h', 0.109375, 0.299679, "2", 1], //10
-    ['h', 0.109375, 0.379808, "3", 2], //11
-    ['h', 0.109375, 0.459936, "4", 3], //12
-    ['h', 0.109375, 0.540064, "5", 4], //13
-    ['h', 0.109375, 0.620192, "6", 5], //14
-    ['h', 0.109375, 0.700321, "7", 6], //15
-    ['h', 0.109375, 0.780449, "8", 7], //16
-    ['v', 0.219551, 0.890625, "9", 8], //17
-    ['v', 0.299679, 0.890625, "10", 9], //18
-    ['v', 0.379808, 0.890625, "11", 10], //19
-    ['v', 0.459936, 0.890625, "12", 11], //20
-    ['v', 0.540064, 0.890625, "13", 12], //21
-    ['v', 0.620192, 0.890625, "14", 13], //22
-    ['v', 0.700321, 0.890625, "15", 14], //23
-    ['v', 0.780449, 0.890625, "16", 15], //24
-    ['h', 0.890625, 0.780449, "17", 16], //25
-    ['h', 0.890625, 0.700321, "18", 17], //26
-    ['h', 0.890625, 0.620192, "19", 18], //27
-    ['h', 0.890625, 0.540064, "20", 19], //28
-    ['h', 0.890625, 0.459936, "21", 20], //29
-    ['h', 0.890625, 0.379808, "22", 21], //30
-    ['h', 0.890625, 0.299679, "23", 22], //31
-    ['h', 0.890625, 0.219551, "24", 23], //32
-    ['v', 0.780449, 0.109375, "25", 24], //33
-    ['v', 0.700321, 0.109375, "26", 25], //34
-    ['v', 0.620192, 0.109375, "27", 26], //35
-    ['v', 0.540064, 0.109375, "28", 27], //36
-    ['v', 0.459936, 0.109375, "29", 28], //37
-    ['v', 0.379808, 0.109375, "30", 29], //38
-    ['v', 0.299679, 0.109375, "31", 30], //39
-    ['v', 0.219551, 0.109375, "32", 31], //40
-    ['h', 0.500000, 0.500000, "33", 32], //41
+    ['h', 0.109375, 0.219551, "1", -1], //9
+    ['h', 0.109375, 0.299679, "2", 0], //10
+    ['h', 0.109375, 0.379808, "3", -1], //11
+    ['h', 0.109375, 0.459936, "4", 1], //12
+    ['h', 0.109375, 0.540064, "5", 2], //13
+    ['h', 0.109375, 0.620192, "6", -1], //14
+    ['h', 0.109375, 0.700321, "7", 3], //15
+    ['h', 0.109375, 0.780449, "8", 4], //16
+    ['v', 0.219551, 0.890625, "9", -1], //17
+    ['v', 0.299679, 0.890625, "10", 5], //18
+    ['v', 0.379808, 0.890625, "11", 6], //19
+    ['v', 0.459936, 0.890625, "12", -1], //20
+    ['v', 0.540064, 0.890625, "13", 7], //21
+    ['v', 0.620192, 0.890625, "14", 8], //22
+    ['v', 0.700321, 0.890625, "15", 9], //23
+    ['v', 0.780449, 0.890625, "16", -1], //24
+    ['h', 0.890625, 0.780449, "17", 10], //25
+    ['h', 0.890625, 0.700321, "18", 11], //26
+    ['h', 0.890625, 0.620192, "19", -1], //27
+    ['h', 0.890625, 0.540064, "20", -1], //28
+    ['h', 0.890625, 0.459936, "21", 12], //29
+    ['h', 0.890625, 0.379808, "22", 13], //30
+    ['h', 0.890625, 0.299679, "23", 14], //31
+    ['h', 0.890625, 0.219551, "24", -1], //32
+    ['v', 0.780449, 0.109375, "25", 15], //33
+    ['v', 0.700321, 0.109375, "26", 16], //34
+    ['v', 0.620192, 0.109375, "27", -1], //35
+    ['v', 0.540064, 0.109375, "28", -1], //36
+    ['v', 0.459936, 0.109375, "29", -1], //37
+    ['v', 0.379808, 0.109375, "30", 17], //38
+    ['v', 0.299679, 0.109375, "31", 18], //39
+    ['v', 0.219551, 0.109375, "32", 19], //40
+    ['h', 0.500000, 0.500000, "33", -1], //41
   ];
   const graph = [
     ['l', 0.081731, 0.918269, 0.081731, 0.842147], //0
@@ -546,9 +590,9 @@ function package_draw_ATtiny261_MU_QFN32(ctx, tbl, x, y, scale){
     ['l', 0.099359, 0.900641, 0.099359, 0.259615], //14
     ['l', 0.259615, 0.099359, 0.900641, 0.099359], //15
   ];
-  pack_html_draw(ctx, tbl, x, y, scale, 0.040064, pins, pin_names, graph);
+  pack_html_draw(ctx, tbl, x, y, scale, 0.040064, pins, pin_names, drawnames, graph);
 }
-function package_draw_ATtiny261_PU_DIP20(ctx, tbl, x, y, scale){
+function package_draw_ATtiny261_PU_DIP20(ctx, tbl, x, y, scale, drawnames){
   const pins = [
     ['r', 0.011561, 0.028902, 0.061657, 0.061657],//0
     ['c', 0.042389, 0.157611, 0.030829, 0.030829],//1
@@ -610,9 +654,9 @@ function package_draw_ATtiny261_PU_DIP20(ctx, tbl, x, y, scale){
     ['l', 0.311561, 0.989595, 0.066859, 0.989595], //13
     ['l', 0.066859, 0.989595, 0.066859, 0.049326], //14
   ];
-  pack_html_draw(ctx, tbl, x, y, scale, 0.061657, pins, pin_names, graph);
+  pack_html_draw(ctx, tbl, x, y, scale, 0.043160, pins, pin_names, drawnames, graph);
 }
-function package_draw_ATtiny261_SU_SOIC20(ctx, tbl, x, y, scale){
+function package_draw_ATtiny261_SU_SOIC20(ctx, tbl, x, y, scale, drawnames){
   const pins = [
     ['r', 0.019173, 0.047744, 0.154135, 0.045113],//0
     ['r', 0.019173, 0.143233, 0.154135, 0.045113],//1
@@ -677,7 +721,7 @@ function package_draw_ATtiny261_SU_SOIC20(ctx, tbl, x, y, scale){
     ['l', 0.163910, 0.093985, 0.239098, 0.018797], //16
     ['l', 0.727820, 0.981203, 0.163910, 0.981203], //17
   ];
-  pack_html_draw(ctx, tbl, x, y, scale, 0.045113, pins, pin_names, graph);
+  pack_html_draw(ctx, tbl, x, y, scale, 0.045113, pins, pin_names, drawnames, graph);
 }
 
 </script>
@@ -705,17 +749,15 @@ function package_draw_ATtiny261_SU_SOIC20(ctx, tbl, x, y, scale){
 <label for="Per.INT">INT</label><input type="checkbox" class="controls" id="Per.INT" name="INT" checked onclick="SelectPeriph('INT');"/>
 <label for="Per.USI">USI</label><input type="checkbox" class="controls" id="Per.USI" name="USI" checked onclick="SelectPeriph('USI');"/>
 <label for="Per.Other">Other</label><input type="checkbox" class="controls" id="Per.Other" name="Other" checked onclick="SelectPeriph('Other');"/>
-<input type="checkbox" class="controls" id="Per.Service" name="Service" checked onclick="SelectPeriph('Service');" hidden/>
+<label for="Per.Service">Service</label><input type="checkbox" class="controls" id="Per.Service" name="Service" checked onclick="SelectPeriph('Service');"/>
 
 <br>
-<select id="srvsel" onchange="SrvVisible()">
-  <option value="srv_show">Service lines: Show</option>
-  <option value="srv_opt">Service lines: Remap only</option>
-  <option value="srv_hide">Service lines: Hide</option>
-</select>
 <input type="button" value="Save" onclick="SaveToFile()"/>
 <input type="file" id="LoadFile" accept=".pincfg" onchange="LoadFromFile();"/>
 
+<label for="hideempty">Hide empty</label><input type="checkbox" id="hideempty" name="hideempty" onclick="UnusedVisible();"/>
+<label for="pinnames">Pin names</label><input type="checkbox" id="pinnames" name="pinnames" onclick="package_draw();"/>
+<input type="button" value="HideAll" onclick="HideAll();"/>
 
 
 </form>
@@ -755,7 +797,7 @@ function package_draw_ATtiny261_SU_SOIC20(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(0);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_F" onmousemove="table_onmouse(12);">
       <td><div>4</div></td>
@@ -770,7 +812,7 @@ function package_draw_ATtiny261_SU_SOIC20(ctx, tbl, x, y, scale){
       <td><div>VCC</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(1);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_F" onmousemove="table_onmouse(13);">
       <td><div>5</div></td>
@@ -785,7 +827,7 @@ function package_draw_ATtiny261_SU_SOIC20(ctx, tbl, x, y, scale){
       <td><div>GND</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(2);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_O" onmousemove="table_onmouse(15);">
       <td><div>7</div></td>
@@ -797,10 +839,10 @@ function package_draw_ATtiny261_SU_SOIC20(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div>PC12</div></td>
       <td><div></div></td>
-      <td><div>CLKI,   XTAL1</div></td>
+      <td><div>CLKI, XTAL1</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(3);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_O" onmousemove="table_onmouse(16);">
       <td><div>8</div></td>
@@ -812,10 +854,10 @@ function package_draw_ATtiny261_SU_SOIC20(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div>PC13</div></td>
       <td><div></div></td>
-      <td><div>CLKO,   XTAL2</div></td>
+      <td><div>CLKO, XTAL2</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(4);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(18);">
       <td><div>10</div></td>
@@ -830,7 +872,7 @@ function package_draw_ATtiny261_SU_SOIC20(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(5);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_O" onmousemove="table_onmouse(19);">
       <td><div>11</div></td>
@@ -845,7 +887,7 @@ function package_draw_ATtiny261_SU_SOIC20(ctx, tbl, x, y, scale){
       <td><div>RST</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(6);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(21);">
       <td><div>13</div></td>
@@ -860,7 +902,7 @@ function package_draw_ATtiny261_SU_SOIC20(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(7);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(22);">
       <td><div>14</div></td>
@@ -875,7 +917,7 @@ function package_draw_ATtiny261_SU_SOIC20(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(8);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(23);">
       <td><div>15</div></td>
@@ -890,7 +932,7 @@ function package_draw_ATtiny261_SU_SOIC20(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(9);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(25);">
       <td><div>17</div></td>
@@ -905,7 +947,7 @@ function package_draw_ATtiny261_SU_SOIC20(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(10);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_F" onmousemove="table_onmouse(26);">
       <td><div>18</div></td>
@@ -920,7 +962,7 @@ function package_draw_ATtiny261_SU_SOIC20(ctx, tbl, x, y, scale){
       <td><div>AVCC</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(11);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_F" onmousemove="table_onmouse(29);">
       <td><div>21</div></td>
@@ -935,7 +977,7 @@ function package_draw_ATtiny261_SU_SOIC20(ctx, tbl, x, y, scale){
       <td><div>AGND</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(12);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_O" onmousemove="table_onmouse(30);">
       <td><div>22</div></td>
@@ -950,7 +992,7 @@ function package_draw_ATtiny261_SU_SOIC20(ctx, tbl, x, y, scale){
       <td><div>AREF</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(13);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(31);">
       <td><div>23</div></td>
@@ -965,7 +1007,7 @@ function package_draw_ATtiny261_SU_SOIC20(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(14);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(33);">
       <td><div>25</div></td>
@@ -980,7 +1022,7 @@ function package_draw_ATtiny261_SU_SOIC20(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(15);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(34);">
       <td><div>26</div></td>
@@ -995,7 +1037,7 @@ function package_draw_ATtiny261_SU_SOIC20(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(16);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(38);">
       <td><div>30</div></td>
@@ -1010,7 +1052,7 @@ function package_draw_ATtiny261_SU_SOIC20(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(17);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(39);">
       <td><div>31</div></td>
@@ -1025,7 +1067,7 @@ function package_draw_ATtiny261_SU_SOIC20(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(18);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(40);">
       <td><div>32</div></td>
@@ -1040,7 +1082,7 @@ function package_draw_ATtiny261_SU_SOIC20(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(19);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
   </tbody>
 </table>
@@ -1077,7 +1119,7 @@ function package_draw_ATtiny261_SU_SOIC20(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(0);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(1);">
       <td><div>2</div></td>
@@ -1092,7 +1134,7 @@ function package_draw_ATtiny261_SU_SOIC20(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(1);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(2);">
       <td><div>3</div></td>
@@ -1107,7 +1149,7 @@ function package_draw_ATtiny261_SU_SOIC20(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(2);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(3);">
       <td><div>4</div></td>
@@ -1122,7 +1164,7 @@ function package_draw_ATtiny261_SU_SOIC20(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(3);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_F" onmousemove="table_onmouse(4);">
       <td><div>5</div></td>
@@ -1137,7 +1179,7 @@ function package_draw_ATtiny261_SU_SOIC20(ctx, tbl, x, y, scale){
       <td><div>VCC</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(4);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_F" onmousemove="table_onmouse(5);">
       <td><div>6</div></td>
@@ -1152,7 +1194,7 @@ function package_draw_ATtiny261_SU_SOIC20(ctx, tbl, x, y, scale){
       <td><div>GND</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(5);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_O" onmousemove="table_onmouse(6);">
       <td><div>7</div></td>
@@ -1164,10 +1206,10 @@ function package_draw_ATtiny261_SU_SOIC20(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div>PC12</div></td>
       <td><div></div></td>
-      <td><div>CLKI,   XTAL1</div></td>
+      <td><div>CLKI, XTAL1</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(6);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_O" onmousemove="table_onmouse(7);">
       <td><div>8</div></td>
@@ -1179,10 +1221,10 @@ function package_draw_ATtiny261_SU_SOIC20(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div>PC13</div></td>
       <td><div></div></td>
-      <td><div>CLKO,   XTAL2</div></td>
+      <td><div>CLKO, XTAL2</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(7);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(8);">
       <td><div>9</div></td>
@@ -1197,7 +1239,7 @@ function package_draw_ATtiny261_SU_SOIC20(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(8);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_O" onmousemove="table_onmouse(9);">
       <td><div>10</div></td>
@@ -1212,7 +1254,7 @@ function package_draw_ATtiny261_SU_SOIC20(ctx, tbl, x, y, scale){
       <td><div>RST</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(9);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(10);">
       <td><div>11</div></td>
@@ -1227,7 +1269,7 @@ function package_draw_ATtiny261_SU_SOIC20(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(10);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(11);">
       <td><div>12</div></td>
@@ -1242,7 +1284,7 @@ function package_draw_ATtiny261_SU_SOIC20(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(11);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(12);">
       <td><div>13</div></td>
@@ -1257,7 +1299,7 @@ function package_draw_ATtiny261_SU_SOIC20(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(12);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(13);">
       <td><div>14</div></td>
@@ -1272,7 +1314,7 @@ function package_draw_ATtiny261_SU_SOIC20(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(13);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_F" onmousemove="table_onmouse(14);">
       <td><div>15</div></td>
@@ -1287,7 +1329,7 @@ function package_draw_ATtiny261_SU_SOIC20(ctx, tbl, x, y, scale){
       <td><div>AVCC</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(14);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_F" onmousemove="table_onmouse(15);">
       <td><div>16</div></td>
@@ -1302,7 +1344,7 @@ function package_draw_ATtiny261_SU_SOIC20(ctx, tbl, x, y, scale){
       <td><div>AGND</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(15);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_O" onmousemove="table_onmouse(16);">
       <td><div>17</div></td>
@@ -1317,7 +1359,7 @@ function package_draw_ATtiny261_SU_SOIC20(ctx, tbl, x, y, scale){
       <td><div>AREF</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(16);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(17);">
       <td><div>18</div></td>
@@ -1332,7 +1374,7 @@ function package_draw_ATtiny261_SU_SOIC20(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(17);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(18);">
       <td><div>19</div></td>
@@ -1347,7 +1389,7 @@ function package_draw_ATtiny261_SU_SOIC20(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(18);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(19);">
       <td><div>20</div></td>
@@ -1362,7 +1404,7 @@ function package_draw_ATtiny261_SU_SOIC20(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(19);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
   </tbody>
 </table>
@@ -1399,7 +1441,7 @@ function package_draw_ATtiny261_SU_SOIC20(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(0);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(1);">
       <td><div>2</div></td>
@@ -1414,7 +1456,7 @@ function package_draw_ATtiny261_SU_SOIC20(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(1);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(2);">
       <td><div>3</div></td>
@@ -1429,7 +1471,7 @@ function package_draw_ATtiny261_SU_SOIC20(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(2);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(3);">
       <td><div>4</div></td>
@@ -1444,7 +1486,7 @@ function package_draw_ATtiny261_SU_SOIC20(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(3);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_F" onmousemove="table_onmouse(4);">
       <td><div>5</div></td>
@@ -1459,7 +1501,7 @@ function package_draw_ATtiny261_SU_SOIC20(ctx, tbl, x, y, scale){
       <td><div>VCC</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(4);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_F" onmousemove="table_onmouse(5);">
       <td><div>6</div></td>
@@ -1474,7 +1516,7 @@ function package_draw_ATtiny261_SU_SOIC20(ctx, tbl, x, y, scale){
       <td><div>GND</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(5);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_O" onmousemove="table_onmouse(6);">
       <td><div>7</div></td>
@@ -1486,10 +1528,10 @@ function package_draw_ATtiny261_SU_SOIC20(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div>PC12</div></td>
       <td><div></div></td>
-      <td><div>CLKI,   XTAL1</div></td>
+      <td><div>CLKI, XTAL1</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(6);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_O" onmousemove="table_onmouse(7);">
       <td><div>8</div></td>
@@ -1501,10 +1543,10 @@ function package_draw_ATtiny261_SU_SOIC20(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div>PC13</div></td>
       <td><div></div></td>
-      <td><div>CLKO,   XTAL2</div></td>
+      <td><div>CLKO, XTAL2</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(7);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(8);">
       <td><div>9</div></td>
@@ -1519,7 +1561,7 @@ function package_draw_ATtiny261_SU_SOIC20(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(8);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_O" onmousemove="table_onmouse(9);">
       <td><div>10</div></td>
@@ -1534,7 +1576,7 @@ function package_draw_ATtiny261_SU_SOIC20(ctx, tbl, x, y, scale){
       <td><div>RST</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(9);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(10);">
       <td><div>11</div></td>
@@ -1549,7 +1591,7 @@ function package_draw_ATtiny261_SU_SOIC20(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(10);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(11);">
       <td><div>12</div></td>
@@ -1564,7 +1606,7 @@ function package_draw_ATtiny261_SU_SOIC20(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(11);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(12);">
       <td><div>13</div></td>
@@ -1579,7 +1621,7 @@ function package_draw_ATtiny261_SU_SOIC20(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(12);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(13);">
       <td><div>14</div></td>
@@ -1594,7 +1636,7 @@ function package_draw_ATtiny261_SU_SOIC20(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(13);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_F" onmousemove="table_onmouse(14);">
       <td><div>15</div></td>
@@ -1609,7 +1651,7 @@ function package_draw_ATtiny261_SU_SOIC20(ctx, tbl, x, y, scale){
       <td><div>AVCC</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(14);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_F" onmousemove="table_onmouse(15);">
       <td><div>16</div></td>
@@ -1624,7 +1666,7 @@ function package_draw_ATtiny261_SU_SOIC20(ctx, tbl, x, y, scale){
       <td><div>AGND</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(15);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_O" onmousemove="table_onmouse(16);">
       <td><div>17</div></td>
@@ -1639,7 +1681,7 @@ function package_draw_ATtiny261_SU_SOIC20(ctx, tbl, x, y, scale){
       <td><div>AREF</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(16);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(17);">
       <td><div>18</div></td>
@@ -1654,7 +1696,7 @@ function package_draw_ATtiny261_SU_SOIC20(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(17);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(18);">
       <td><div>19</div></td>
@@ -1669,7 +1711,7 @@ function package_draw_ATtiny261_SU_SOIC20(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(18);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(19);">
       <td><div>20</div></td>
@@ -1684,14 +1726,14 @@ function package_draw_ATtiny261_SU_SOIC20(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(19);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
   </tbody>
 </table>
 </div>
 </div>
 <div id="col-2">
-  <canvas style="position:fixed; top:100px; left:70%" id="canvas" onmousemove="cnv_procdrag(event);" onwheel="cnv_wheel(event);">Package</canvas>
+  <canvas id="canvas" onmousemove="cnv_procdrag(event);" onwheel="cnv_wheel(event);">Package</canvas>
 </div>
 
 

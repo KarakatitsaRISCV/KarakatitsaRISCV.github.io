@@ -1,6 +1,10 @@
 <head>
+<title>Pintable</title>
 
 <style type="text/css">
+  /*body {
+    overflow: hidden;
+  }*/
   table{
     border-collapse: collapse; /* Убираем двойные линии между ячейками */ 
   }
@@ -8,7 +12,7 @@
     border: 1px solid black; /* Параметры рамки */ 
     width:auto;
     text-align: center;
-  }
+    text-shadow: 0 0 1px #ffffff;  }
   th{
     background: #b0e0e6; /* Цвет фона */ 
     position: sticky; top: 0; /*Зафиксировать заголовок*/
@@ -17,8 +21,10 @@
     border: none !important; /* В результате границы становятся абсолютно незаметными */ 
   }
   .hltext{
+    padding: 1px;
+    border: 2px dotted #ffffff;
     color: #000000;
-    background-color:#ff808080;
+    background-color:#c0c0c080;
   }
   input[type="checkbox"]{
     margin-right: 20px;
@@ -38,19 +44,19 @@ input[type="text"]{
   position: relative;
   width: 70%;
   float: left;
-  height: 100%;
+  height: 80%;
 }
 
 #col-2 {
   position: relative;
   width: 30%;
   float: right;
-  height: 100%;
+  height: 80%;
 }
 .table_wrapper{
   display: block;
   overflow-x: auto;
-  height: 80%;
+  height: 100%;
   white-space: nowrap;
 }
 
@@ -80,29 +86,30 @@ function SelectPeriph(name){
     if(hdr.children[i].children.length < 2)continue;
     hdr.children[i].children[idx].hidden = hid;
   }
+  UnusedVisible();
 }
 
-function SrvVisible(){
+function UnusedVisible(){
   let mcu = document.getElementById("mcuselected").value;
-  let tbl = document.getElementsByName(mcu);
-  let ctl = document.getElementById("srvsel").value;
-  let sh_F=true, sh_O=true;
-  let check = document.getElementsByName("Service")[0];
-  if(ctl == "srv_show"){sh_F=true; sh_O=true;}
-  if(ctl == "srv_opt"){sh_F=false; sh_O=true;}
-  if(ctl == "srv_hide"){sh_F=false; sh_O=false;}
-  tbl = tbl[0].children[1].children;
-  for(let i=0; i<tbl.length; i++){
-    if(tbl[i].className == "tbl_srv_F"){
-      tbl[i].hidden = !sh_F;
-    }else if(tbl[i].className == "tbl_srv_O"){
-      tbl[i].hidden = !sh_O;
-    }else{
+  let tbl = document.getElementsByName(mcu)[0];
+  tbl = tbl.children[1].children;
+  if(document.getElementById("hideempty").checked){
+    for(let i=0; i<tbl.length; i++){
+      let vis = false;
+      let lin = tbl[i].children;
+      for(let j=2; j<lin.length-3; j++){
+        if(lin[j].hidden)continue;
+        if(lin[j].textContent == "")continue;
+        vis = true;
+        break;
+      }
+      tbl[i].hidden = !vis;
+    }
+  }else{
+    for(let i=0; i<tbl.length; i++){
       tbl[i].hidden = false;
     }
   }
-  check.checked = sh_O;
-  SelectPeriph('Service');
 }
 
 function SelectColor(linenum){
@@ -124,20 +131,35 @@ function SelectColor(linenum){
   package_draw();
 }
 
+function PN_input(){
+  package_draw();
+}
+
 function SelectMCU(){
-  let mcu = document.getElementById("mcuselected").value;
+  let mcu = document.getElementById("mcuselected");
   let tables = document.getElementsByTagName("table");
   for(let i=0; i<tables.length; i++){
-    tables[i].hidden = (tables[i].attributes.name.value != mcu);
+    tables[i].hidden = (tables[i].attributes.name.value != mcu.value);
   }
   Periph_Vis_update();
   package_draw();
   tbl_col_update();
+  document.title = mcu.children[mcu.selectedIndex].firstChild.data + " - Pins";
 }
 
 function Periph_Vis_update(){
-  SrvVisible();
   for(let i=0; i<controls.length; i++){
+    SelectPeriph(controls[i].name);
+  }
+}
+
+function HideAll(){
+  let check = false;
+  for(let i=0; i<controls.length; i++){
+    check |= controls[i].checked;
+  }
+  for(let i=0; i<controls.length; i++){
+    controls[i].checked = !check;
     SelectPeriph(controls[i].name);
   }
 }
@@ -169,9 +191,31 @@ function OnLoad(){
   tbl_col_update();
 }
 
+var comment_event = false;
+function href_onclick(name){
+let det = document.getElementById("details_comments");
+  comment_event = true;
+  det.setAttribute("open","");
+  for(let i=0; i<det.children.length; i++){
+    if(det.children[i].id != name){
+      det.children[i].style = "";
+    }else{
+      det.children[i].style = "background-color:powderblue;";
+    }
+  }
+}
+
+function comm_ontoggle(){
+  if(comment_event){comment_event=false; return;}
+  let det = document.getElementById("details_comments");
+  for(let i=0; i<det.children.length; i++){
+    det.children[i].style = "";
+  }
+}
+
 function tbl_export(){
-  let mcu = document.getElementById("mcuselected").value;
-  let tbl = document.getElementsByName(mcu);
+  let mcu = document.getElementById("mcuselected");
+  let tbl = document.getElementsByName(mcu.value);
   
   let lin = tbl[0].children[0].children[0].children;
   let idx_col = -1, idx_pn = -1, idx_comm=-1;
@@ -181,7 +225,7 @@ function tbl_export(){
     if(lin[i].className == "tbl_comment")idx_comm = i;
   }
   
-  let res = mcu + "\n";
+  let res = mcu.children[mcu.selectedIndex].firstChild.data + "\n";
   
   let col = -1;
   let cur = tbl[0].children[1].children;
@@ -205,12 +249,22 @@ function tbl_export(){
 function tbl_import(str){
   let arr = str.split("\n");
   let name = arr[0];
-  let tbl = document.getElementsByName(name);
-  if(tbl.length == 0){
+  
+  let mcu = document.getElementById("mcuselected");
+  let idx = -1;
+  for(let i=0; i<mcu.children.length; i++){
+    if(mcu.children[i].firstChild.data == name){
+      mcu.selectedIndex = i;
+      idx = i;
+      break;
+    }
+  }
+  
+  if(idx < 0){
     alert("MCU [" + name + "] not found");
     return;
   }
-  document.getElementById("mcuselected").value = name;
+  let tbl = document.getElementsByName(mcu.value);
   
   let linenum = 1;
   
@@ -250,32 +304,35 @@ function tbl_import(str){
 }
 
 function SaveToFile(){
+  let mcu = document.getElementById("mcuselected");
   let text = tbl_export();
   let blob = new Blob([text], { type: 'text/plain' });
   let link = document.createElement('a');
   link.href = URL.createObjectURL(blob);
-  let filename = document.getElementById("mcuselected").value + ".pincfg";
+  let filename = mcu.children[mcu.selectedIndex].firstChild.data + ".pincfg";
   link.download = filename;
   link.click();
 }
 
 function LoadFromFile(){
-  var file = document.getElementById("LoadFile").files[0];
+  let ui = document.getElementById("LoadFile");
+  var file = ui.files[0];
   if(!file){return;}
   const reader = new FileReader();
   function LoadFromFile_done(){
     tbl_import(reader.result);
+    ui.value = ""
   }
   reader.onload = LoadFromFile_done;
   reader.readAsText(file);
 }
 
-var cnv_x=0, cnv_y=0, cnv_scale=1;
+var cnv_x=1, cnv_y=1, cnv_scale=1;
 var cnv_dx=0, cnv_dy=0;
 
 function cnv_procdrag(event){
   if( event.buttons & 4){
-    cnv_x = 0; cnv_y = 0; cnv_scale = 1; package_draw();
+    cnv_x = 1; cnv_y = 1; cnv_scale = 1; package_draw();
   }
   if( event.buttons & 1){
     cnv_x += event.clientX-cnv_dx;
@@ -296,7 +353,7 @@ function cnv_wheel(event){
   }else{
     ds = 1.1;
   }
-  let X = event.clientX-canvas.offsetLeft, Y = event.clientY-canvas.offsetTop;
+  let X = event.clientX-canvas.parentNode.offsetLeft, Y = event.clientY-canvas.parentNode.offsetTop;
   cnv_x = cnv_x*ds + X*(1-ds);
   cnv_y = cnv_y*ds + Y*(1-ds);
   cnv_scale *= ds;
@@ -322,11 +379,12 @@ function package_draw(){
   const ctx = canvas.getContext("2d");
   let mcu = document.getElementById("mcuselected").value 
   let tbl = document.getElementsByName(mcu);
+  let drawnames = document.getElementById("pinnames").checked;
   let x=cnv_x, y=cnv_y, scale=500;
 
   let w = canvas.parentNode.clientWidth;
   let h = canvas.parentNode.clientHeight;
-  if(w < h)scale = w; else scale = h;
+  if(w < h)scale = w-2; else scale = h-2;
   canvas.width = w;
   canvas.height = h;
   scale *= cnv_scale;
@@ -341,7 +399,7 @@ function package_draw(){
         ctx.restore();
         pkg_draw_prev = i;
       }
-      funcs[i][1](ctx, tbl[0].children[1].children, x, y, scale); 
+      funcs[i][1](ctx, tbl[0].children[1].children, x, y, scale, drawnames); 
       break;
     }
   }
@@ -354,7 +412,7 @@ function table_onmouse(idx){
   package_draw();
 }
 
-function pack_html_draw(ctx, tbl, x, y, scale, font_sz, pins, pin_names, graph){
+function pack_html_draw(ctx, tbl, x, y, scale, font_sz, pins, pin_names, drawnames, graph){
   const patternCanvas = document.createElement("canvas");
   const patternContext = patternCanvas.getContext("2d");
   patternCanvas.width = 10;
@@ -368,10 +426,10 @@ function pack_html_draw(ctx, tbl, x, y, scale, font_sz, pins, pin_names, graph){
 
 //draw pads
   for(let i=0; i<pins.length; i++){
-    let col = "rgb(200 200 200)";
+    let col = "rgb(220 220 220)";
     let idx = pin_names[i][4];
     if((idx >= 0)&&(idx < tbl.length)){
-      if(tbl[idx].bgcolor != ""){
+      if((tbl[idx].bgColor)&&(tbl[idx].bgcolor != "")){
         col = tbl[idx].bgColor;
       }
     }
@@ -403,6 +461,7 @@ function pack_html_draw(ctx, tbl, x, y, scale, font_sz, pins, pin_names, graph){
   for(let i=0; i<pin_names.length; i++){
     let name = pin_names[i][3];
     let idx = pin_names[i][4];
+    if(drawnames && (idx>=0)&&(idx<tbl.length)){name = tbl[idx].children[1].children[0].textContent;}
     if((colnum >= 0) && (idx >= 0) && (idx < tbl.length)){
       let val = tbl[idx].children[colnum].children[0].value;
       if(val != "")name = val;
@@ -432,7 +491,7 @@ function pack_html_draw(ctx, tbl, x, y, scale, font_sz, pins, pin_names, graph){
   ctx.stroke();
 }
 
-function package_draw_CH32V203F6P6_TSSOP20(ctx, tbl, x, y, scale){
+function package_draw_CH32V203F6P6_TSSOP20(ctx, tbl, x, y, scale, drawnames){
   const pins = [
     ['r', 0.032468, 0.048701, 0.191558, 0.051948],//0
     ['r', 0.032468, 0.133117, 0.191558, 0.051948],//1
@@ -492,9 +551,9 @@ function package_draw_CH32V203F6P6_TSSOP20(ctx, tbl, x, y, scale){
     ['l', 0.785714, 0.876623, 0.214286, 0.876623], //11
     ['l', 0.344156, 0.032468, 0.785714, 0.032468], //12
   ];
-  pack_html_draw(ctx, tbl, x, y, scale, 0.051948, pins, pin_names, graph);
+  pack_html_draw(ctx, tbl, x, y, scale, 0.051948, pins, pin_names, drawnames, graph);
 }
-function package_draw_CH32V203F8P6_TSSOP20(ctx, tbl, x, y, scale){
+function package_draw_CH32V203F8P6_TSSOP20(ctx, tbl, x, y, scale, drawnames){
   const pins = [
     ['r', 0.032468, 0.048701, 0.191558, 0.051948],//0
     ['r', 0.032468, 0.133117, 0.191558, 0.051948],//1
@@ -554,9 +613,9 @@ function package_draw_CH32V203F8P6_TSSOP20(ctx, tbl, x, y, scale){
     ['l', 0.785714, 0.876623, 0.214286, 0.876623], //11
     ['l', 0.344156, 0.032468, 0.785714, 0.032468], //12
   ];
-  pack_html_draw(ctx, tbl, x, y, scale, 0.051948, pins, pin_names, graph);
+  pack_html_draw(ctx, tbl, x, y, scale, 0.051948, pins, pin_names, drawnames, graph);
 }
-function package_draw_CH32V203F8U6_QFN20X3(ctx, tbl, x, y, scale){
+function package_draw_CH32V203F8U6_QFN20X3(ctx, tbl, x, y, scale, drawnames){
   const pins = [
     ['r', 0.324292, 0.324292, 0.158019, 0.158019],//0
     ['r', 0.517689, 0.517689, 0.158019, 0.158019],//1
@@ -629,9 +688,9 @@ function package_draw_CH32V203F8U6_QFN20X3(ctx, tbl, x, y, scale){
     ['l', 0.146226, 0.853774, 0.146226, 0.323113], //14
     ['l', 0.853774, 0.146226, 0.853774, 0.853774], //15
   ];
-  pack_html_draw(ctx, tbl, x, y, scale, 0.047170, pins, pin_names, graph);
+  pack_html_draw(ctx, tbl, x, y, scale, 0.047170, pins, pin_names, drawnames, graph);
 }
-function package_draw_CH32V203G6U6_QFN28X4(ctx, tbl, x, y, scale){
+function package_draw_CH32V203G6U6_QFN28X4(ctx, tbl, x, y, scale, drawnames){
   const pins = [
     ['r', 0.300000, 0.521154, 0.178846, 0.178846],//0
     ['r', 0.300000, 0.300000, 0.178846, 0.178846],//1
@@ -720,9 +779,9 @@ function package_draw_CH32V203G6U6_QFN28X4(ctx, tbl, x, y, scale){
     ['l', 0.115385, 0.884615, 0.115385, 0.307692], //14
     ['l', 0.307692, 0.115385, 0.884615, 0.115385], //15
   ];
-  pack_html_draw(ctx, tbl, x, y, scale, 0.038462, pins, pin_names, graph);
+  pack_html_draw(ctx, tbl, x, y, scale, 0.038462, pins, pin_names, drawnames, graph);
 }
-function package_draw_CH32V203G8R6_QSOP28(ctx, tbl, x, y, scale){
+function package_draw_CH32V203G8R6_QSOP28(ctx, tbl, x, y, scale, drawnames){
   const pins = [
     ['r', 0.024038, 0.083894, 0.115385, 0.038462],//0
     ['r', 0.024038, 0.144952, 0.115385, 0.038462],//1
@@ -801,9 +860,9 @@ function package_draw_CH32V203G8R6_QSOP28(ctx, tbl, x, y, scale){
     ['l', 0.240385, 0.024038, 0.519231, 0.024038], //14
     ['l', 0.519231, 0.024038, 0.519231, 0.975962], //15
   ];
-  pack_html_draw(ctx, tbl, x, y, scale, 0.038462, pins, pin_names, graph);
+  pack_html_draw(ctx, tbl, x, y, scale, 0.038462, pins, pin_names, drawnames, graph);
 }
-function package_draw_CH32V203K6T6_LQFP32(ctx, tbl, x, y, scale){
+function package_draw_CH32V203K6T6_LQFP32(ctx, tbl, x, y, scale, drawnames){
   const pins = [
     ['r', 0.024614, 0.205598, 0.144788, 0.048263],//0
     ['r', 0.024614, 0.282819, 0.144788, 0.048263],//1
@@ -912,9 +971,9 @@ function package_draw_CH32V203K6T6_LQFP32(ctx, tbl, x, y, scale){
     ['l', 0.837838, 0.837838, 0.162162, 0.837838], //36
     ['l', 0.162162, 0.258687, 0.258687, 0.162162], //37
   ];
-  pack_html_draw(ctx, tbl, x, y, scale, 0.048263, pins, pin_names, graph);
+  pack_html_draw(ctx, tbl, x, y, scale, 0.048263, pins, pin_names, drawnames, graph);
 }
-function package_draw_CH32V203K8T6_LQFP32(ctx, tbl, x, y, scale){
+function package_draw_CH32V203K8T6_LQFP32(ctx, tbl, x, y, scale, drawnames){
   const pins = [
     ['r', 0.024614, 0.205598, 0.144788, 0.048263],//0
     ['r', 0.024614, 0.282819, 0.144788, 0.048263],//1
@@ -1023,9 +1082,9 @@ function package_draw_CH32V203K8T6_LQFP32(ctx, tbl, x, y, scale){
     ['l', 0.837838, 0.837838, 0.162162, 0.837838], //36
     ['l', 0.162162, 0.258687, 0.258687, 0.162162], //37
   ];
-  pack_html_draw(ctx, tbl, x, y, scale, 0.048263, pins, pin_names, graph);
+  pack_html_draw(ctx, tbl, x, y, scale, 0.048263, pins, pin_names, drawnames, graph);
 }
-function package_draw_CH32V203C6T6_LQFP48(ctx, tbl, x, y, scale){
+function package_draw_CH32V203C6T6_LQFP48(ctx, tbl, x, y, scale, drawnames){
   const pins = [
     ['r', 0.024272, 0.218447, 0.143204, 0.029126],//0
     ['r', 0.024272, 0.266990, 0.143204, 0.029126],//1
@@ -1166,9 +1225,9 @@ function package_draw_CH32V203C6T6_LQFP48(ctx, tbl, x, y, scale){
     ['l', 0.160194, 0.839806, 0.160194, 0.257282], //36
     ['l', 0.839806, 0.839806, 0.160194, 0.839806], //37
   ];
-  pack_html_draw(ctx, tbl, x, y, scale, 0.029126, pins, pin_names, graph);
+  pack_html_draw(ctx, tbl, x, y, scale, 0.029126, pins, pin_names, drawnames, graph);
 }
-function package_draw_CH32V203C8T6_LQFP48(ctx, tbl, x, y, scale){
+function package_draw_CH32V203C8T6_LQFP48(ctx, tbl, x, y, scale, drawnames){
   const pins = [
     ['r', 0.024272, 0.218447, 0.143204, 0.029126],//0
     ['r', 0.024272, 0.266990, 0.143204, 0.029126],//1
@@ -1309,9 +1368,9 @@ function package_draw_CH32V203C8T6_LQFP48(ctx, tbl, x, y, scale){
     ['l', 0.160194, 0.839806, 0.160194, 0.257282], //36
     ['l', 0.839806, 0.839806, 0.160194, 0.839806], //37
   ];
-  pack_html_draw(ctx, tbl, x, y, scale, 0.029126, pins, pin_names, graph);
+  pack_html_draw(ctx, tbl, x, y, scale, 0.029126, pins, pin_names, drawnames, graph);
 }
-function package_draw_CH32V203C8U6_QFN48X7(ctx, tbl, x, y, scale){
+function package_draw_CH32V203C8U6_QFN48X7(ctx, tbl, x, y, scale, drawnames){
   const pins = [
     ['r', 0.030488, 0.149390, 0.097561, 0.030488],//0
     ['r', 0.030488, 0.210366, 0.097561, 0.030488],//1
@@ -1450,9 +1509,9 @@ function package_draw_CH32V203C8U6_QFN48X7(ctx, tbl, x, y, scale){
     ['l', 1.000000, 1.000000, 1.000000, 0.000000], //14
     ['l', 1.000000, 0.000000, 0.000000, 0.000000], //15
   ];
-  pack_html_draw(ctx, tbl, x, y, scale, 0.030488, pins, pin_names, graph);
+  pack_html_draw(ctx, tbl, x, y, scale, 0.030488, pins, pin_names, drawnames, graph);
 }
-function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
+function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale, drawnames){
   const pins = [
     ['r', 0.018657, 0.208955, 0.115672, 0.022388],//0
     ['r', 0.018657, 0.246269, 0.115672, 0.022388],//1
@@ -1625,7 +1684,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
     ['l', 0.126866, 0.201493, 0.201493, 0.126866], //36
     ['l', 0.201493, 0.126866, 0.873134, 0.126866], //37
   ];
-  pack_html_draw(ctx, tbl, x, y, scale, 0.022388, pins, pin_names, graph);
+  pack_html_draw(ctx, tbl, x, y, scale, 0.022388, pins, pin_names, drawnames, graph);
 }
 
 </script>
@@ -1664,17 +1723,15 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
 <label for="Per.USB">USB</label><input type="checkbox" class="controls" id="Per.USB" name="USB" checked onclick="SelectPeriph('USB');"/>
 <label for="Per.Ethernet">Ethernet</label><input type="checkbox" class="controls" id="Per.Ethernet" name="Ethernet" checked onclick="SelectPeriph('Ethernet');"/>
 <label for="Per.Other">Other</label><input type="checkbox" class="controls" id="Per.Other" name="Other" checked onclick="SelectPeriph('Other');"/>
-<input type="checkbox" class="controls" id="Per.Service" name="Service" checked onclick="SelectPeriph('Service');" hidden/>
+<label for="Per.Service">Service</label><input type="checkbox" class="controls" id="Per.Service" name="Service" checked onclick="SelectPeriph('Service');"/>
 
 <br>
-<select id="srvsel" onchange="SrvVisible()">
-  <option value="srv_show">Service lines: Show</option>
-  <option value="srv_opt">Service lines: Remap only</option>
-  <option value="srv_hide">Service lines: Hide</option>
-</select>
 <input type="button" value="Save" onclick="SaveToFile()"/>
 <input type="file" id="LoadFile" accept=".pincfg" onchange="LoadFromFile();"/>
 
+<label for="hideempty">Hide empty</label><input type="checkbox" id="hideempty" name="hideempty" onclick="UnusedVisible();"/>
+<label for="pinnames">Pin names</label><input type="checkbox" id="pinnames" name="pinnames" onclick="package_draw();"/>
+<input type="button" value="HideAll" onclick="HideAll();"/>
 
 
 </form>
@@ -1720,7 +1777,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div>BOOT0</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(0);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_O" onmousemove="table_onmouse(1);">
       <td><div>2</div></td>
@@ -1738,7 +1795,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div>OSC_IN</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(1);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_O" onmousemove="table_onmouse(2);">
       <td><div>3</div></td>
@@ -1756,7 +1813,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div>OSC_OUT</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(2);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_F" onmousemove="table_onmouse(3);">
       <td><div>4</div></td>
@@ -1774,7 +1831,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div>NRST</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(3);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_F" onmousemove="table_onmouse(4);">
       <td><div>5</div></td>
@@ -1792,7 +1849,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div>AVCC</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(4);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(5);">
       <td><div>6</div></td>
@@ -1810,7 +1867,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div>WKUP</div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(5);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(6);">
       <td><div>7</div></td>
@@ -1828,7 +1885,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(6);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(7);">
       <td><div>8</div></td>
@@ -1846,7 +1903,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(7);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(8);">
       <td><div>9</div></td>
@@ -1864,7 +1921,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(8);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(9);">
       <td><div>10</div></td>
@@ -1882,7 +1939,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(9);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(10);">
       <td><div>11</div></td>
@@ -1900,7 +1957,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(10);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(11);">
       <td><div>12</div></td>
@@ -1918,7 +1975,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(11);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(12);">
       <td><div>13</div></td>
@@ -1936,7 +1993,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(12);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(13);">
       <td><div>14</div></td>
@@ -1954,7 +2011,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(13);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_F" onmousemove="table_onmouse(14);">
       <td><div>15</div></td>
@@ -1972,7 +2029,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div>GND</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(14);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_F" onmousemove="table_onmouse(15);">
       <td><div>16</div></td>
@@ -1990,7 +2047,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div>VCC</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(15);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(16);">
       <td><div>17</div></td>
@@ -2008,7 +2065,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(16);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(17);">
       <td><div>18</div></td>
@@ -2026,7 +2083,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(17);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_O" onmousemove="table_onmouse(18);">
       <td><div>19</div></td>
@@ -2044,7 +2101,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div>SWDIO</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(18);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_O" onmousemove="table_onmouse(19);">
       <td><div>20</div></td>
@@ -2062,7 +2119,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div>SWCLK</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(19);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
   </tbody>
 </table>
@@ -2105,7 +2162,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div>SWDIO</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(0);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_O" onmousemove="table_onmouse(1);">
       <td><div>2</div></td>
@@ -2123,7 +2180,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div>SWCLK</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(1);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_F" onmousemove="table_onmouse(2);">
       <td><div>3</div></td>
@@ -2141,7 +2198,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div>GND</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(2);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_F" onmousemove="table_onmouse(3);">
       <td><div>4</div></td>
@@ -2159,7 +2216,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div>VCC</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(3);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_F" onmousemove="table_onmouse(4);">
       <td><div>5</div></td>
@@ -2177,7 +2234,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div>NRST</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(4);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(5);">
       <td><div>6</div></td>
@@ -2195,7 +2252,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div>WKUP</div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(5);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(6);">
       <td><div>7</div></td>
@@ -2213,7 +2270,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(6);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(7);">
       <td><div>8</div></td>
@@ -2231,7 +2288,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(7);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(8);">
       <td><div>9</div></td>
@@ -2249,7 +2306,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(8);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(9);">
       <td><div>10</div></td>
@@ -2267,7 +2324,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(9);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(10);">
       <td><div>11</div></td>
@@ -2285,7 +2342,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(10);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(11);">
       <td><div>12</div></td>
@@ -2303,7 +2360,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(11);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(12);">
       <td><div>13</div></td>
@@ -2321,7 +2378,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(12);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(13);">
       <td><div>14</div></td>
@@ -2339,7 +2396,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(13);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(14);">
       <td><div>15</div></td>
@@ -2357,7 +2414,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(14);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(15);">
       <td><div>16</div></td>
@@ -2375,7 +2432,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(15);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(16);">
       <td><div>17</div></td>
@@ -2393,7 +2450,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(16);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(17);">
       <td><div>18</div></td>
@@ -2411,7 +2468,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div>MCO</div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(17);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(18);">
       <td><div>19</div></td>
@@ -2429,7 +2486,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(18);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(19);">
       <td><div>20</div></td>
@@ -2447,7 +2504,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(19);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
   </tbody>
 </table>
@@ -2490,7 +2547,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div>WKUP</div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(0);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(5);">
       <td><div>2</div></td>
@@ -2508,7 +2565,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(1);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(6);">
       <td><div>3</div></td>
@@ -2526,7 +2583,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(2);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(7);">
       <td><div>4</div></td>
@@ -2544,7 +2601,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(3);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(8);">
       <td><div>5</div></td>
@@ -2562,7 +2619,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(4);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(9);">
       <td><div>6</div></td>
@@ -2580,7 +2637,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(5);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(10);">
       <td><div>7</div></td>
@@ -2598,7 +2655,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(6);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(11);">
       <td><div>8</div></td>
@@ -2616,7 +2673,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(7);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(12);">
       <td><div>9</div></td>
@@ -2634,7 +2691,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(8);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(13);">
       <td><div>10</div></td>
@@ -2652,7 +2709,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(9);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(14);">
       <td><div>11</div></td>
@@ -2670,7 +2727,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(10);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(15);">
       <td><div>12</div></td>
@@ -2688,7 +2745,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(11);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(16);">
       <td><div>13</div></td>
@@ -2706,7 +2763,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(12);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(17);">
       <td><div>14</div></td>
@@ -2724,7 +2781,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div>MCO</div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(13);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(18);">
       <td><div>15</div></td>
@@ -2742,7 +2799,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(14);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_O" onmousemove="table_onmouse(19);">
       <td><div>16</div></td>
@@ -2760,7 +2817,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div>SWDIO</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(15);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_O" onmousemove="table_onmouse(20);">
       <td><div>17</div></td>
@@ -2778,7 +2835,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div>SWCLK</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(16);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(21);">
       <td><div>18</div></td>
@@ -2796,7 +2853,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(17);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_F" onmousemove="table_onmouse(22);">
       <td><div>19</div></td>
@@ -2814,7 +2871,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div>VCC</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(18);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(23);">
       <td><div>20</div></td>
@@ -2832,7 +2889,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(19);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_F" onmousemove="table_onmouse(24);">
       <td><div>21</div></td>
@@ -2850,7 +2907,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div>GND</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(20);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
   </tbody>
 </table>
@@ -2893,7 +2950,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div>BOOT0</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(0);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_O" onmousemove="table_onmouse(5);">
       <td><div>2</div></td>
@@ -2911,7 +2968,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div>OSC_IN</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(1);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_O" onmousemove="table_onmouse(6);">
       <td><div>3</div></td>
@@ -2929,7 +2986,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div>OSC_OUT</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(2);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_F" onmousemove="table_onmouse(7);">
       <td><div>4</div></td>
@@ -2947,7 +3004,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div>NRST</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(3);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_F" onmousemove="table_onmouse(8);">
       <td><div>5</div></td>
@@ -2965,7 +3022,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div>AVCC</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(4);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(9);">
       <td><div>6</div></td>
@@ -2983,7 +3040,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div>WKUP</div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(5);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(10);">
       <td><div>7</div></td>
@@ -3001,7 +3058,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(6);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(11);">
       <td><div>8</div></td>
@@ -3019,7 +3076,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(7);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(12);">
       <td><div>9</div></td>
@@ -3037,7 +3094,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(8);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(13);">
       <td><div>10</div></td>
@@ -3055,7 +3112,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(9);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(14);">
       <td><div>11</div></td>
@@ -3073,7 +3130,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(10);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(15);">
       <td><div>12</div></td>
@@ -3091,7 +3148,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(11);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(16);">
       <td><div>13</div></td>
@@ -3109,7 +3166,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(12);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(17);">
       <td><div>14</div></td>
@@ -3127,7 +3184,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(13);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(18);">
       <td><div>15</div></td>
@@ -3145,7 +3202,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(14);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_F" onmousemove="table_onmouse(19);">
       <td><div>16</div></td>
@@ -3163,7 +3220,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div>GND</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(15);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_F" onmousemove="table_onmouse(20);">
       <td><div>17</div></td>
@@ -3181,7 +3238,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div>VCC</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(16);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(21);">
       <td><div>18</div></td>
@@ -3199,7 +3256,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(17);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(22);">
       <td><div>19</div></td>
@@ -3217,7 +3274,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(18);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(23);">
       <td><div>20</div></td>
@@ -3235,7 +3292,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(19);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_O" onmousemove="table_onmouse(24);">
       <td><div>21</div></td>
@@ -3253,7 +3310,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div>SWDIO</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(20);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_O" onmousemove="table_onmouse(25);">
       <td><div>22</div></td>
@@ -3271,7 +3328,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div>SWCLK</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(21);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(26);">
       <td><div>23</div></td>
@@ -3289,7 +3346,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(22);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(27);">
       <td><div>24</div></td>
@@ -3307,7 +3364,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(23);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(28);">
       <td><div>25</div></td>
@@ -3325,7 +3382,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(24);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(29);">
       <td><div>26</div></td>
@@ -3343,7 +3400,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(25);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(30);">
       <td><div>27</div></td>
@@ -3361,7 +3418,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(26);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(31);">
       <td><div>28</div></td>
@@ -3379,7 +3436,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(27);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_F" onmousemove="table_onmouse(32);">
       <td><div>29</div></td>
@@ -3397,7 +3454,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div>GND</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(28);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
   </tbody>
 </table>
@@ -3440,7 +3497,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div>SWCLK</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(0);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(1);">
       <td><div>2</div></td>
@@ -3458,7 +3515,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(1);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(2);">
       <td><div>3</div></td>
@@ -3476,7 +3533,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(2);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_F" onmousemove="table_onmouse(3);">
       <td><div>4</div></td>
@@ -3494,7 +3551,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div>BOOT0</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(3);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(4);">
       <td><div>5</div></td>
@@ -3512,7 +3569,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(4);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_F" onmousemove="table_onmouse(5);">
       <td><div>6</div></td>
@@ -3530,7 +3587,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div>VCC</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(5);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_F" onmousemove="table_onmouse(6);">
       <td><div>7</div></td>
@@ -3548,7 +3605,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div>GND</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(6);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_F" onmousemove="table_onmouse(7);">
       <td><div>8</div></td>
@@ -3566,7 +3623,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div>NRST</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(7);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(8);">
       <td><div>9</div></td>
@@ -3584,7 +3641,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div>WKUP</div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(8);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(9);">
       <td><div>10</div></td>
@@ -3602,7 +3659,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(9);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(10);">
       <td><div>11</div></td>
@@ -3620,7 +3677,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(10);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(11);">
       <td><div>12</div></td>
@@ -3638,7 +3695,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(11);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(12);">
       <td><div>13</div></td>
@@ -3656,7 +3713,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(12);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(13);">
       <td><div>14</div></td>
@@ -3674,7 +3731,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(13);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(14);">
       <td><div>15</div></td>
@@ -3692,7 +3749,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(14);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(15);">
       <td><div>16</div></td>
@@ -3710,7 +3767,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(15);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(16);">
       <td><div>17</div></td>
@@ -3728,7 +3785,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(16);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(17);">
       <td><div>18</div></td>
@@ -3746,7 +3803,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(17);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(18);">
       <td><div>19</div></td>
@@ -3764,7 +3821,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(18);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(19);">
       <td><div>20</div></td>
@@ -3782,7 +3839,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(19);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(20);">
       <td><div>21</div></td>
@@ -3800,7 +3857,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(20);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(21);">
       <td><div>22</div></td>
@@ -3818,7 +3875,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(21);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(22);">
       <td><div>23</div></td>
@@ -3836,7 +3893,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(22);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(23);">
       <td><div>24</div></td>
@@ -3854,7 +3911,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div>MCO</div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(23);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(24);">
       <td><div>25</div></td>
@@ -3872,7 +3929,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(24);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(25);">
       <td><div>26</div></td>
@@ -3890,7 +3947,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(25);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(26);">
       <td><div>27</div></td>
@@ -3908,7 +3965,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(26);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_O" onmousemove="table_onmouse(27);">
       <td><div>28</div></td>
@@ -3926,7 +3983,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div>SWDIO</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(27);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
   </tbody>
 </table>
@@ -3969,7 +4026,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div>VCC</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(0);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_F" onmousemove="table_onmouse(1);">
       <td><div>2</div></td>
@@ -3987,7 +4044,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div>OSC_IN</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(1);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_F" onmousemove="table_onmouse(2);">
       <td><div>3</div></td>
@@ -4005,7 +4062,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div>OSC_OUT</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(2);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_F" onmousemove="table_onmouse(3);">
       <td><div>4</div></td>
@@ -4023,7 +4080,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div>NRST</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(3);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_F" onmousemove="table_onmouse(4);">
       <td><div>5</div></td>
@@ -4041,7 +4098,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div>AVCC</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(4);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(5);">
       <td><div>6</div></td>
@@ -4059,7 +4116,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div>WKUP</div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(5);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(6);">
       <td><div>7</div></td>
@@ -4077,7 +4134,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(6);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(7);">
       <td><div>8</div></td>
@@ -4095,7 +4152,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(7);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(8);">
       <td><div>9</div></td>
@@ -4113,7 +4170,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(8);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(9);">
       <td><div>10</div></td>
@@ -4131,7 +4188,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(9);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(10);">
       <td><div>11</div></td>
@@ -4149,7 +4206,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(10);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(11);">
       <td><div>12</div></td>
@@ -4167,7 +4224,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(11);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(12);">
       <td><div>13</div></td>
@@ -4185,7 +4242,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(12);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(13);">
       <td><div>14</div></td>
@@ -4203,7 +4260,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(13);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(14);">
       <td><div>15</div></td>
@@ -4221,7 +4278,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(14);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_F" onmousemove="table_onmouse(15);">
       <td><div>16</div></td>
@@ -4239,7 +4296,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div>GND</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(15);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_F" onmousemove="table_onmouse(16);">
       <td><div>17</div></td>
@@ -4257,7 +4314,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div>VCC</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(16);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(17);">
       <td><div>18</div></td>
@@ -4275,7 +4332,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div>MCO</div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(17);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(18);">
       <td><div>19</div></td>
@@ -4293,7 +4350,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(18);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(19);">
       <td><div>20</div></td>
@@ -4311,7 +4368,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(19);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(20);">
       <td><div>21</div></td>
@@ -4329,7 +4386,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(20);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(21);">
       <td><div>22</div></td>
@@ -4347,7 +4404,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(21);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_O" onmousemove="table_onmouse(22);">
       <td><div>23</div></td>
@@ -4365,7 +4422,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div>SWDIO</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(22);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_O" onmousemove="table_onmouse(23);">
       <td><div>24</div></td>
@@ -4383,7 +4440,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div>SWCLK</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(23);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(24);">
       <td><div>25</div></td>
@@ -4401,7 +4458,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(24);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(25);">
       <td><div>26</div></td>
@@ -4419,7 +4476,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(25);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(26);">
       <td><div>27</div></td>
@@ -4437,7 +4494,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(26);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(27);">
       <td><div>28</div></td>
@@ -4455,7 +4512,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(27);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(28);">
       <td><div>29</div></td>
@@ -4473,7 +4530,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(28);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(29);">
       <td><div>30</div></td>
@@ -4491,7 +4548,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(29);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_F" onmousemove="table_onmouse(30);">
       <td><div>31</div></td>
@@ -4509,7 +4566,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div>BOOT0</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(30);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_F" onmousemove="table_onmouse(31);">
       <td><div>32</div></td>
@@ -4527,7 +4584,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div>GND</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(31);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
   </tbody>
 </table>
@@ -4570,7 +4627,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div>VCC</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(0);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(1);">
       <td><div>2</div></td>
@@ -4588,7 +4645,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div>TAMPER_RTC</div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(1);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_O" onmousemove="table_onmouse(2);">
       <td><div>3</div></td>
@@ -4606,7 +4663,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div>OSC32_IN</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(2);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_O" onmousemove="table_onmouse(3);">
       <td><div>4</div></td>
@@ -4624,7 +4681,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div>OSC32_OUT</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(3);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_F" onmousemove="table_onmouse(4);">
       <td><div>5</div></td>
@@ -4642,7 +4699,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div>OSC_IN</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(4);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_F" onmousemove="table_onmouse(5);">
       <td><div>6</div></td>
@@ -4660,7 +4717,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div>OSC_OUT</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(5);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_F" onmousemove="table_onmouse(6);">
       <td><div>7</div></td>
@@ -4678,7 +4735,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div>NRST</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(6);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_F" onmousemove="table_onmouse(7);">
       <td><div>8</div></td>
@@ -4696,7 +4753,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div>AGND</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(7);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_F" onmousemove="table_onmouse(8);">
       <td><div>9</div></td>
@@ -4714,7 +4771,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div>AVCC</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(8);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(9);">
       <td><div>10</div></td>
@@ -4732,7 +4789,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div>WKUP</div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(9);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(10);">
       <td><div>11</div></td>
@@ -4750,7 +4807,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(10);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(11);">
       <td><div>12</div></td>
@@ -4768,7 +4825,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(11);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(12);">
       <td><div>13</div></td>
@@ -4786,7 +4843,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(12);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(13);">
       <td><div>14</div></td>
@@ -4804,7 +4861,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(13);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(14);">
       <td><div>15</div></td>
@@ -4822,7 +4879,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(14);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(15);">
       <td><div>16</div></td>
@@ -4840,7 +4897,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(15);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(16);">
       <td><div>17</div></td>
@@ -4858,7 +4915,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(16);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(17);">
       <td><div>18</div></td>
@@ -4876,7 +4933,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(17);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(18);">
       <td><div>19</div></td>
@@ -4894,7 +4951,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(18);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_O" onmousemove="table_onmouse(19);">
       <td><div>20</div></td>
@@ -4912,7 +4969,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div>BOOT1</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(19);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(20);">
       <td><div>21</div></td>
@@ -4930,7 +4987,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(20);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(21);">
       <td><div>22</div></td>
@@ -4948,7 +5005,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(21);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_F" onmousemove="table_onmouse(22);">
       <td><div>23</div></td>
@@ -4966,7 +5023,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div>GND</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(22);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_F" onmousemove="table_onmouse(23);">
       <td><div>24</div></td>
@@ -4984,7 +5041,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div>VCC</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(23);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(24);">
       <td><div>25</div></td>
@@ -5002,7 +5059,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(24);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(25);">
       <td><div>26</div></td>
@@ -5020,7 +5077,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(25);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(26);">
       <td><div>27</div></td>
@@ -5038,7 +5095,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(26);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(27);">
       <td><div>28</div></td>
@@ -5056,7 +5113,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(27);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(28);">
       <td><div>29</div></td>
@@ -5074,7 +5131,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div>MCO</div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(28);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(29);">
       <td><div>30</div></td>
@@ -5092,7 +5149,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(29);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(30);">
       <td><div>31</div></td>
@@ -5110,7 +5167,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(30);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(31);">
       <td><div>32</div></td>
@@ -5128,7 +5185,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(31);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(32);">
       <td><div>33</div></td>
@@ -5146,7 +5203,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(32);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_O" onmousemove="table_onmouse(33);">
       <td><div>34</div></td>
@@ -5164,7 +5221,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div>SWDIO</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(33);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_F" onmousemove="table_onmouse(34);">
       <td><div>35</div></td>
@@ -5182,7 +5239,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div>GND</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(34);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_F" onmousemove="table_onmouse(35);">
       <td><div>36</div></td>
@@ -5200,7 +5257,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div>VCC</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(35);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_O" onmousemove="table_onmouse(36);">
       <td><div>37</div></td>
@@ -5218,7 +5275,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div>SWCLK</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(36);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(37);">
       <td><div>38</div></td>
@@ -5236,7 +5293,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(37);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(38);">
       <td><div>39</div></td>
@@ -5254,7 +5311,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(38);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(39);">
       <td><div>40</div></td>
@@ -5272,7 +5329,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(39);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(40);">
       <td><div>41</div></td>
@@ -5290,7 +5347,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(40);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(41);">
       <td><div>42</div></td>
@@ -5308,7 +5365,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(41);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(42);">
       <td><div>43</div></td>
@@ -5326,7 +5383,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(42);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_F" onmousemove="table_onmouse(43);">
       <td><div>44</div></td>
@@ -5344,7 +5401,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div>BOOT0</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(43);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(44);">
       <td><div>45</div></td>
@@ -5362,7 +5419,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(44);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(45);">
       <td><div>46</div></td>
@@ -5380,7 +5437,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(45);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_F" onmousemove="table_onmouse(46);">
       <td><div>47</div></td>
@@ -5398,7 +5455,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div>GND</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(46);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_F" onmousemove="table_onmouse(47);">
       <td><div>48</div></td>
@@ -5416,7 +5473,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div>VCC</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(47);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
   </tbody>
 </table>
@@ -5459,7 +5516,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div>VCC</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(0);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(1);">
       <td><div>2</div></td>
@@ -5477,7 +5534,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div>TAMPER_RTC</div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(1);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_O" onmousemove="table_onmouse(2);">
       <td><div>3</div></td>
@@ -5495,7 +5552,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div>OSC32_IN</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(2);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_O" onmousemove="table_onmouse(3);">
       <td><div>4</div></td>
@@ -5513,7 +5570,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div>OSC32_OUT</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(3);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_F" onmousemove="table_onmouse(4);">
       <td><div>5</div></td>
@@ -5531,7 +5588,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div>OSC_IN</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(4);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_F" onmousemove="table_onmouse(5);">
       <td><div>6</div></td>
@@ -5549,7 +5606,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div>OSC_OUT</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(5);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_F" onmousemove="table_onmouse(6);">
       <td><div>7</div></td>
@@ -5567,7 +5624,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div>NRST</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(6);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_F" onmousemove="table_onmouse(7);">
       <td><div>8</div></td>
@@ -5585,7 +5642,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div>AGND</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(7);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_F" onmousemove="table_onmouse(8);">
       <td><div>9</div></td>
@@ -5603,7 +5660,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div>AVCC</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(8);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(9);">
       <td><div>10</div></td>
@@ -5621,7 +5678,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div>WKUP</div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(9);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(10);">
       <td><div>11</div></td>
@@ -5639,7 +5696,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(10);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(11);">
       <td><div>12</div></td>
@@ -5657,7 +5714,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(11);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(12);">
       <td><div>13</div></td>
@@ -5675,7 +5732,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(12);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(13);">
       <td><div>14</div></td>
@@ -5693,7 +5750,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(13);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(14);">
       <td><div>15</div></td>
@@ -5711,7 +5768,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(14);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(15);">
       <td><div>16</div></td>
@@ -5729,7 +5786,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(15);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(16);">
       <td><div>17</div></td>
@@ -5747,7 +5804,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(16);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(17);">
       <td><div>18</div></td>
@@ -5765,7 +5822,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(17);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(18);">
       <td><div>19</div></td>
@@ -5783,7 +5840,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(18);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_O" onmousemove="table_onmouse(19);">
       <td><div>20</div></td>
@@ -5801,7 +5858,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div>BOOT1</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(19);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(20);">
       <td><div>21</div></td>
@@ -5819,7 +5876,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(20);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(21);">
       <td><div>22</div></td>
@@ -5837,7 +5894,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(21);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_F" onmousemove="table_onmouse(22);">
       <td><div>23</div></td>
@@ -5855,7 +5912,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div>GND</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(22);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_F" onmousemove="table_onmouse(23);">
       <td><div>24</div></td>
@@ -5873,7 +5930,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div>VCC</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(23);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(24);">
       <td><div>25</div></td>
@@ -5891,7 +5948,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(24);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(25);">
       <td><div>26</div></td>
@@ -5909,7 +5966,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(25);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(26);">
       <td><div>27</div></td>
@@ -5927,7 +5984,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(26);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(27);">
       <td><div>28</div></td>
@@ -5945,7 +6002,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(27);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(28);">
       <td><div>29</div></td>
@@ -5963,7 +6020,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div>MCO</div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(28);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(29);">
       <td><div>30</div></td>
@@ -5981,7 +6038,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(29);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(30);">
       <td><div>31</div></td>
@@ -5999,7 +6056,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(30);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(31);">
       <td><div>32</div></td>
@@ -6017,7 +6074,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(31);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(32);">
       <td><div>33</div></td>
@@ -6035,7 +6092,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(32);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_O" onmousemove="table_onmouse(33);">
       <td><div>34</div></td>
@@ -6053,7 +6110,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div>SWDIO</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(33);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_F" onmousemove="table_onmouse(34);">
       <td><div>35</div></td>
@@ -6071,7 +6128,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div>GND</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(34);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_F" onmousemove="table_onmouse(35);">
       <td><div>36</div></td>
@@ -6089,7 +6146,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div>VCC</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(35);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_O" onmousemove="table_onmouse(36);">
       <td><div>37</div></td>
@@ -6107,7 +6164,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div>SWCLK</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(36);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(37);">
       <td><div>38</div></td>
@@ -6125,7 +6182,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(37);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(38);">
       <td><div>39</div></td>
@@ -6143,7 +6200,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(38);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(39);">
       <td><div>40</div></td>
@@ -6161,7 +6218,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(39);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(40);">
       <td><div>41</div></td>
@@ -6179,7 +6236,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(40);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(41);">
       <td><div>42</div></td>
@@ -6197,7 +6254,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(41);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(42);">
       <td><div>43</div></td>
@@ -6215,7 +6272,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(42);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_F" onmousemove="table_onmouse(43);">
       <td><div>44</div></td>
@@ -6233,7 +6290,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div>BOOT0</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(43);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(44);">
       <td><div>45</div></td>
@@ -6251,7 +6308,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(44);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(45);">
       <td><div>46</div></td>
@@ -6269,7 +6326,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(45);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_F" onmousemove="table_onmouse(46);">
       <td><div>47</div></td>
@@ -6287,7 +6344,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div>GND</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(46);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_F" onmousemove="table_onmouse(47);">
       <td><div>48</div></td>
@@ -6305,7 +6362,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div>VCC</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(47);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_F" onmousemove="table_onmouse(48);">
       <td><div>49</div></td>
@@ -6323,7 +6380,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div>GND</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(48);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
   </tbody>
 </table>
@@ -6366,7 +6423,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div>VBAT</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(0);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(1);">
       <td><div>2</div></td>
@@ -6384,7 +6441,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div>TAMPER_RTC</div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(1);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_O" onmousemove="table_onmouse(2);">
       <td><div>3</div></td>
@@ -6402,7 +6459,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div>OSC32_IN</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(2);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_O" onmousemove="table_onmouse(3);">
       <td><div>4</div></td>
@@ -6420,7 +6477,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div>OSC32_OUT</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(3);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_F" onmousemove="table_onmouse(4);">
       <td><div>5</div></td>
@@ -6438,7 +6495,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div>OSC_IN</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(4);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_F" onmousemove="table_onmouse(5);">
       <td><div>6</div></td>
@@ -6456,7 +6513,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div>OSC_OUT</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(5);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_F" onmousemove="table_onmouse(6);">
       <td><div>7</div></td>
@@ -6474,7 +6531,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div>NRST</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(6);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(7);">
       <td><div>8</div></td>
@@ -6492,7 +6549,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(7);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(8);">
       <td><div>9</div></td>
@@ -6510,7 +6567,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(8);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(9);">
       <td><div>10</div></td>
@@ -6528,7 +6585,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(9);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(10);">
       <td><div>11</div></td>
@@ -6546,7 +6603,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(10);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_F" onmousemove="table_onmouse(11);">
       <td><div>12</div></td>
@@ -6564,7 +6621,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div>AGND</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(11);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_F" onmousemove="table_onmouse(12);">
       <td><div>13</div></td>
@@ -6582,7 +6639,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div>AVCC</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(12);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(13);">
       <td><div>14</div></td>
@@ -6600,7 +6657,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div>WKUP</div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(13);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(14);">
       <td><div>15</div></td>
@@ -6618,7 +6675,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(14);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(15);">
       <td><div>16</div></td>
@@ -6636,7 +6693,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(15);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(16);">
       <td><div>17</div></td>
@@ -6654,7 +6711,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(16);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_F" onmousemove="table_onmouse(17);">
       <td><div>18</div></td>
@@ -6672,7 +6729,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div>GND</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(17);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_F" onmousemove="table_onmouse(18);">
       <td><div>19</div></td>
@@ -6690,7 +6747,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div>VCC</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(18);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(19);">
       <td><div>20</div></td>
@@ -6708,7 +6765,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(19);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(20);">
       <td><div>21</div></td>
@@ -6726,7 +6783,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(20);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(21);">
       <td><div>22</div></td>
@@ -6744,7 +6801,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(21);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(22);">
       <td><div>23</div></td>
@@ -6762,7 +6819,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(22);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(23);">
       <td><div>24</div></td>
@@ -6780,7 +6837,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(23);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(24);">
       <td><div>25</div></td>
@@ -6798,7 +6855,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(24);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(25);">
       <td><div>26</div></td>
@@ -6816,7 +6873,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(25);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(26);">
       <td><div>27</div></td>
@@ -6834,7 +6891,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(26);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_O" onmousemove="table_onmouse(27);">
       <td><div>28</div></td>
@@ -6852,7 +6909,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div>BOOT1</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(27);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(28);">
       <td><div>29</div></td>
@@ -6870,7 +6927,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(28);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(29);">
       <td><div>30</div></td>
@@ -6888,7 +6945,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(29);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_F" onmousemove="table_onmouse(30);">
       <td><div>31</div></td>
@@ -6906,7 +6963,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div>GND</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(30);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_F" onmousemove="table_onmouse(31);">
       <td><div>32</div></td>
@@ -6924,7 +6981,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div>VCC</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(31);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(32);">
       <td><div>33</div></td>
@@ -6942,7 +6999,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(32);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(33);">
       <td><div>34</div></td>
@@ -6960,7 +7017,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(33);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(34);">
       <td><div>35</div></td>
@@ -6978,7 +7035,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(34);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(35);">
       <td><div>36</div></td>
@@ -6996,7 +7053,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(35);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(36);">
       <td><div>37</div></td>
@@ -7014,7 +7071,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div>ETH.RXP</div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(36);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(37);">
       <td><div>38</div></td>
@@ -7032,7 +7089,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div>ETN.RXN</div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(37);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(38);">
       <td><div>39</div></td>
@@ -7050,7 +7107,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div>ETH.TXP</div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(38);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(39);">
       <td><div>40</div></td>
@@ -7068,7 +7125,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div>ETH.TXN</div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(39);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(40);">
       <td><div>41</div></td>
@@ -7086,7 +7143,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div>MCO</div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(40);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(41);">
       <td><div>42</div></td>
@@ -7104,7 +7161,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(41);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(42);">
       <td><div>43</div></td>
@@ -7122,7 +7179,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(42);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(43);">
       <td><div>44</div></td>
@@ -7140,7 +7197,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(43);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(44);">
       <td><div>45</div></td>
@@ -7158,7 +7215,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(44);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_O" onmousemove="table_onmouse(45);">
       <td><div>46</div></td>
@@ -7176,7 +7233,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div>SWDIO</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(45);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_F" onmousemove="table_onmouse(46);">
       <td><div>47</div></td>
@@ -7194,7 +7251,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div>NC</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(46);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_F" onmousemove="table_onmouse(47);">
       <td><div>48</div></td>
@@ -7212,7 +7269,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div>NC</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(47);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_O" onmousemove="table_onmouse(48);">
       <td><div>49</div></td>
@@ -7230,7 +7287,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div>SWCLK</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(48);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(49);">
       <td><div>50</div></td>
@@ -7248,7 +7305,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(49);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(50);">
       <td><div>51</div></td>
@@ -7266,7 +7323,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(50);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(51);">
       <td><div>52</div></td>
@@ -7284,7 +7341,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(51);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(52);">
       <td><div>53</div></td>
@@ -7302,7 +7359,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(52);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(53);">
       <td><div>54</div></td>
@@ -7320,7 +7377,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(53);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(54);">
       <td><div>55</div></td>
@@ -7338,7 +7395,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(54);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(55);">
       <td><div>56</div></td>
@@ -7356,7 +7413,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(55);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(56);">
       <td><div>57</div></td>
@@ -7374,7 +7431,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(56);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(57);">
       <td><div>58</div></td>
@@ -7392,7 +7449,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(57);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(58);">
       <td><div>59</div></td>
@@ -7410,7 +7467,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(58);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_F" onmousemove="table_onmouse(59);">
       <td><div>60</div></td>
@@ -7428,7 +7485,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div>BOOT0</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(59);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(60);">
       <td><div>61</div></td>
@@ -7446,7 +7503,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(60);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(61);">
       <td><div>62</div></td>
@@ -7464,7 +7521,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(61);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_F" onmousemove="table_onmouse(62);">
       <td><div>63</div></td>
@@ -7482,7 +7539,7 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div>GND</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(62);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_F" onmousemove="table_onmouse(63);">
       <td><div>64</div></td>
@@ -7500,14 +7557,14 @@ function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale){
       <td><div>VCC</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(63);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
   </tbody>
 </table>
 </div>
 </div>
 <div id="col-2">
-  <canvas style="position:fixed; top:100px; left:70%" id="canvas" onmousemove="cnv_procdrag(event);" onwheel="cnv_wheel(event);">Package</canvas>
+  <canvas id="canvas" onmousemove="cnv_procdrag(event);" onwheel="cnv_wheel(event);">Package</canvas>
 </div>
 
 

@@ -1,4 +1,5 @@
 <head>
+<title>Pintable</title>
 
 <style type="text/css">
   /*body {
@@ -11,7 +12,7 @@
     border: 1px solid black; /* Параметры рамки */ 
     width:auto;
     text-align: center;
-  }
+    text-shadow: 0 0 1px #ffffff;  }
   th{
     background: #b0e0e6; /* Цвет фона */ 
     position: sticky; top: 0; /*Зафиксировать заголовок*/
@@ -20,8 +21,10 @@
     border: none !important; /* В результате границы становятся абсолютно незаметными */ 
   }
   .hltext{
+    padding: 1px;
+    border: 2px dotted #ffffff;
     color: #000000;
-    background-color:#ff808080;
+    background-color:#c0c0c080;
   }
   input[type="checkbox"]{
     margin-right: 20px;
@@ -83,29 +86,30 @@ function SelectPeriph(name){
     if(hdr.children[i].children.length < 2)continue;
     hdr.children[i].children[idx].hidden = hid;
   }
+  UnusedVisible();
 }
 
-function SrvVisible(){
+function UnusedVisible(){
   let mcu = document.getElementById("mcuselected").value;
-  let tbl = document.getElementsByName(mcu);
-  let ctl = document.getElementById("srvsel").value;
-  let sh_F=true, sh_O=true;
-  let check = document.getElementsByName("Service")[0];
-  if(ctl == "srv_show"){sh_F=true; sh_O=true;}
-  if(ctl == "srv_opt"){sh_F=false; sh_O=true;}
-  if(ctl == "srv_hide"){sh_F=false; sh_O=false;}
-  tbl = tbl[0].children[1].children;
-  for(let i=0; i<tbl.length; i++){
-    if(tbl[i].className == "tbl_srv_F"){
-      tbl[i].hidden = !sh_F;
-    }else if(tbl[i].className == "tbl_srv_O"){
-      tbl[i].hidden = !sh_O;
-    }else{
+  let tbl = document.getElementsByName(mcu)[0];
+  tbl = tbl.children[1].children;
+  if(document.getElementById("hideempty").checked){
+    for(let i=0; i<tbl.length; i++){
+      let vis = false;
+      let lin = tbl[i].children;
+      for(let j=2; j<lin.length-3; j++){
+        if(lin[j].hidden)continue;
+        if(lin[j].textContent == "")continue;
+        vis = true;
+        break;
+      }
+      tbl[i].hidden = !vis;
+    }
+  }else{
+    for(let i=0; i<tbl.length; i++){
       tbl[i].hidden = false;
     }
   }
-  check.checked = sh_O;
-  SelectPeriph('Service');
 }
 
 function SelectColor(linenum){
@@ -127,20 +131,35 @@ function SelectColor(linenum){
   package_draw();
 }
 
+function PN_input(){
+  package_draw();
+}
+
 function SelectMCU(){
-  let mcu = document.getElementById("mcuselected").value;
+  let mcu = document.getElementById("mcuselected");
   let tables = document.getElementsByTagName("table");
   for(let i=0; i<tables.length; i++){
-    tables[i].hidden = (tables[i].attributes.name.value != mcu);
+    tables[i].hidden = (tables[i].attributes.name.value != mcu.value);
   }
   Periph_Vis_update();
   package_draw();
   tbl_col_update();
+  document.title = mcu.children[mcu.selectedIndex].firstChild.data + " - Pins";
 }
 
 function Periph_Vis_update(){
-  SrvVisible();
   for(let i=0; i<controls.length; i++){
+    SelectPeriph(controls[i].name);
+  }
+}
+
+function HideAll(){
+  let check = false;
+  for(let i=0; i<controls.length; i++){
+    check |= controls[i].checked;
+  }
+  for(let i=0; i<controls.length; i++){
+    controls[i].checked = !check;
     SelectPeriph(controls[i].name);
   }
 }
@@ -177,12 +196,10 @@ function href_onclick(name){
 let det = document.getElementById("details_comments");
   comment_event = true;
   det.setAttribute("open","");
-  console.log(name);
   for(let i=0; i<det.children.length; i++){
     if(det.children[i].id != name){
       det.children[i].style = "";
     }else{
-      console.log("found");
       det.children[i].style = "background-color:powderblue;";
     }
   }
@@ -287,11 +304,12 @@ function tbl_import(str){
 }
 
 function SaveToFile(){
+  let mcu = document.getElementById("mcuselected");
   let text = tbl_export();
   let blob = new Blob([text], { type: 'text/plain' });
   let link = document.createElement('a');
   link.href = URL.createObjectURL(blob);
-  let filename = document.getElementById("mcuselected").value + ".pincfg";
+  let filename = mcu.children[mcu.selectedIndex].firstChild.data + ".pincfg";
   link.download = filename;
   link.click();
 }
@@ -335,7 +353,7 @@ function cnv_wheel(event){
   }else{
     ds = 1.1;
   }
-  let X = event.clientX-canvas.offsetLeft, Y = event.clientY-canvas.offsetTop;
+  let X = event.clientX-canvas.parentNode.offsetLeft, Y = event.clientY-canvas.parentNode.offsetTop;
   cnv_x = cnv_x*ds + X*(1-ds);
   cnv_y = cnv_y*ds + Y*(1-ds);
   cnv_scale *= ds;
@@ -351,6 +369,7 @@ function package_draw(){
   const ctx = canvas.getContext("2d");
   let mcu = document.getElementById("mcuselected").value 
   let tbl = document.getElementsByName(mcu);
+  let drawnames = document.getElementById("pinnames").checked;
   let x=cnv_x, y=cnv_y, scale=500;
 
   let w = canvas.parentNode.clientWidth;
@@ -370,7 +389,7 @@ function package_draw(){
         ctx.restore();
         pkg_draw_prev = i;
       }
-      funcs[i][1](ctx, tbl[0].children[1].children, x, y, scale); 
+      funcs[i][1](ctx, tbl[0].children[1].children, x, y, scale, drawnames); 
       break;
     }
   }
@@ -383,7 +402,7 @@ function table_onmouse(idx){
   package_draw();
 }
 
-function pack_html_draw(ctx, tbl, x, y, scale, font_sz, pins, pin_names, graph){
+function pack_html_draw(ctx, tbl, x, y, scale, font_sz, pins, pin_names, drawnames, graph){
   const patternCanvas = document.createElement("canvas");
   const patternContext = patternCanvas.getContext("2d");
   patternCanvas.width = 10;
@@ -397,10 +416,10 @@ function pack_html_draw(ctx, tbl, x, y, scale, font_sz, pins, pin_names, graph){
 
 //draw pads
   for(let i=0; i<pins.length; i++){
-    let col = "rgb(200 200 200)";
+    let col = "rgb(220 220 220)";
     let idx = pin_names[i][4];
     if((idx >= 0)&&(idx < tbl.length)){
-      if(tbl[idx].bgcolor != ""){
+      if((tbl[idx].bgColor)&&(tbl[idx].bgcolor != "")){
         col = tbl[idx].bgColor;
       }
     }
@@ -432,6 +451,7 @@ function pack_html_draw(ctx, tbl, x, y, scale, font_sz, pins, pin_names, graph){
   for(let i=0; i<pin_names.length; i++){
     let name = pin_names[i][3];
     let idx = pin_names[i][4];
+    if(drawnames && (idx>=0)&&(idx<tbl.length)){name = tbl[idx].children[1].children[0].textContent;}
     if((colnum >= 0) && (idx >= 0) && (idx < tbl.length)){
       let val = tbl[idx].children[colnum].children[0].value;
       if(val != "")name = val;
@@ -461,7 +481,7 @@ function pack_html_draw(ctx, tbl, x, y, scale, font_sz, pins, pin_names, graph){
   ctx.stroke();
 }
 
-function package_draw_1921вг015_LQFP100(ctx, tbl, x, y, scale){
+function package_draw_1921вг015_LQFP100(ctx, tbl, x, y, scale, drawnames){
   const pins = [
     ['r', 0.014048, 0.147362, 0.091743, 0.017202],//0
     ['r', 0.014048, 0.176032, 0.091743, 0.017202],//1
@@ -706,7 +726,7 @@ function package_draw_1921вг015_LQFP100(ctx, tbl, x, y, scale){
     ['l', 0.901376, 0.901376, 0.098624, 0.901376], //36
     ['l', 0.901376, 0.098624, 0.901376, 0.901376], //37
   ];
-  pack_html_draw(ctx, tbl, x, y, scale, 0.017202, pins, pin_names, graph);
+  pack_html_draw(ctx, tbl, x, y, scale, 0.017202, pins, pin_names, drawnames, graph);
 }
 
 </script>
@@ -734,17 +754,15 @@ function package_draw_1921вг015_LQFP100(ctx, tbl, x, y, scale){
 <label for="Per.WKUP">WKUP</label><input type="checkbox" class="controls" id="Per.WKUP" name="WKUP" checked onclick="SelectPeriph('WKUP');"/>
 <label for="Per.вскрыт.">вскрыт.</label><input type="checkbox" class="controls" id="Per.вскрыт." name="вскрыт." checked onclick="SelectPeriph('вскрыт.');"/>
 <label for="Per.Other">Other</label><input type="checkbox" class="controls" id="Per.Other" name="Other" checked onclick="SelectPeriph('Other');"/>
-<input type="checkbox" class="controls" id="Per.Service" name="Service" checked onclick="SelectPeriph('Service');" hidden/>
+<label for="Per.Service">Service</label><input type="checkbox" class="controls" id="Per.Service" name="Service" checked onclick="SelectPeriph('Service');"/>
 
 <br>
-<select id="srvsel" onchange="SrvVisible()">
-  <option value="srv_show">Service lines: Show</option>
-  <option value="srv_opt">Service lines: Remap only</option>
-  <option value="srv_hide">Service lines: Hide</option>
-</select>
 <input type="button" value="Save" onclick="SaveToFile()"/>
 <input type="file" id="LoadFile" accept=".pincfg" onchange="LoadFromFile();"/>
 
+<label for="hideempty">Hide empty</label><input type="checkbox" id="hideempty" name="hideempty" onclick="UnusedVisible();"/>
+<label for="pinnames">Pin names</label><input type="checkbox" id="pinnames" name="pinnames" onclick="package_draw();"/>
+<input type="button" value="HideAll" onclick="HideAll();"/>
 
 
 </form>
@@ -788,7 +806,7 @@ function package_draw_1921вг015_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(0);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(1);">
       <td><div>2</div></td>
@@ -805,7 +823,7 @@ function package_draw_1921вг015_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(1);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(2);">
       <td><div>3</div></td>
@@ -822,7 +840,7 @@ function package_draw_1921вг015_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(2);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(3);">
       <td><div>4</div></td>
@@ -839,7 +857,7 @@ function package_draw_1921вг015_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(3);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(4);">
       <td><div>5</div></td>
@@ -856,7 +874,7 @@ function package_draw_1921вг015_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(4);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(5);">
       <td><div>6</div></td>
@@ -873,7 +891,7 @@ function package_draw_1921вг015_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(5);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(6);">
       <td><div>7</div></td>
@@ -890,7 +908,7 @@ function package_draw_1921вг015_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(6);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(7);">
       <td><div>8</div></td>
@@ -907,7 +925,7 @@ function package_draw_1921вг015_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(7);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_F" onmousemove="table_onmouse(8);">
       <td><div>9</div></td>
@@ -924,7 +942,7 @@ function package_draw_1921вг015_LQFP100(ctx, tbl, x, y, scale){
       <td><div>OSC_IN</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(8);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_F" onmousemove="table_onmouse(9);">
       <td><div>10</div></td>
@@ -941,7 +959,7 @@ function package_draw_1921вг015_LQFP100(ctx, tbl, x, y, scale){
       <td><div>OSC_OUT</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(9);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_F" onmousemove="table_onmouse(10);">
       <td><div>11</div></td>
@@ -958,7 +976,7 @@ function package_draw_1921вг015_LQFP100(ctx, tbl, x, y, scale){
       <td><div>GND</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(10);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_F" onmousemove="table_onmouse(11);">
       <td><div>12</div></td>
@@ -975,7 +993,7 @@ function package_draw_1921вг015_LQFP100(ctx, tbl, x, y, scale){
       <td><div>VCC</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(11);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_F" onmousemove="table_onmouse(12);">
       <td><div>13</div></td>
@@ -992,7 +1010,7 @@ function package_draw_1921вг015_LQFP100(ctx, tbl, x, y, scale){
       <td><div>VAON_CAP</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(12);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_F" onmousemove="table_onmouse(13);">
       <td><div>14</div></td>
@@ -1009,7 +1027,7 @@ function package_draw_1921вг015_LQFP100(ctx, tbl, x, y, scale){
       <td><div>VBAT</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(13);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_F" onmousemove="table_onmouse(14);">
       <td><div>15</div></td>
@@ -1026,7 +1044,7 @@ function package_draw_1921вг015_LQFP100(ctx, tbl, x, y, scale){
       <td><div>VBAT_CAP</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(14);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_F" onmousemove="table_onmouse(15);">
       <td><div>16</div></td>
@@ -1043,7 +1061,7 @@ function package_draw_1921вг015_LQFP100(ctx, tbl, x, y, scale){
       <td><div>VCC</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(15);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_F" onmousemove="table_onmouse(16);">
       <td><div>17</div></td>
@@ -1060,7 +1078,7 @@ function package_draw_1921вг015_LQFP100(ctx, tbl, x, y, scale){
       <td><div>VCORE_CAP</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(16);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_F" onmousemove="table_onmouse(17);">
       <td><div>18</div></td>
@@ -1077,7 +1095,7 @@ function package_draw_1921вг015_LQFP100(ctx, tbl, x, y, scale){
       <td><div>AREF</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(17);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_F" onmousemove="table_onmouse(18);">
       <td><div>19</div></td>
@@ -1094,7 +1112,7 @@ function package_draw_1921вг015_LQFP100(ctx, tbl, x, y, scale){
       <td><div>VCC</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(18);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_F" onmousemove="table_onmouse(19);">
       <td><div>20</div></td>
@@ -1111,7 +1129,7 @@ function package_draw_1921вг015_LQFP100(ctx, tbl, x, y, scale){
       <td><div>GND</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(19);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(20);">
       <td><div>21</div></td>
@@ -1128,7 +1146,7 @@ function package_draw_1921вг015_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(20);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(21);">
       <td><div>22</div></td>
@@ -1145,7 +1163,7 @@ function package_draw_1921вг015_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(21);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(22);">
       <td><div>23</div></td>
@@ -1162,7 +1180,7 @@ function package_draw_1921вг015_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(22);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(23);">
       <td><div>24</div></td>
@@ -1179,7 +1197,7 @@ function package_draw_1921вг015_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(23);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_F" onmousemove="table_onmouse(24);">
       <td><div>25</div></td>
@@ -1196,7 +1214,7 @@ function package_draw_1921вг015_LQFP100(ctx, tbl, x, y, scale){
       <td><div>SDADC_CAP</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(24);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(25);">
       <td><div>26</div></td>
@@ -1213,7 +1231,7 @@ function package_draw_1921вг015_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(25);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(26);">
       <td><div>27</div></td>
@@ -1230,7 +1248,7 @@ function package_draw_1921вг015_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(26);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(27);">
       <td><div>28</div></td>
@@ -1247,7 +1265,7 @@ function package_draw_1921вг015_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(27);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(28);">
       <td><div>29</div></td>
@@ -1264,7 +1282,7 @@ function package_draw_1921вг015_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(28);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(29);">
       <td><div>30</div></td>
@@ -1281,7 +1299,7 @@ function package_draw_1921вг015_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div>USB_D+</div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(29);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(30);">
       <td><div>31</div></td>
@@ -1298,7 +1316,7 @@ function package_draw_1921вг015_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div>USB_D-</div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(30);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_F" onmousemove="table_onmouse(31);">
       <td><div>32</div></td>
@@ -1315,7 +1333,7 @@ function package_draw_1921вг015_LQFP100(ctx, tbl, x, y, scale){
       <td><div>GND</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(31);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_F" onmousemove="table_onmouse(32);">
       <td><div>33</div></td>
@@ -1332,7 +1350,7 @@ function package_draw_1921вг015_LQFP100(ctx, tbl, x, y, scale){
       <td><div>VCC</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(32);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(33);">
       <td><div>34</div></td>
@@ -1349,7 +1367,7 @@ function package_draw_1921вг015_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(33);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(34);">
       <td><div>35</div></td>
@@ -1366,7 +1384,7 @@ function package_draw_1921вг015_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(34);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(35);">
       <td><div>36</div></td>
@@ -1383,7 +1401,7 @@ function package_draw_1921вг015_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(35);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(36);">
       <td><div>37</div></td>
@@ -1400,7 +1418,7 @@ function package_draw_1921вг015_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(36);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(37);">
       <td><div>38</div></td>
@@ -1417,7 +1435,7 @@ function package_draw_1921вг015_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(37);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(38);">
       <td><div>39</div></td>
@@ -1434,7 +1452,7 @@ function package_draw_1921вг015_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(38);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(39);">
       <td><div>40</div></td>
@@ -1451,7 +1469,7 @@ function package_draw_1921вг015_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(39);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(40);">
       <td><div>41</div></td>
@@ -1468,7 +1486,7 @@ function package_draw_1921вг015_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div>CLKOUT</div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(40);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(41);">
       <td><div>42</div></td>
@@ -1485,7 +1503,7 @@ function package_draw_1921вг015_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(41);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(42);">
       <td><div>43</div></td>
@@ -1502,7 +1520,7 @@ function package_draw_1921вг015_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(42);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(43);">
       <td><div>44</div></td>
@@ -1519,7 +1537,7 @@ function package_draw_1921вг015_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(43);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(44);">
       <td><div>45</div></td>
@@ -1536,7 +1554,7 @@ function package_draw_1921вг015_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(44);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(45);">
       <td><div>46</div></td>
@@ -1553,7 +1571,7 @@ function package_draw_1921вг015_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(45);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(46);">
       <td><div>47</div></td>
@@ -1570,7 +1588,7 @@ function package_draw_1921вг015_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(46);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(47);">
       <td><div>48</div></td>
@@ -1587,7 +1605,7 @@ function package_draw_1921вг015_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(47);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(48);">
       <td><div>49</div></td>
@@ -1604,7 +1622,7 @@ function package_draw_1921вг015_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(48);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_F" onmousemove="table_onmouse(49);">
       <td><div>50</div></td>
@@ -1621,7 +1639,7 @@ function package_draw_1921вг015_LQFP100(ctx, tbl, x, y, scale){
       <td><div>SERVEN</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(49);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_F" onmousemove="table_onmouse(50);">
       <td><div>51</div></td>
@@ -1638,7 +1656,7 @@ function package_draw_1921вг015_LQFP100(ctx, tbl, x, y, scale){
       <td><div>VCC</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(50);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_F" onmousemove="table_onmouse(51);">
       <td><div>52</div></td>
@@ -1655,7 +1673,7 @@ function package_draw_1921вг015_LQFP100(ctx, tbl, x, y, scale){
       <td><div>GND</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(51);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(52);">
       <td><div>53</div></td>
@@ -1672,7 +1690,7 @@ function package_draw_1921вг015_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(52);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(53);">
       <td><div>54</div></td>
@@ -1689,7 +1707,7 @@ function package_draw_1921вг015_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(53);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(54);">
       <td><div>55</div></td>
@@ -1706,7 +1724,7 @@ function package_draw_1921вг015_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(54);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(55);">
       <td><div>56</div></td>
@@ -1723,7 +1741,7 @@ function package_draw_1921вг015_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(55);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(56);">
       <td><div>57</div></td>
@@ -1740,7 +1758,7 @@ function package_draw_1921вг015_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(56);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(57);">
       <td><div>58</div></td>
@@ -1757,7 +1775,7 @@ function package_draw_1921вг015_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(57);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(58);">
       <td><div>59</div></td>
@@ -1774,7 +1792,7 @@ function package_draw_1921вг015_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(58);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(59);">
       <td><div>60</div></td>
@@ -1791,7 +1809,7 @@ function package_draw_1921вг015_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(59);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_F" onmousemove="table_onmouse(60);">
       <td><div>61</div></td>
@@ -1808,7 +1826,7 @@ function package_draw_1921вг015_LQFP100(ctx, tbl, x, y, scale){
       <td><div>VCC</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(60);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(61);">
       <td><div>62</div></td>
@@ -1825,7 +1843,7 @@ function package_draw_1921вг015_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(61);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(62);">
       <td><div>63</div></td>
@@ -1842,7 +1860,7 @@ function package_draw_1921вг015_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(62);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(63);">
       <td><div>64</div></td>
@@ -1859,7 +1877,7 @@ function package_draw_1921вг015_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(63);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(64);">
       <td><div>65</div></td>
@@ -1876,7 +1894,7 @@ function package_draw_1921вг015_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(64);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(65);">
       <td><div>66</div></td>
@@ -1893,7 +1911,7 @@ function package_draw_1921вг015_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(65);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(66);">
       <td><div>67</div></td>
@@ -1910,7 +1928,7 @@ function package_draw_1921вг015_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(66);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(67);">
       <td><div>68</div></td>
@@ -1927,7 +1945,7 @@ function package_draw_1921вг015_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(67);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(68);">
       <td><div>69</div></td>
@@ -1944,7 +1962,7 @@ function package_draw_1921вг015_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(68);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_F" onmousemove="table_onmouse(69);">
       <td><div>70</div></td>
@@ -1961,7 +1979,7 @@ function package_draw_1921вг015_LQFP100(ctx, tbl, x, y, scale){
       <td><div>TMS</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(69);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_F" onmousemove="table_onmouse(70);">
       <td><div>71</div></td>
@@ -1978,7 +1996,7 @@ function package_draw_1921вг015_LQFP100(ctx, tbl, x, y, scale){
       <td><div>TDO</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(70);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_F" onmousemove="table_onmouse(71);">
       <td><div>72</div></td>
@@ -1995,7 +2013,7 @@ function package_draw_1921вг015_LQFP100(ctx, tbl, x, y, scale){
       <td><div>TDI</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(71);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_F" onmousemove="table_onmouse(72);">
       <td><div>73</div></td>
@@ -2012,7 +2030,7 @@ function package_draw_1921вг015_LQFP100(ctx, tbl, x, y, scale){
       <td><div>TCK</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(72);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_F" onmousemove="table_onmouse(73);">
       <td><div>74</div></td>
@@ -2029,7 +2047,7 @@ function package_draw_1921вг015_LQFP100(ctx, tbl, x, y, scale){
       <td><div>GND</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(73);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_F" onmousemove="table_onmouse(74);">
       <td><div>75</div></td>
@@ -2046,7 +2064,7 @@ function package_draw_1921вг015_LQFP100(ctx, tbl, x, y, scale){
       <td><div>VCC</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(74);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_F" onmousemove="table_onmouse(75);">
       <td><div>76</div></td>
@@ -2063,7 +2081,7 @@ function package_draw_1921вг015_LQFP100(ctx, tbl, x, y, scale){
       <td><div>TRST</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(75);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(76);">
       <td><div>77</div></td>
@@ -2080,7 +2098,7 @@ function package_draw_1921вг015_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(76);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(77);">
       <td><div>78</div></td>
@@ -2097,7 +2115,7 @@ function package_draw_1921вг015_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(77);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(78);">
       <td><div>79</div></td>
@@ -2114,7 +2132,7 @@ function package_draw_1921вг015_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(78);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(79);">
       <td><div>80</div></td>
@@ -2131,7 +2149,7 @@ function package_draw_1921вг015_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(79);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(80);">
       <td><div>81</div></td>
@@ -2148,7 +2166,7 @@ function package_draw_1921вг015_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(80);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(81);">
       <td><div>82</div></td>
@@ -2165,7 +2183,7 @@ function package_draw_1921вг015_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(81);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(82);">
       <td><div>83</div></td>
@@ -2182,7 +2200,7 @@ function package_draw_1921вг015_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(82);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(83);">
       <td><div>84</div></td>
@@ -2199,7 +2217,7 @@ function package_draw_1921вг015_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(83);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(84);">
       <td><div>85</div></td>
@@ -2216,7 +2234,7 @@ function package_draw_1921вг015_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(84);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(85);">
       <td><div>86</div></td>
@@ -2233,7 +2251,7 @@ function package_draw_1921вг015_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(85);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(86);">
       <td><div>87</div></td>
@@ -2250,7 +2268,7 @@ function package_draw_1921вг015_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(86);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(87);">
       <td><div>88</div></td>
@@ -2267,7 +2285,7 @@ function package_draw_1921вг015_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(87);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(88);">
       <td><div>89</div></td>
@@ -2284,7 +2302,7 @@ function package_draw_1921вг015_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(88);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(89);">
       <td><div>90</div></td>
@@ -2301,7 +2319,7 @@ function package_draw_1921вг015_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(89);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(90);">
       <td><div>91</div></td>
@@ -2318,7 +2336,7 @@ function package_draw_1921вг015_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(90);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(91);">
       <td><div>92</div></td>
@@ -2335,7 +2353,7 @@ function package_draw_1921вг015_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(91);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_F" onmousemove="table_onmouse(92);">
       <td><div>93</div></td>
@@ -2352,7 +2370,7 @@ function package_draw_1921вг015_LQFP100(ctx, tbl, x, y, scale){
       <td><div>VCC</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(92);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_F" onmousemove="table_onmouse(93);">
       <td><div>94</div></td>
@@ -2369,7 +2387,7 @@ function package_draw_1921вг015_LQFP100(ctx, tbl, x, y, scale){
       <td><div>GND</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(93);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_F" onmousemove="table_onmouse(94);">
       <td><div>95</div></td>
@@ -2386,7 +2404,7 @@ function package_draw_1921вг015_LQFP100(ctx, tbl, x, y, scale){
       <td><div>RST</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(94);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_F" onmousemove="table_onmouse(95);">
       <td><div>96</div></td>
@@ -2403,7 +2421,7 @@ function package_draw_1921вг015_LQFP100(ctx, tbl, x, y, scale){
       <td><div>OSC32_OUT</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(95);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr class="tbl_srv_F" onmousemove="table_onmouse(96);">
       <td><div>97</div></td>
@@ -2420,7 +2438,7 @@ function package_draw_1921вг015_LQFP100(ctx, tbl, x, y, scale){
       <td><div>OSC32_IN</div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(96);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(97);">
       <td><div>98</div></td>
@@ -2437,7 +2455,7 @@ function package_draw_1921вг015_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(97);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(98);">
       <td><div>99</div></td>
@@ -2454,7 +2472,7 @@ function package_draw_1921вг015_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(98);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
     <tr onmousemove="table_onmouse(99);">
       <td><div>100</div></td>
@@ -2471,7 +2489,7 @@ function package_draw_1921вг015_LQFP100(ctx, tbl, x, y, scale){
       <td><div></div></td>
       <td><div></div></td>
       <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(99);"/></td>
-      <td><input type="text" value="" size="2"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
       <td><div><input type="text" value=""/></div></td>
   </tbody>
 </table>

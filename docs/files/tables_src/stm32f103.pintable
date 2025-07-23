@@ -1,0 +1,113 @@
+Packages: LQFP48[LQFP-48_7x7mm_P0.5mm]; LQFP64[LQFP-64_10x10mm_P0.5mm]; LQFP100[LQFP-100_14x14mm_P0.5mm]; UFQFPN48[QFN-48-1EP_7x7mm_P0.5mm_EP5.6x5.6mm]; LFBGA100[LFBGA-100_10x10mm_Layout10x10_P0.8mm]; TFBGA64[TFBGA-64_5x5mm_Layout8x8_P0.5mm]; QFN36[QFN-36-1EP_6x6mm_P0.5mm_EP4.1x4.1mm]
+
+MCU: STM32F103V8H[LFBGA100]; STM32F103VBH[LFBGA100]; STM32F103C8T[LQFP48]; STM32F103CBT[LQFP48]; STM32F103CBU[UFQFPN48]; STM32F103R8H[TFBGA64]; STM32F103RBH[TFBGA64]; STM32F103R8T[LQFP64]; STM32F103RBT[LQFP64]; STM32F103V8T[LQFP100]; STM32F103VBT[LQFP100]; STM32F103T8U[QFN36]; STM32F103TBU[QFN36]
+
+Periph: GPIO[P]; 5VT[5]; TIM; Analog[A]; UART; SPI; I2C; USB; CAN; FMC; TPIU
+
+Content:
+| Name    | [LFBGA100] | [LQFP48];[UFQFPN48] | [TFBGA64] | [LQFP64] | [LQFP100] | [QFN36] | Periph |
+|---------|------------|---------------------|-----------|----------|-----------|---------|--------|
+|  PE2    |     A3     |          -          |    -      |     -    |     1     |    -    | P.PE2; 5.+; TPIU.[TRACECK] |
+|  PE3    |     B3     |          -          |    -      |     -    |     2     |    -   | P.PE3; 5.+; TPIU.[TRACED0] |
+|  PE4    |     C3     |          -          |    -      |     -    |     3     |   -   | P.PE4; 5.+; TPIU.[TRACED1] |
+|  PE5    |     D3     |          -          |    -      |     -    |     4     |   -  | P.PE5; 5.+; TPIU.[TRACED2] |
+|  PE6    |     E3     |          -          |    -      |     -    |     5     |  -  | P.PE6; 5.+; TPIU.[TRACED3] |
+|  VBAT   |     B2     |          1          |    B2     |     1    |     6     |  - | SRV.F.VBAT |
+|  PC13   |     A2     |          2          |    A2     |     2    |    7     |  - | P.PC13; TAMPER-RTC |
+|  PC14   |     A1     |          3          |    A1     |     3    |    8    |  - | P.PC14; SRV.O.OSC32_IN |
+|  PC15   |     B1     |          4          |    B1     |     4    |   9    |  - | P.PC15; SRV.O.OSC32_OUT |
+|  GND    |     C2     |          -          |    -      |     -    |  10   |  - | SRV.F.GND |
+|  VCC    |     D2     |          -          |    -      |     -    | 11   |  - | SRV.F.VCC |
+| OSC_IN  |     C1     |          5          |    C1     |     5    | 12  | 2  | SRV.F.OSC_IN |
+| OSC_OUT |     D1     |          6          |    D1     |     6    | 13 | 3  | SRV.F.OSC_OUT |
+|  NRST   |     E1     |          7          |    E1     |     7   | 14 | 4  | SRV.F.NRST |
+|  PC0    |     F1     |          -          |    E3     |    8   | 15 | -  | P.PC0; A.12.10 |
+|  PC1    |     F2     |          -          |    E2     |    9  | 16 | -  | P.PC1; A.12.11 |
+|  PC2    |     E2     |          -          |    F2     |  10  | 17 | -  | P.PC2; A.12.12 |
+|  PC3    |     F3     |          -          |    -      |  11 | 18 | -  | P.PC3; A.12.13 | COMM[7]
+|  AGND   |     G1     |          8          |    F1     | 12 | 19 | 5  | SRV.F.AGND |
+| VREF-   |     H1     |          -          |    -     | -  | 20 | -  | SRV.F.VREF- |
+| VREF+   |     J1     |          -          |    G1   | -  | 21 | -  | SRV.F.VREF+ | COMM[7]
+|  AVCC   |     K1     |          9          |   H1   | 13 | 22 | 6  | SRV.F.AVCC |
+|  PA0    |     G2     |         10          |  G2   | 14 | 23 | 7  | P.PA0; WKUP; UART.2_CTS; A.12.0; TIM.1_ETR | COMM[8]
+|  PA1    |     H2     |         11          | H2   | 15 | 24 | 8  | P.PA1; UART.2_RTS; A.12.1; TIM.2.2 | COMM[8]
+|  PA2    |     J2     |         12          | F3  | 16 | 25 | 9  | P.PA2; UART.2_TX; A.12.2; TIM.2.3 | COMM[8]
+|  PA3    |     K2     |         13          | G3 | 17 | 26 | 10 | P.PA3; UART.2_RX; A.12.3; TIM.2.4 | COMM[8]
+|  GND    |     E4     |          -         | C2 | 18 | 27 | -  | SRV.F.GND |
+|  VCC    |     F4     |          -        | D2 | 19 | 28 | -  | SRV.F.VCC |
+|  PA4    |     G3     |        14        | H3 | 20 | 29 | 11 | P.PA4; SPI.1_NSS; UART.2_CK; A.12.4 | COMM[8]
+|  PA5    |     H3     |        15       | F4 | 21 | 30 | 12 | P.PA5; SPI.1_SCK; A.12.5 | COMM[8]
+|  PA6    |     J3     |       16       | G4 | 22 | 31 | 13 | P.PA6; SPI.1_MISO; A.12.6; TIM.3.1; TIM.[1_BKIN] | COMM[8]
+|  PA7    |     K3     |       17      | H4 | 23 | 32 | 14 | P.PA7; SPI.1_MOSI; A.12.7; TIM.3.2; TIM.[1.1N] | COMM[8]
+|  PC4    |     G4     |       -      | H5 | 24 | 33 | -  | P.PC4; A.12.14 |
+|  PC5    |     H4     |      -      | H6 | 25 | 34 | -  | P.PC5; A.12.15 |
+|  PB0    |     J4     |     18     | F5 | 26 | 35 | 15 | P.PB0; A.12.8; TIM.3.3; TIM.[1.2N] | COMM[8]
+|  PB1    |     K4     |    19     | G5 | 27 | 36 | 16 | P.PB1; A.12.9; TIM.3.4; TIM.[1.3N] | COMM[8]
+|  PB2    |     G5     |    20    | G6 | 28 | 37 | 17 | P.PB2; 5.+; SRV.O.BOOT1 |
+|  PE7    |     H5     |    -    | -  | -  | 38 | -  | P.PE7; 5.+; TIM.[1_ETR] |
+|  PE8    |     J5     |   -    | -  | -  | 39 | -  | P.PE8; 5.+; TIM.[1.1N] |
+|  PE9    |     K5     |   -   | -  | -  | 40 | -  | P.PE9; 5.+; TIM.[1.1] |
+|  PE10   |     G6     |  -   | -  | -  | 41 | -  | P.PE10; 5.+; TIM.[1.2N] |
+|  PE11   |     H6     | -   | -  | -  | 42 | -  | P.PE11; 5.+; TIM.[1.2] |
+|  PE12   |     J6     | -  | -  | -  | 43 | -  | P.PE12; 5.+; TIM.[1.3N] |
+|  PE13   |     K6    | -  | -  | -  | 44 | -  | P.PE13; 5.+; TIM.[1.3] |
+|  PE14   |    G7    | -  | -  | -  | 45 | -  | P.PE14; 5.+; TIM.[1.4] |
+|  PE15   |    H7   | -  | -  | -  | 46 | -  | P.PE15; 5.+; TIM.[1_BKIN] |
+|  PB10   |   J7   | 21 | G7 | 29 | 47 | -  | P.PB10; I2C.2_SCL; UART.3_TX; TIM.[2.3] | COMM[8]
+|  PB11   |   K7  | 22 | H7 | 30 | 48 | -  | P.PB11; I2C.2_SDA; UART.3_RX; TIM.[2.4] | COMM[8]
+|  GND    |  E7  | 23 | D6 | 31 | 49 | 18 | SRV.F.GND |
+|  VCC    |  F7 | 24 | E6 | 32 | 50 | 19 | SRV.F.VCC |
+|  PB12   | K8  | 25 | H8 | 33 | 51 | -  | P.PB12; 5.+; SPI.2_NSS; I2C.2_SMBA; UART.3_CK; TIM.1_BKIN | COMM[8]
+|  PB13   | J8  | 26 | G8 | 34 | 52 | -  | P.PB13; 5.+; SPI.2_SCK; UART.3_CTS; TIM.1.1N | COMM[8]
+|  PB14   | H8  | 27 | F8 | 35 | 53 | -  | P.PB14; 5.+; SPI.2_MISO; UART.3_RTS; TIM.1.2N | COMM[8]
+|  PB15   | G8  | 28 | F7 | 36 | 54 | -  | P.PB15; 5.+; SPI.2_MOSI; TIM.1.3N | COMM[8]
+|  PD8    | K9  | -  | -  | -  | 55 | -  | P.PD8; 5.+; UART.[3_TX] |
+|  PD9    | J9  | -  | -  | -  | 56 | -  | P.PD9; 5.+; UART.[3_RX] |
+|  PD10   | H9  | -  | -  | -  | 57 | -  | P.PD10; 5.+; UART.[3_CK] |
+|  PD11   | G9  | -  | -  | -  | 58 | -  | P.PD11; 5.+; UART.[3_CK] |
+|  PD12   | K10 | -  | -  | -  | 59 | -  | P.PD12; 5.+; UART.[3_RTS]; TIM.[4.1] |
+|  PD13   | J10 | -  | -  | -  | 60 | -  | P.PD13; 5.+; TIM.[4.2] |
+|  PD14   | H10 | -  | -  | -  | 61 | -  | P.PD14; 5.+; TIM.[4.3] |
+|  PD15   | G10 | -  | -  | -  | 62 | -  | P.PD15; 5.+; TIM.[4.4] |
+|  PC6    | F10 | -  | F6 | 37 | 63 | -  | P.PC6; 5.+; TIM.[3.1] |
+|  PC7    | E10 | -  | E7 | 38 | 64 | -  | P.PC7; 5.+; TIM.[3.2] |
+|  PC8    | F9  | -  | E8 | 39 | 65 | -  | P.PC8; 5.+; TIM.[3.3] |
+|  PC9    | E9  | -  | D8 | 40 | 66 | -  | P.PC9; 5.+; TIM.[3.4] |
+|  PA8    | D9  | 29 | D7 | 41 | 67 | 20 | P.PA8; 5.+; UART.1_CK; TIM.1.1; MCO | COMM[8]
+|  PA9    | C9  | 30 | C7 | 42 | 68 | 21 | P.PA9; 5.+; UART.1_TX; TIM.1.2 | COMM[8]
+|  PA10   | D10 | 31 | C6 | 43 | 69 | 22 | P.PA10; 5.+; UART.1_RX; TIM.1.3 | COMM[8]
+|  PA11   | C10 | 32 | C8 | 44 | 70 | 23 | P.PA11; 5.+; UART.1_CTS; CAN.RX; USB.D-; TIM.1.4 | COMM[8]
+|  PA12   | B10 | 33 | B8 | 45 | 71 | 24 | P.PA12; 5.+; UART.1_RTS; CAN.TX; USB.D+; TIM.1_ETR | COMM[8]
+|  PA13   | A10 | 34 | A8 | 46 | 72 | 25 | P.PA13; 5.+; SRV.O.JTMS; SRV.O.SWDIO |
+|  NC     | F8  | -  | -  | -  | 73 | -  | SRV.F.NC |
+|  GND    | E6  | 35 | D5 | 47 | 74 | 26 | SRV.F.GND |
+|  VCC    | F6  | 36 | E5 | 48 | 75 | 27 | SRV.F.VCC |
+|  PA14   | A9  | 37 | A7 | 49 | 76 | 28 | P.PA14; 5.+; SRV.O.JTCK; SRV.O.SWCLK |
+|  PA15   | A8  | 38 | A6 | 50 | 77 | 29 | P.PA15; 5.+; SRV.O.JTDI; TIM.[2.1_ETR]; SPI.[1_NSS] |
+|  PC10   | B9  | -  | B7 | 51 | 78 | -  | P.PC10; 5.+; UART.[3_TX] |
+|  PC11   | B8  | -  | B6 | 52 | 79 | -  | P.PC11; 5.+; UART.[3_RX] |
+|  PC12   | C8  | -  | C5 | 53 | 80 | -  | P.PC12; 5.+; UART.[3_CK] |
+|  PD0    | D8  | 5  | C1 | 5  | 81 | 2  | P.PD0; 5.+; SRV.O.[OSC_IN]; CAN.[RX] | COMM[9]
+|  PD1    | E8  | 6  | D1 | 6  | 82 | 3  | P.PD1; 5.+; SRV.O.[OSC_OUT]; CAN.[TX] | COMM[9]
+|  PD2    | B7  | -  | B5 | 54 | 83 | -  | P.PD2; 5.+; TIM.3_ETR |
+|  PD3    | C7  | -  | -  | -  | 84 | -  | P.PD3; 5.+; UART.[2_CTS] |
+|  PD4    | D7  | -  | -  | -  | 85 | -  | P.PD4; 5.+; UART.[2_RTS] |
+|  PD5    | B6  | -  | -  | -  | 86 | -  | P.PD5; 5.+; UART.[2_TX] |
+|  PD6    | C6  | -  | -  | -  | 87 | -  | P.PD6; 5.+; UART.[2_RX] |
+|  PD7    | D6  | -  | -  | -  | 88 | -  | P.PD7; 5.+; UART.[2_CK] |
+|  PB3    | A7  | 39 | A5 | 55 | 89 | 30 | P.PB3; 5.+; SRV.O.JTDO; TIM.[2.2]; TPIU.[TRACESWO]; SPI.[1_SCK] |
+|  PB4    | A6  | 40 | A4 | 56 | 90 | 31 | P.PB4; 5.+; SRV.O.JNTRST; TIM.[3.1]; SPI.[1_MISO] |
+|  PB5    | C5  | 41 | C4 | 57 | 91 | 32 | P.PB5; 5.+; I2C.1_SMBAI; TIM.[3.2]; SPI.[1_MOSI] |
+|  PB6    | B5  | 42 | D3 | 58 | 92 | 33 | P.PB6; 5.+; I2C.1_SCL; TIM.4.1; UART.[1_TX] | COMM[8]
+|  PB7    | A5  | 43 | C3 | 59 | 93 | 34 | P.PB7; 5.+; I2C.1_SDA; TIM.4.2; UART.[1_RX] | COMM[8]
+|  BOOT0  | D5  | 44 | B4 | 60 | 94 | 35 | SRV.F.BOOT0 |
+|  PB8    | B4  | 45 | B3 | 61 | 95 | -  | P.PB8; TIM.4.3; I2C.[1_SCL]; CAN.[RX] | COMM[8]
+|  PB9    | A4  | 46 | A3 | 62 | 96 | -  | P.PB9; TIM.4.4; I2C.[1_SDA]; CAN.[TX] | COMM[8]
+|  PE0    | D4  | -  | -  | -  | 97 | -  | P.PE0; TIM.4_ETR |
+|  PE1    | C4  | -  | -  | -  | 98 | -  | P.PE1 |
+|  GND    | E5  | 47 | D4 | 63 | 99 | 36 | SRV.F.GND |
+|  VCC    | F5  | 48 | E4 | 64 | 100| 1  | SRV.F.VCC |
+
+Comment7 Unlike in the LQFP64 package, there is no PC3 in the TFBGA64 package. The VREF+ functionality is provided instead
+Comment8 This alternate function can be remapped by software to some other port pins (if available on the used package). For more details, refer to the Alternate function I/O and debug configuration section in the STM32F10xxx reference manual, available from the STMicroelectronics website: www.st.com.
+Comment9 The pins number 2 and 3 in the VFQFPN36 package, 5 and 6 in the LQFP48 and LQFP64 packages, and C1 and C2 in the TFBGA64 package are configured as OSC_IN/OSC_OUT after reset, however the functionality of PD0 and PD1 can be remapped by software on these pins. For the LQFP100 package, PD0 and PD1 are available by default, so there is no need for remapping. For more details, refer to the Alternate function I/O and debug configuration section in the STM32F10xxx reference manual. The use of PD0 and PD1 in output mode is limited as they can only be used at 50 MHz in output mode.
