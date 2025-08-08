@@ -53,7 +53,7 @@ td{
   <tr>
     <td>ch32h417</td>
     <td><a href="files/pintable/ch32h417.html">Распиновка</a></td>
-    <td>Регистры</td>
+    <td><a href="files/registers/CH32H417xx.html">Регистры</a></td>
   </tr>
   <tr>
   <td colspan="3">Прочие</td>
@@ -71,12 +71,12 @@ td{
   <tr>
     <td>stm32f103</td>
     <td><a href="files/pintable/stm32f103.html">Распиновка</a></td>
-    <td><a href="files/registers/stm32f103.html">Регистры</a></td>
+    <td><a href="files/registers/STM32F103.html">Регистры</a></td>
   </tr>
   <tr>
     <td>stm32u575</td>
     <td><a href="files/pintable/stm32u575.html">Распиновка</a></td>
-    <td><a href="files/registers/stm32u575.html">Регистры</a></td>
+    <td><a href="files/registers/STM32U575.html">Регистры</a></td>
   </tr>
   
   <tr>
