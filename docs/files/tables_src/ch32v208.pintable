@@ -1,94 +1,94 @@
 Packages: QFN28X4[QFN-28-1EP_4x4mm_P0.4mm_EP2.3x2.3mm]; QFN48X7[QFN-48-1EP_7x7mm_P0.5mm_EP3.5x3.5mm]; LQFP64M[LQFP-64_10x10mm_P0.5mm]; QFN68[QFN-68-1EP_8x8mm_P0.4mm_EP6.4x6.4mm]
 MCU: CH32V208GBU6[QFN28X4]; CH32V203CBU6[QFN48X7]; CH32V203RBT6[LQFP64M]; CH32V208WBU6[QFN68]
-Periph: GPIO[P]; 5VT[5]; TIM; Analog[A]; UART; SPI; I2C; CAN; USB; Ethernet
+Periph: GPIO[P]; 5VT[5]; TIM; Analog[A]; UART; SPI; I2C; CAN; USB; Ethernet[ETH]
 
 # Service pins: SRV.[F/O].name.  Example: SRV.F.VCC, SRV.O.Boot_TX
 
 Content:
 | Name    | [QFN28X4] | [QFN48X7] | [LQFP64M]|[QFN68] | Periph |
-|---------|------------------------------------------|--------|
-|   GND   |    1     |    1     |         -    |1        | SRV.F.GND  |
-|   Vbat  |    -      |    49     |          2 |2        | SRV.F.VCC | 
-|   PC13  |    -      |    2     |          3  |3        | P.PC13; TAMPER_RTC | COMM[2]; COMM[3]
-|   PC14  |    29      |   3     |          4  |4        | P.PC14; SRV.O.OSC32_IN | COMM[2]; COMM[3]
-|   PC15  |    2      |    4|         5        |5        | P.PC15; SRV.O.OSC32_OUT | COMM[2]; COMM[3]
-|   AGND   |    -      |     5    |          6  | 6     | SRV.F.AGND |
-|  OSC_IN |    3      |    6     |          7  |7      | SRV.F.OSC_IN |
-| OSC_OUT |    4      |    7     |          8  |8      | SRV.F.OSC_OUT |
-|  NRST   |    -      |    8     |          9  |9      | SRV.F.NRST |
-|   PC0   |  -        |    -     |          10  |10      | P.PC0; A.10|
-|   PC1   |  -        |    -     |          11  |11      | P.PC1; A.11|
-|   PC2   |  -        |    -     |          12  |12      | P.PC2; A.12|
-|   PC3   |  -        |    -     |          13  |13      | P.PC3; A.13|
-|   AVCC  |    5      |    9     |          14  |14      | SRV.F.AVCC |
-|   PA0-WKUP   |    6      |    10     |          15 |15      |P.PA0; WKUP; UART.2_CTS; A.0; TIM.2.1; TIM.2_ETR; TIM.5.1; TIM.[2.1_ETR]2 | COMM[9]
-|   PA1   |    7      |    11     |          16 |16      | P.PA1; UART.2_RTS; A.1; TIM.2.2; TIM.5.1; TIM.[2.2]2 |
-|   PA2   |    9      |    12     |          17 |17      | P.PA2; UART.2_TX; A.2; TIM.2.3; A.OPA2_OUT0; TIM.5.3; TIM.[2.3]1 |
-|   VCC   |    -      |     -    |          - |18      | SRV.F.VCC |
-|   PD4  |    -      |     -    |          - |19      | P.PD4; 5.+ |
-|   PA3   |    9      |    13     |          18 |20      | P.PA3; UART.2_RX; A.3; TIM.2.4; A.OPA1_OUT0; TIM.5.4; TIM.[2.4]1 |
-|   GND   |    -      |    -    |          19 | -     | SRV.F.GND |
-|   VCC   |    -      |    -    |          20 | -     | SRV.F.VCC |
-|   PA4   |    10     |    14   |          21 |21      | P.PA4; SPI.1_NSS; UART.2_CK; A.4; A.OPA2_OUT1 |
-|   PA5   |    11     |    15   |          22 |22      | P.PA5; SPI.1_SCK; A.5; A.OPA2_1N |
-|   PA6   |    12     |    16    |         23 |23      | P.PA6; SPI.1_MISO; A.6; TIM.3.1; A.OPA1_1N; TIM.[1_BKIN]1 |
-|   PA7   |    13     |    17    |         24 |24      | P.PA7; SPI.1_MOSI; A.7; TIM.3.2; A.OPA2_1P; TIM.[1.1N]1 |
-|   PC4   |  -        |    -     |          25  |25      | P.PC4; A.14|
-|   PC5   |  -        |    -     |          26  |26      | P.PC5; A.15|
-|   PB0   |    -      |    18    |          27  |27      | P.PB0; A.8; TIM.3.3; A.OPA1_1P; TIM.[1.2N]1; TIM.[3.3]2; UART.[4_TX]1 |
-|   PB1   |    -      |    19    |          28  |28      | P.PB1; A.9; TIM.3.4; A.OPA1_OUT1; TIM.[1.3N]1; TIM.[3.4]2; UART.[4_RX]1 |
-|   PB2   |    -      |    20    |          29  |29      | P.PB2; 5.+; SRV.O.BOOT1|
-|   PB10  |   -       |    21    |          30  |30      | P.PB10; 5.+; I2C.2_SCL; UART.3_TX; A.OPA2_0N; TIM.[2.3]2; TIM.[2.3]3 |
-|   PB11  |   -      |     22    |          30  |30      | P.PB11; 5.+; I2C.2_SDA; UART.3_RX; A.OPA1_0N; TIM.[2.4]2; TIM.[2.4]3 |
-|   GND   |    -      |    -     |          32 |-     | SRV.F.GND |
-|   VCC   |    14     |    23    |          33 |-      | SRV.F.VCC |
-|   VCC   |    -     |    -    |          - |32      | SRV.F.VCC |
-|   VCC   |    -     |    -    |          - |33      | SRV.F.VCC |
-|   PD5  |    -      |     -    |          - |34      | P.PD5; 5.+ |
-|   PD6  |    -      |     -    |          - |35      | P.PD6; 5.+ |
-|   PB12  |    -      |     24   |          34 |36    | P.PB12; 5.+; SPI.2_NSS; I2C.2_SMBA; UART.3_CK; TIM.1_BKIN |
-|   PB13  |    -      |     24   |          34 |37    | P.PB13; 5.+; SPI.2_SCK; UART.3_CTS; TIM.1.1N; UART.[3_CTS]1 |
-|   PB14  |   -       |     26   |          36 |38      | P.PB14; 5.+; SPI.2_MISO; TIM.1.2N; UART.3_RTS; A.OPA2_0P; UART.[3_RTS]1 |
-|   PB15  |   -       |     27   |          37 |39      | P.PB15; 5.+; SPI.2_MOSI; TIM.1.3N; A.OPA1_0P |
-|  PC6    |   15       |     -   |          38 |40      | P.PC6; 5.+; ETH.RXP; TIM.[3.1]3 |
-|  PC7    |   16       |     -   |          39 |41      | P.PC7; 5.+; ETH.RXN; TIM.[3.2]3 | 
-|  PC8    |   17       |     -   |          40 |42      | P.PC8; 5.+; ETH.TXP; TIM.[3.3]3 |
-|  PC9    |   18       |     -   |          41 |43      | P.PC9; 5.+; ETH.TXN; TIM.[3.4]3 | 
-|   PA8   |   -        |    28   |          42 |44      | P.PA8; 5.+; UART.1_CK; TIM.1.1; MCO; UART.[1_CK]1; TIM.[1.1]1 |
-|   PA9   |   -      |      29   |          43 |46      | P.PA9; 5.+; UART.1_TX; TIM.1.2; TIM.[1.2]1 |
-|   PA10  |   -      |     30    |          44 |45      | P.PA10; 5.+; UART.1_RX; TIM.1.3; TIM.[1.3]1 |
-|   PA11  |   19      |    31    |          45 |47      | P.PA11; 5.+; UART.1_CTS; USB.Dev_D-; CAN.1_RX; TIM.1.4; UART.[1_CTS]1; TIM.[1.4]1 |
-|   PA12  |   20      |    32    |          46 |48      | P.PA12; 5.+; UART.1_RTS; USB.Dev_D+; CAN.1_TX; TIM.1_ETR; UART.[1_RTS]1; TIM.[1_ETR]1 |
-|   PA13  |   21      |    33    |          47 |49      | P.PA13; 5.+; SRV.O.SWDIO |
-|   GND   |    -      |    36    |          - |50      | SRV.F.GND |
-|   VCC   |    22     |    34    |          48 |51      | SRV.F.VCC |
-|   ANT   |    23     |    35    |          49 |52      | SRV.F.ANT |
-|   PA14  |    24     |    37    |          50 |53      | P.PA4; 5.+; SRV.O.SWCLK |
-|   PA15  |    -      |    38    |          51 |54      | P.PA15; 5.+; TIM.[2.1_ETR]1; TIM.[2.1_ETR]3; SPI.[1_NSS] | COMM[9]
-|  PC10   |    -      |     -    |          52 |55      | P.PC10; 5.+; UART.4_TX;  UART.[3_TX]1 |
-|  PC11   |    -      |     -    |          53 |56      | P.PC11; 5.+; UART.4_RX;  UART.[3_RX]1 |
-|  PC12   |    -      |     -    |          54 |57      | P.PC12; 5.+; UART.[3_CK]1 |
-|  PD2    |    -      |     -    |          55 |58      | P.PD2; 5.+; TIM.3_ETR; TIM.[3_ETR]2; TIM.[3_ETR]3 |
-|   PB3   |    -      |    39    |          56 |59      | P.PB3; 5.+; TIM.[2.2]1; TIM.[2.2]3; SPI.[1_SCK] |
-|   PB4   |    -      |    40    |          57 |60      | P.PB4; 5.+; TIM.[3.1]2; SPI.[1_MISO] |
-|   PB5   |    -      |    41    |          58 |61      | P.PB5; 5.+; I2C.1_SMBA; TIM.[3.2]2; SPI.[1_MOSI] |
-|   PB6   |    25     |    42    |          59 |62      | P.PB6; 5.+; I2C.1_SCL; TIM.4.1; USB.OTG_D-; UART.[1_TX]1 |
-|   PB7   |    26     |    43    |          60 |63      | P.PB7; 5.+; I2C.1_SDA; TIM.4.2; USB.OTG_D+; UART.[1_RX]1 |
-|  BOOT0  |    27     |    44    |          61 |64      | SRV.F.BOOT0 | COMM[6]
-|   PB8   |    27     |    45    |          62 |65      | P.PB8; 5.+; TIM.4.3; I2C.[1_SCL]; CAN.[1_RX] | COMM[6]
-|   PB9   |    -      |    46    |          63 |66      | P.PB9; 5.+; TIM.4.4; I2C.[1_SDA]; CAN.[1_TX] |
-|   PD3   |    -      |     -    |          - |67      | P.PD3; 5.+ |
-|   GND   |    -      |    47    |          64 |-      | SRV.F.GND |
-|   VCC   |    28     |    48    |          65 |-      | SRV.F.VCC |
-|   VCC   |    -     |     -    |          - | 68     | SRV.F.VCC |
-|   VCC   |    -     |     -    |          - | 69     | SRV.F.VCC |
+|---------|-----------|-----------|----------|--------|--------|
+|   GND   |    29     |    49     |     -    |  69    | SRV.F.GND  |         
+|   Vbat  |    -      |    48     |        1 |1        | SRV.F.VCC |         
+|   PC13  |    -      |    1     |          2  |2        | P.PC13; TAMPER_RTC | COMM[2]; COMM[3]         
+|   PC14  |    28      |   2     |          3  |3        | P.PC14; SRV.O.OSC32_IN | COMM[2]; COMM[3]         
+|   PC15  |    1      |    3|         4        |4        | P.PC15; SRV.O.OSC32_OUT | COMM[2]; COMM[3]         
+|   AGND   |    -      |     4    |          5  | 5     | SRV.F.AGND |         
+|  OSC_IN |    2      |    5     |          6  |6      | SRV.F.OSC_IN |         
+| OSC_OUT |    3      |    6     |          7  |7      | SRV.F.OSC_OUT |         
+|  NRST   |    -      |    7     |          8  |8      | SRV.F.NRST |         
+|   PC0   |  -        |    -     |          9  |9      | P.PC0; A.10|         
+|   PC1   |  -        |    -     |          10  |10      | P.PC1; A.11|         
+|   PC2   |  -        |    -     |          11  |11      | P.PC2; A.12|         
+|   PC3   |  -        |    -     |          12  |12      | P.PC3; A.13|         
+|   AVCC  |    4      |    8     |          13  |13      | SRV.F.AVCC |         
+| PA0-WKUP|    5      |    9     |          14 |14      |P.PA0; WKUP; UART.2_CTS; A.0; TIM.2.1; TIM.2_ETR; TIM.5.1; TIM.[2.1_ETR]2 | COMM[9]         
+|   PA1   |    6      |    10     |          15 |15      | P.PA1; UART.2_RTS; A.1; TIM.2.2; TIM.5.1; TIM.[2.2]2 |         
+|   PA2   |    7      |    11     |          16 |16      | P.PA2; UART.2_TX; A.2; TIM.2.3; A.OPA2_OUT0; TIM.5.3; TIM.[2.3]1 |         
+|   VCC   |    -      |     -    |          - |17      | SRV.F.VCC |         
+|   PD4  |    -      |     -    |          - |18      | P.PD4; 5.+ |         
+|   PA3   |    8      |    12     |          17 |19      | P.PA3; UART.2_RX; A.3; TIM.2.4; A.OPA1_OUT0; TIM.5.4; TIM.[2.4]1 |         
+|   GND   |    -      |    -    |          18 | -     | SRV.F.GND |         
+|   VCC   |    -      |    -    |          19 | -     | SRV.F.VCC |         
+|   PA4   |    9     |    13   |          20 |20      | P.PA4; SPI.1_NSS; UART.2_CK; A.4; A.OPA2_OUT1 |         
+|   PA5   |    10     |    14   |          21 |21      | P.PA5; SPI.1_SCK; A.5; A.OPA2_1N |         
+|   PA6   |    11     |    15    |         22 |22      | P.PA6; SPI.1_MISO; A.6; TIM.3.1; A.OPA1_1N; TIM.[1_BKIN]1 |         
+|   PA7   |    12     |    16    |         23 |23      | P.PA7; SPI.1_MOSI; A.7; TIM.3.2; A.OPA2_1P; TIM.[1.1N]1 |         
+|   PC4   |  -        |    -     |          24  |24      | P.PC4; A.14|         
+|   PC5   |  -        |    -     |          25  |25      | P.PC5; A.15|         
+|   PB0   |    -      |    17    |          26  |26      | P.PB0; A.8; TIM.3.3; A.OPA1_1P; TIM.[1.2N]1; TIM.[3.3]2; UART.[4_TX]1 |         
+|   PB1   |    -      |    18    |          27  |27      | P.PB1; A.9; TIM.3.4; A.OPA1_OUT1; TIM.[1.3N]1; TIM.[3.4]2; UART.[4_RX]1 |         
+|   PB2   |    -      |    19    |          28  |28      | P.PB2; 5.+; SRV.O.BOOT1|         
+|   PB10  |   -       |    20    |          29  |29      | P.PB10; 5.+; I2C.2_SCL; UART.3_TX; A.OPA2_0N; TIM.[2.3]2; TIM.[2.3]3 |         
+|   PB11  |   -      |     21    |          30  |30      | P.PB11; 5.+; I2C.2_SDA; UART.3_RX; A.OPA1_0N; TIM.[2.4]2; TIM.[2.4]3 |         
+|   GND   |    -      |    -     |          31 |-     | SRV.F.GND |         
+|   VCC   |    13     |    22    |          32 |-      | SRV.F.VCC |         
+|   VCC   |    -     |    -    |          - |31      | SRV.F.VCC |         
+|   VCC   |    -     |    -    |          - |32      | SRV.F.VCC |         
+|   PD5  |    -      |     -    |          - |33      | P.PD5; 5.+ |         
+|   PD6  |    -      |     -    |          - |34      | P.PD6; 5.+ |         
+|   PB12  |    -      |     23   |          33 |35    | P.PB12; 5.+; SPI.2_NSS; I2C.2_SMBA; UART.3_CK; TIM.1_BKIN |         
+|   PB13  |    -      |     24   |          34 |36    | P.PB13; 5.+; SPI.2_SCK; UART.3_CTS; TIM.1.1N; UART.[3_CTS]1 |         
+|   PB14  |   -       |     25   |          35 |37      | P.PB14; 5.+; SPI.2_MISO; TIM.1.2N; UART.3_RTS; A.OPA2_0P; UART.[3_RTS]1 |         
+|   PB15  |   -       |     26   |          36 |38      | P.PB15; 5.+; SPI.2_MOSI; TIM.1.3N; A.OPA1_0P |         
+|  PC6    |   14       |     -   |          37 |39      | P.PC6; 5.+; ETH.RXP; TIM.[3.1]3 |         
+|  PC7    |   15       |     -   |          38 |40      | P.PC7; 5.+; ETH.RXN; TIM.[3.2]3 |         
+|  PC8    |   16       |     -   |          39 |41      | P.PC8; 5.+; ETH.TXP; TIM.[3.3]3 |         
+|  PC9    |   17       |     -   |          40 |42      | P.PC9; 5.+; ETH.TXN; TIM.[3.4]3 |         
+|   PA8   |   -        |    27   |          41 |43      | P.PA8; 5.+; UART.1_CK; TIM.1.1; MCO; UART.[1_CK]1; TIM.[1.1]1 |         
+|   PA9   |   -      |      28   |          42 |45      | P.PA9; 5.+; UART.1_TX; TIM.1.2; TIM.[1.2]1 |         
+|   PA10  |   -      |     29    |          43 |44      | P.PA10; 5.+; UART.1_RX; TIM.1.3; TIM.[1.3]1 |         
+|   PA11  |   18      |    30    |          44 |46      | P.PA11; 5.+; UART.1_CTS; USB.Dev_D-; CAN.1_RX; TIM.1.4; UART.[1_CTS]1; TIM.[1.4]1 |         
+|   PA12  |   19      |    31    |          45 |47      | P.PA12; 5.+; UART.1_RTS; USB.Dev_D+; CAN.1_TX; TIM.1_ETR; UART.[1_RTS]1; TIM.[1_ETR]1 |         
+|   PA13  |   20      |    32    |          46 |48      | P.PA13; 5.+; SRV.O.SWDIO |         
+|   GND   |    -      |    35    |          - |49      | SRV.F.GND |         
+|   VCC   |    21     |    33    |          47 |50      | SRV.F.VCC |         
+|   ANT   |    22     |    34    |          48 |51      | SRV.F.ANT |         
+|   PA14  |    23     |    36    |          49 |52      | P.PA4; 5.+; SRV.O.SWCLK |         
+|   PA15  |    -      |    37    |          50 |53      | P.PA15; 5.+; TIM.[2.1_ETR]1; TIM.[2.1_ETR]3; SPI.[1_NSS]1 | COMM[9]         
+|  PC10   |    -      |     -    |          51 |54      | P.PC10; 5.+; UART.4_TX;  UART.[3_TX]1 |         
+|  PC11   |    -      |     -    |          52 |55      | P.PC11; 5.+; UART.4_RX;  UART.[3_RX]1 |         
+|  PC12   |    -      |     -    |          53 |56      | P.PC12; 5.+; UART.[3_CK]1 |         
+|  PD2    |    -      |     -    |          54 |57      | P.PD2; 5.+; TIM.3_ETR; TIM.[3_ETR]2; TIM.[3_ETR]3 |         
+|   PB3   |    -      |    38    |          55 |58      | P.PB3; 5.+; TIM.[2.2]1; TIM.[2.2]3; SPI.[1_SCK]1 |         
+|   PB4   |    -      |    39    |          56 |59      | P.PB4; 5.+; TIM.[3.1]2; SPI.[1_MISO]1 |
+|   PB5   |    -      |    40    |          57 |60      | P.PB5; 5.+; I2C.1_SMBA; TIM.[3.2]2; SPI.[1_MOSI]1 |
+|   PB6   |    24     |    41    |          58 |61      | P.PB6; 5.+; I2C.1_SCL; TIM.4.1; USB.OTG_D-; UART.[1_TX]1 |
+|   PB7   |    25     |    42    |          59 |62      | P.PB7; 5.+; I2C.1_SDA; TIM.4.2; USB.OTG_D+; UART.[1_RX]1 |
+|  BOOT0  |    26     |    43    |          60 |63      | SRV.F.BOOT0 | COMM[6]         
+|   PB8   |    26     |    44    |          61 |64      | P.PB8; 5.+; TIM.4.3; I2C.[1_SCL]1; CAN.[1_RX]2 | COMM[6]         
+|   PB9   |    -      |    45    |          62 |65      | P.PB9; 5.+; TIM.4.4; I2C.[1_SDA]1; CAN.[1_TX]2 |         
+|   PD3   |    -      |     -    |          - |66      | P.PD3; 5.+ |         
+|   GND   |    -      |    46    |          63 |-      | SRV.F.GND |         
+|   VCC   |    27     |    47    |          64 |-      | SRV.F.VCC |         
+|   VCC   |    -     |     -    |          - | 67     | SRV.F.VCC |         
+|   VCC   |    -     |     -    |          - | 68     | SRV.F.VCC |         
 
 
-Comment2: The PC13, PC14 and PC15 pins are powered by the power's switch, and this power's switch can only absorb a limited current (3mA). Therefore, when these 3 pins are used as output pins, there are the following restrictions: only one pin can be used as an output at the same time. When used as an output pin, it can only work in 2MHz mode. The maximum drive load is 30pF and cannot be used as a current source (Such as driving LED).
-Comment3: These pins are in the main function state when the backup area is powered on for the first time. Even after reset, the state of these pins is controlled by the backup area registers (these registers will not be reset by the main reset system). For specific information on how to control these IO ports, please refer to the relevant chapters on the battery backup area and BKP register in the CH32FV2x_V3xRM datasheet.
-Comment4: Pin 5 and pin 6 of those in LQFP64M package are configured as OSC_IN and OSC_OUT function pins by default after chip reset. Software can reconfigure these 2 pins as PD0 and PD1. But for those in LQFP100 package, since PD0 and PD1 are inherent functional pins, there is no need to re-image settings by software. For the CH32V203RBT6, the OSC_IN and OSC_OUT function pins have no alternate functions of PD0 and PD1. For more detailed information, please refer to the chapters on Alternate Function I/O and Debug Setting in the CH32FV2x_V3xRM datasheet.
-Comment5: For devices without the BOOT0 pinout, they are pulled down to GND internally. For devices with the BOOT0 pinout but no BOOT1/PB2 pinout, BOOT1/PB2 is pulled down to GND internally. In this case, it is recommended that the BOOT1/PB2 pinout is set to input pull-down mode if a device goes into the low-power mode and configures IO port state, to avoid generating extra current.
-Comment6: For devices with BOOT0 and PB8 pinouts shorted, it is recommended to be connected to an external 500K pull-down resistor, to ensure that the device is powered on stably and enters the mode of booting from program Flash memory. In this case, the PB8 only supports output drive functions, with all input functions disabled.
-Comment7: For devices in 20-pin/28-pin package, several pins are shorted (at least 2 IO function pins are physically shorted as one pin). In this case, the driver should not configure the output function at the same time, otherwise the pins may be damaged. Note pin states when there is a power consumption requirement.
-Comment8: The value after the underline of the remapping function indicates the configuration value of the corresponding bit in the AFIO register. For example: UART4_RX_3 indicates that the corresponding bit of AFIO register is configured as 11b.
-Comment9: TIM2_CH1 and TIM2_ETR share a common pin, but cannot be used at the same time.
+Comment2 The PC13, PC14 and PC15 pins are powered by the power's switch, and this power's switch can only absorb a limited current (3mA). Therefore, when these 3 pins are used as output pins, there are the following restrictions: only one pin can be used as an output at the same time. When used as an output pin, it can only work in 2MHz mode. The maximum drive load is 30pF and cannot be used as a current source (Such as driving LED).
+Comment3 These pins are in the main function state when the backup area is powered on for the first time. Even after reset, the state of these pins is controlled by the backup area registers (these registers will not be reset by the main reset system). For specific information on how to control these IO ports, please refer to the relevant chapters on the battery backup area and BKP register in the CH32FV2x_V3xRM datasheet.
+Comment4 Pin 5 and pin 6 of those in LQFP64M package are configured as OSC_IN and OSC_OUT function pins by default after chip reset. Software can reconfigure these 2 pins as PD0 and PD1. But for those in LQFP100 package, since PD0 and PD1 are inherent functional pins, there is no need to re-image settings by software. For the CH32V203RBT6, the OSC_IN and OSC_OUT function pins have no alternate functions of PD0 and PD1. For more detailed information, please refer to the chapters on Alternate Function I/O and Debug Setting in the CH32FV2x_V3xRM datasheet.
+Comment5 For devices without the BOOT0 pinout, they are pulled down to GND internally. For devices with the BOOT0 pinout but no BOOT1/PB2 pinout, BOOT1/PB2 is pulled down to GND internally. In this case, it is recommended that the BOOT1/PB2 pinout is set to input pull-down mode if a device goes into the low-power mode and configures IO port state, to avoid generating extra current.
+Comment6 For devices with BOOT0 and PB8 pinouts shorted, it is recommended to be connected to an external 500K pull-down resistor, to ensure that the device is powered on stably and enters the mode of booting from program Flash memory. In this case, the PB8 only supports output drive functions, with all input functions disabled.
+Comment7 For devices in 20-pin/28-pin package, several pins are shorted (at least 2 IO function pins are physically shorted as one pin). In this case, the driver should not configure the output function at the same time, otherwise the pins may be damaged. Note pin states when there is a power consumption requirement.
+Comment8 The value after the underline of the remapping function indicates the configuration value of the corresponding bit in the AFIO register. For example: UART4_RX_3 indicates that the corresponding bit of AFIO register is configured as 11b.
+Comment9 TIM2_CH1 and TIM2_ETR share a common pin, but cannot be used at the same time.

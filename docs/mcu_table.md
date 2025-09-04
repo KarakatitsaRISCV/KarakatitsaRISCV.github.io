@@ -37,10 +37,10 @@ td{
     <td><a href="files/pintable/ch32v203.html">Распиновка</a></td>
     <td><a href="files/registers/CH32V203xx.html">Регистры</a></td>
   </tr>
-<tr>
+  <tr>
     <td>CH32V208</td>
     <td><a href="files/pintable/ch32v208.html">Распиновка</a></td>
-    <td>Регистры</td>
+    <td><a href="files/registers/CH32V208xx.html">Регистры</a></td>
   </tr>
   <tr>
     <td>CH32V303</td>
