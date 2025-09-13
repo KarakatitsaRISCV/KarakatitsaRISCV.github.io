@@ -18835,6 +18835,54 @@ function OnLoad(){
 </ul>
 </ul>
 </details></li>
+<li class="content" name="per_D1000000"><details ontoggle="ElemCh('per_D1000000');"><summary>0xD1000000<b style="margin: 20px;">CPU_TIMER</b>// cpu timer</summary>
+<ul>
+<li class="content" name="reg_D1000000"><details ontoggle="ElemCh('reg_D1000000');"><summary>0xD1000000<b style="margin: 20px;">MTIME_LO</b>//   mtime low register</summary>
+<ul>
+<li class="content" name="fld_D1000000.0" onclick="ElemClick('fld_D1000000.0');">
+[0:31]<b style="margin: 20px;">COUNT</b> (def=0x0)    //    MTIME count
+</li>
+</ul>
+</details></li>
+<li class="content" name="reg_D1000004"><details ontoggle="ElemCh('reg_D1000004');"><summary>0xD1000004<b style="margin: 20px;">MTIME_HI</b>//   mtime high register</summary>
+<ul>
+<li class="content" name="fld_D1000004.0" onclick="ElemClick('fld_D1000004.0');">
+[0:31]<b style="margin: 20px;">COUNT</b> (def=0x0)    //    MTIME count
+</li>
+</ul>
+</details></li>
+<li class="content" name="reg_D1000008"><details ontoggle="ElemCh('reg_D1000008');"><summary>0xD1000008<b style="margin: 20px;">MTIMECMP_LO</b>//   mtimecmp low register</summary>
+<ul>
+<li class="content" name="fld_D1000008.0" onclick="ElemClick('fld_D1000008.0');">
+[0:31]<b style="margin: 20px;">COUNT</b> (def=0xFFFFFFFF)    //    MTIMECMP count
+</li>
+</ul>
+</details></li>
+<li class="content" name="reg_D100000C"><details ontoggle="ElemCh('reg_D100000C');"><summary>0xD100000C<b style="margin: 20px;">MTIMECMP_HI</b>//   mtimecmp high register</summary>
+<ul>
+<li class="content" name="fld_D100000C.0" onclick="ElemClick('fld_D100000C.0');">
+[0:31]<b style="margin: 20px;">COUNT</b> (def=0xFFFFFFFF)    //    MTIMECMP count
+</li>
+</ul>
+</details></li>
+<li class="content" name="reg_D1000FF8"><details ontoggle="ElemCh('reg_D1000FF8');"><summary>0xD1000FF8<b style="margin: 20px;">MSTOP</b>//   MSTOP register</summary>
+<ul>
+<li class="content" name="fld_D1000FF8.0" onclick="ElemClick('fld_D1000FF8.0');">
+[0]<b style="margin: 20px;">TIMESTOP</b> (def=0x0)    //    TIMESTOP
+</li>
+</ul>
+</details></li>
+<li class="content" name="reg_D1000FFC"><details ontoggle="ElemCh('reg_D1000FFC');"><summary>0xD1000FFC<b style="margin: 20px;">MSIP</b>//   MSIP register</summary>
+<ul>
+<li class="content" name="fld_D1000FFC.0" onclick="ElemClick('fld_D1000FFC.0');">
+[0]<b style="margin: 20px;">MSIP</b> (def=0x0)    //    MSIP
+</li>
+</ul>
+</details></li>
+<b>interrupts:</b><ul><li class="content" name="isr_D1000000.7" onclick="ElemClick('isr_D1000000.7');">[7]  <b>CLIC_INT_TMR</b>    //    </li>
+</ul>
+</ul>
+</details></li>
 <li class="content" name="per_D2000000"><details ontoggle="ElemCh('per_D2000000');"><summary>0xD2000000<b style="margin: 20px;">ECLIC</b>// Enhanced Core Local Interrupt Controller</summary>
 <ul>
 <li class="content" name="reg_D2000000"><details ontoggle="ElemCh('reg_D2000000');"><summary>0xD2000000<b style="margin: 20px;">CLICCFG</b>//   cliccfg Register</summary>

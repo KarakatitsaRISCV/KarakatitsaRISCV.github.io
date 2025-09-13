@@ -1,0 +1,2297 @@
+<head>
+<title>Pintable</title>
+
+<style type="text/css">
+  /*body {
+    overflow: hidden;
+  }*/
+  table{
+    border-collapse: collapse; /* Убираем двойные линии между ячейками */ 
+  }
+  td, th{
+    border: 1px solid black; /* Параметры рамки */ 
+    width:auto;
+    text-align: center;
+    text-shadow: 0 0 1px #ffffff;  }
+  th{
+    background: #b0e0e6; /* Цвет фона */ 
+    position: sticky; top: 0; /*Зафиксировать заголовок*/
+  }
+  .noBorder, .noBorder th, .noBorder td {
+    border: none !important; /* В результате границы становятся абсолютно незаметными */ 
+  }
+  .hltext{
+    padding: 1px;
+    border: 2px dotted #ffffff;
+    color: #000000;
+    background-color:#c0c0c080;
+  }
+  input[type="checkbox"]{
+    margin-right: 20px;
+  }
+input[type="color"]{
+  box-sizing     : border-box;
+  border: none;
+  height: 20px;
+  width: 20px;
+}
+input[type="text"]{
+  box-sizing: border-box;
+  border: none;
+  height: 20px;
+}
+#col-1 {
+  position: relative;
+  width: 70%;
+  float: left;
+  height: 80%;
+}
+
+#col-2 {
+  position: relative;
+  width: 30%;
+  float: right;
+  height: 80%;
+}
+.table_wrapper{
+  display: block;
+  overflow-x: auto;
+  height: 100%;
+  white-space: nowrap;
+}
+
+</style>
+
+
+<script>
+
+var controls = document.getElementsByClassName("controls");
+
+function SelectPeriph(name){
+  let mcu = document.getElementById("mcuselected").value;
+  let tbl = document.getElementsByName(mcu);
+  let ctl = document.getElementsByName(name);
+  let hdr = tbl[0].children[0].children[0];
+  let idx = -1;
+  let vis = "";
+  for(let i=0; i<hdr.children.length; i++){
+    if(hdr.children[i].innerText == name){idx = i; break;}
+  }
+  if(idx < 0)return;
+  hid = ! ctl[0].checked;
+  hdr.children[idx].hidden = hid;
+  
+  hdr = tbl[0].children[1];
+  for(let i=0; i<hdr.children.length; i++){
+    if(hdr.children[i].children.length < 2)continue;
+    hdr.children[i].children[idx].hidden = hid;
+  }
+  UnusedVisible();
+}
+
+function UnusedVisible(){
+  let mcu = document.getElementById("mcuselected").value;
+  let tbl = document.getElementsByName(mcu)[0];
+  tbl = tbl.children[1].children;
+  if(document.getElementById("hideempty").checked){
+    for(let i=0; i<tbl.length; i++){
+      let vis = false;
+      let lin = tbl[i].children;
+      for(let j=2; j<lin.length-3; j++){
+        if(lin[j].hidden)continue;
+        if(lin[j].textContent == "")continue;
+        vis = true;
+        break;
+      }
+      tbl[i].hidden = !vis;
+    }
+  }else{
+    for(let i=0; i<tbl.length; i++){
+      tbl[i].hidden = false;
+    }
+  }
+}
+
+function SelectColor(linenum){
+  let mcu = document.getElementById("mcuselected").value;
+  let tbl = document.getElementsByName(mcu);
+  let lin = tbl[0].children[1];
+  let col = -1;
+  lin = tbl[0].children[1].children[linenum].getElementsByTagName("input");
+  for(let i=0; i<lin.length; i++){
+    if(lin[i].name == "usersel"){
+      col = lin[i].value;
+      break;
+    }
+  }
+  if(col == -1)return;
+  lin = tbl[0].children[1].children[linenum];
+  if(col == "#ffffff")col="";
+  lin.bgColor = col;
+  package_draw();
+}
+
+function PN_input(){
+  package_draw();
+}
+
+function SelectMCU(){
+  let mcu = document.getElementById("mcuselected");
+  let tables = document.getElementsByTagName("table");
+  for(let i=0; i<tables.length; i++){
+    tables[i].hidden = (tables[i].attributes.name.value != mcu.value);
+  }
+  Periph_Vis_update();
+  package_draw();
+  tbl_col_update();
+  document.title = mcu.children[mcu.selectedIndex].firstChild.data + " - Pins";
+}
+
+function Periph_Vis_update(){
+  for(let i=0; i<controls.length; i++){
+    SelectPeriph(controls[i].name);
+  }
+}
+
+function HideAll(){
+  let check = false;
+  for(let i=0; i<controls.length; i++){
+    check |= controls[i].checked;
+  }
+  for(let i=0; i<controls.length; i++){
+    controls[i].checked = !check;
+    SelectPeriph(controls[i].name);
+  }
+}
+
+function tbl_col_update(){
+  let mcu = document.getElementById("mcuselected").value;
+  let tbl = document.getElementsByName(mcu);
+  let lin = tbl[0].children[1];
+  for(let j=0; j<tbl[0].children[1].children.length; j++){
+    let col = -1;
+    lin = tbl[0].children[1].children[j].getElementsByTagName("input");
+    for(let i=0; i<lin.length; i++){
+      if(lin[i].name == "usersel"){
+        col = lin[i].value;
+        break;
+      }
+    }
+    if(col == -1)return;
+    lin = tbl[0].children[1].children[j];
+    if(col == "#ffffff")col="";
+    lin.bgColor = col;
+  }
+  package_draw();
+}
+
+function OnLoad(){
+  SelectMCU();
+  Periph_Vis_update();
+  tbl_col_update();
+}
+
+var comment_event = false;
+function href_onclick(name){
+let det = document.getElementById("details_comments");
+  comment_event = true;
+  det.setAttribute("open","");
+  for(let i=0; i<det.children.length; i++){
+    if(det.children[i].id != name){
+      det.children[i].style = "";
+    }else{
+      det.children[i].style = "background-color:powderblue;";
+    }
+  }
+}
+
+function comm_ontoggle(){
+  if(comment_event){comment_event=false; return;}
+  let det = document.getElementById("details_comments");
+  for(let i=0; i<det.children.length; i++){
+    det.children[i].style = "";
+  }
+}
+
+function tbl_export(){
+  let mcu = document.getElementById("mcuselected");
+  let tbl = document.getElementsByName(mcu.value);
+  
+  let lin = tbl[0].children[0].children[0].children;
+  let idx_col = -1, idx_pn = -1, idx_comm=-1;
+  for(let i=0; i<lin.length; i++){
+    if(lin[i].className == "tbl_color")idx_col = i;
+    if(lin[i].className == "tbl_pinname")idx_pn = i;
+    if(lin[i].className == "tbl_comment")idx_comm = i;
+  }
+  
+  let res = mcu.children[mcu.selectedIndex].firstChild.data + "\n";
+  
+  let col = -1;
+  let cur = tbl[0].children[1].children;
+  res += cur.length + "\n";
+  for(let i=0; i<cur.length; i++){
+    col = cur[i].children[idx_col].children[0].value;
+    let pn = cur[i].children[idx_pn].children[0].value;
+    let comm = cur[i].children[idx_comm].children[0].children[0].value;
+    res += i+", "+col+", "+pn+", "+comm+   "\n";
+  }
+  
+  res += controls.length + "\n"
+  
+  for(let i=0; i<controls.length; i++){
+    res += controls[i].name +", "+ controls[i].checked + "\n";
+  }
+  
+  return res;
+}
+
+function tbl_import(str){
+  let arr = str.split("\n");
+  let name = arr[0];
+  
+  let mcu = document.getElementById("mcuselected");
+  let idx = -1;
+  for(let i=0; i<mcu.children.length; i++){
+    if(mcu.children[i].firstChild.data == name){
+      mcu.selectedIndex = i;
+      idx = i;
+      break;
+    }
+  }
+  
+  if(idx < 0){
+    alert("MCU [" + name + "] not found");
+    return;
+  }
+  let tbl = document.getElementsByName(mcu.value);
+  
+  let linenum = 1;
+  
+  let lin = tbl[0].children[0].children[0].children;
+  let idx_col = -1, idx_pn = -1, idx_comm=-1;
+  for(let i=0; i<lin.length; i++){
+    if(lin[i].className == "tbl_color")idx_col = i;
+    if(lin[i].className == "tbl_pinname")idx_pn = i;
+    if(lin[i].className == "tbl_comment")idx_comm = i;
+  }
+  
+  let len = parseInt(arr[linenum]);
+  linenum++;
+  
+  for(let i=linenum; i<(linenum+len); i++){
+    cur = arr[i].split(", ");
+    if(cur == ""){len++; continue;}
+    let idx = cur[0];
+    lin = tbl[0].children[1].children[idx].children;
+    lin[idx_col].children[0].value = cur[1];
+    lin[idx_pn].children[0].value = cur[2];
+    lin[idx_comm].children[0].children[0].value = cur[3];
+  }
+  linenum += len;
+  
+  len = parseInt(arr[linenum]);
+  linenum++;
+  for(let i=linenum; i<(linenum+len); i++){
+    cur = arr[i].split(", ");
+    if(cur == ""){len++; continue;}
+    let idx = controls.namedItem(cur[0]);
+    idx.checked = (cur[1] == "true");
+  }
+  linenum += len;
+  
+  SelectMCU();
+}
+
+function SaveToFile(){
+  let mcu = document.getElementById("mcuselected");
+  let text = tbl_export();
+  let blob = new Blob([text], { type: 'text/plain' });
+  let link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  let filename = mcu.children[mcu.selectedIndex].firstChild.data + ".pincfg";
+  link.download = filename;
+  link.click();
+}
+
+function LoadFromFile(){
+  let ui = document.getElementById("LoadFile");
+  var file = ui.files[0];
+  if(!file){return;}
+  const reader = new FileReader();
+  function LoadFromFile_done(){
+    tbl_import(reader.result);
+    ui.value = ""
+  }
+  reader.onload = LoadFromFile_done;
+  reader.readAsText(file);
+}
+
+var cnv_x=1, cnv_y=1, cnv_scale=1;
+var cnv_dx=0, cnv_dy=0;
+
+function cnv_procdrag(event){
+  if( event.buttons & 4){
+    cnv_x = 1; cnv_y = 1; cnv_scale = 1; package_draw();
+  }
+  if( event.buttons & 1){
+    cnv_x += event.clientX-cnv_dx;
+    cnv_y += event.clientY-cnv_dy;
+    package_draw();
+  }
+  cnv_dx = event.clientX;
+  cnv_dy = event.clientY;
+}
+
+function cnv_wheel(event){
+  event.preventDefault();
+  if(event.deltaY == 0)return;
+  const canvas = document.getElementById("canvas");
+  let ds = 1;
+  if(event.deltaY > 0){
+    ds = 1/1.1;
+  }else{
+    ds = 1.1;
+  }
+  let X = event.clientX-canvas.parentNode.offsetLeft, Y = event.clientY-canvas.parentNode.offsetTop;
+  cnv_x = cnv_x*ds + X*(1-ds);
+  cnv_y = cnv_y*ds + Y*(1-ds);
+  cnv_scale *= ds;
+  
+  package_draw();
+}
+function package_draw(){
+  const funcs = [
+    ["GD32VW553KIQ.QFN32", package_draw_GD32VW553KIQ_QFN32],
+    ["GD32VW553KMQ.QFN32", package_draw_GD32VW553KMQ_QFN32],
+    ["GD32VW553HIQ.QFN40", package_draw_GD32VW553HIQ_QFN40],
+    ["GD32VW553HMQ.QFN40", package_draw_GD32VW553HMQ_QFN40],
+  ];
+  const canvas = document.getElementById("canvas");
+  if( !canvas.getContext )return;
+  const ctx = canvas.getContext("2d");
+  let mcu = document.getElementById("mcuselected").value 
+  let tbl = document.getElementsByName(mcu);
+  let drawnames = document.getElementById("pinnames").checked;
+  let x=cnv_x, y=cnv_y, scale=500;
+
+  let w = canvas.parentNode.clientWidth;
+  let h = canvas.parentNode.clientHeight;
+  if(w < h)scale = w-2; else scale = h-2;
+  canvas.width = w;
+  canvas.height = h;
+  scale *= cnv_scale;
+
+  var pkg_draw_prev = -1;
+  for(let i=0; i<funcs.length; i++){
+    if(funcs[i][0] == mcu){
+      if(pkg_draw_prev != i){
+        ctx.save();
+        ctx.fillStyle ="#ffffff";
+        ctx.fillRect(0,0,5000,5000);
+        ctx.restore();
+        pkg_draw_prev = i;
+      }
+      funcs[i][1](ctx, tbl[0].children[1].children, x, y, scale, drawnames); 
+      break;
+    }
+  }
+  //draw_mcu(ctx, tbl[0].children[1].children, x, y, scale); 
+}
+var table_selected = -1;
+window.addEventListener("load", package_draw);
+function table_onmouse(idx){
+  table_selected = idx;
+  package_draw();
+}
+
+function pack_html_draw(ctx, tbl, x, y, scale, font_sz, pins, pin_names, drawnames, graph){
+  const patternCanvas = document.createElement("canvas");
+  const patternContext = patternCanvas.getContext("2d");
+  patternCanvas.width = 10;
+  patternCanvas.height = 10;
+  patternContext.fillStyle ="rgb(200 200 200)";
+  patternContext.fillRect(0, 0, patternCanvas.width, patternCanvas.height);
+  patternContext.fillStyle ="rgb(0 0 0)";
+  patternContext.fillRect(0, 0, 5, 5);
+  const pattern = ctx.createPattern(patternCanvas, "repeat");
+  ctx.fillStyle ="rgb(200 200 200)";
+
+//draw pads
+  for(let i=0; i<pins.length; i++){
+    let col = "rgb(220 220 220)";
+    let idx = pin_names[i][4];
+    if((idx >= 0)&&(idx < tbl.length)){
+      if((tbl[idx].bgColor)&&(tbl[idx].bgcolor != "")){
+        col = tbl[idx].bgColor;
+      }
+    }
+    ctx.fillStyle = col;
+    if(table_selected == i){
+      ctx.fillStyle = pattern;
+    }
+    if(pins[i][0] == 'r'){
+      ctx.fillRect(x+pins[i][1]*scale, y+pins[i][2]*scale, pins[i][3]*scale, pins[i][4]*scale);
+    }else{
+      ctx.beginPath();
+      ctx.ellipse(x+pins[i][1]*scale, y+pins[i][2]*scale, pins[i][3]*scale, pins[i][4]*scale, 0, 0, Math.PI*2);
+      ctx.fill();
+    }
+    ctx.fillStyle = "rgb(200 200 200)";
+  }
+
+//draw pads text
+  ctx.fillStyle ="rgb(0 0 0)";
+  ctx.textBaseline = "middle";
+  ctx.textAlign = "center";
+  ctx.font = scale*font_sz + "px serif";
+
+  let colnum = -1;
+  let hdr = tbl[0].parentElement.parentElement.children[0].children[0].children;
+  for(let i=0; i<hdr.length; i++){
+    if(hdr[i].className == "tbl_pinname"){colnum = i; break;}
+  }
+  for(let i=0; i<pin_names.length; i++){
+    let name = pin_names[i][3];
+    let idx = pin_names[i][4];
+    if(drawnames && (idx>=0)&&(idx<tbl.length)){name = tbl[idx].children[1].children[0].textContent;}
+    if((colnum >= 0) && (idx >= 0) && (idx < tbl.length)){
+      let val = tbl[idx].children[colnum].children[0].value;
+      if(val != "")name = val;
+    }
+    if(pin_names[i][0] == 'h'){
+      ctx.strokeText(name, x + pin_names[i][1]*scale, y + pin_names[i][2]*scale);
+    }else{
+      ctx.save(); ctx.translate(x + pin_names[i][1]*scale, y + pin_names[i][2]*scale);
+      ctx.rotate(-Math.PI/2); ctx.strokeText(name, 0, 0);
+      ctx.restore();
+    }
+  }
+
+//draw graphics
+  ctx.beginPath();
+  for(let i=0; i<graph.length; i++){
+    if(graph[i][0] == 'l'){
+      ctx.moveTo(x + graph[i][1]*scale, y + graph[i][2]*scale); ctx.lineTo(x + graph[i][3]*scale, y + graph[i][4]*scale);
+    }else if(graph[i][0] == 'a'){
+      ctx.moveTo(x + graph[i][1]*scale, y + graph[i][2]*scale); ctx.arc(x+graph[i][1]*scale, y+graph[i][2]*scale, graph[i][3]*scale, graph[i][4], graph[i][5], graph[i][6]);
+    }else if(graph[i][0] == 'r'){
+      ctx.fillRect(x + graph[i][1]*scale, y + graph[i][2]*scale, graph[i][3]*scale, graph[i][4]*scale);
+    }else if(graph[i][0] == 'c'){
+      ctx.ellipse(x + graph[i][1]*scale, y + graph[i][2]*scale, graph[i][3]*scale, graph[i][4]*scale, 0,0,Math.PI*2); ctx.fill();
+    }
+  }
+  ctx.stroke();
+}
+
+function package_draw_GD32VW553KIQ_QFN32(ctx, tbl, x, y, scale, drawnames){
+  const pins = [
+    ['r', 0.248077, 0.248077, 0.225000, 0.225000],//0
+    ['r', 0.248077, 0.526923, 0.225000, 0.225000],//1
+    ['r', 0.526923, 0.248077, 0.225000, 0.225000],//2
+    ['r', 0.526923, 0.526923, 0.225000, 0.225000],//3
+    ['r', 0.048077, 0.211538, 0.134615, 0.038462],//4
+    ['r', 0.048077, 0.288462, 0.134615, 0.038462],//5
+    ['r', 0.048077, 0.365385, 0.134615, 0.038462],//6
+    ['r', 0.048077, 0.442308, 0.134615, 0.038462],//7
+    ['r', 0.048077, 0.519231, 0.134615, 0.038462],//8
+    ['r', 0.048077, 0.596154, 0.134615, 0.038462],//9
+    ['r', 0.048077, 0.673077, 0.134615, 0.038462],//10
+    ['r', 0.048077, 0.750000, 0.134615, 0.038462],//11
+    ['r', 0.211538, 0.817308, 0.038462, 0.134615],//12
+    ['r', 0.288462, 0.817308, 0.038462, 0.134615],//13
+    ['r', 0.365385, 0.817308, 0.038462, 0.134615],//14
+    ['r', 0.442308, 0.817308, 0.038462, 0.134615],//15
+    ['r', 0.519231, 0.817308, 0.038462, 0.134615],//16
+    ['r', 0.596154, 0.817308, 0.038462, 0.134615],//17
+    ['r', 0.673077, 0.817308, 0.038462, 0.134615],//18
+    ['r', 0.750000, 0.817308, 0.038462, 0.134615],//19
+    ['r', 0.817308, 0.750000, 0.134615, 0.038462],//20
+    ['r', 0.817308, 0.673077, 0.134615, 0.038462],//21
+    ['r', 0.817308, 0.596154, 0.134615, 0.038462],//22
+    ['r', 0.817308, 0.519231, 0.134615, 0.038462],//23
+    ['r', 0.817308, 0.442308, 0.134615, 0.038462],//24
+    ['r', 0.817308, 0.365385, 0.134615, 0.038462],//25
+    ['r', 0.817308, 0.288462, 0.134615, 0.038462],//26
+    ['r', 0.817308, 0.211538, 0.134615, 0.038462],//27
+    ['r', 0.750000, 0.048077, 0.038462, 0.134615],//28
+    ['r', 0.673077, 0.048077, 0.038462, 0.134615],//29
+    ['r', 0.596154, 0.048077, 0.038462, 0.134615],//30
+    ['r', 0.519231, 0.048077, 0.038462, 0.134615],//31
+    ['r', 0.442308, 0.048077, 0.038462, 0.134615],//32
+    ['r', 0.365385, 0.048077, 0.038462, 0.134615],//33
+    ['r', 0.288462, 0.048077, 0.038462, 0.134615],//34
+    ['r', 0.211538, 0.048077, 0.038462, 0.134615],//35
+    ['r', 0.221154, 0.221154, 0.557692, 0.557692],//36
+  ];
+  const pin_names = [
+    ['h', 0.360577, 0.360577, "", -1], //0
+    ['h', 0.360577, 0.639423, "", -1], //1
+    ['h', 0.639423, 0.360577, "", -1], //2
+    ['h', 0.639423, 0.639423, "", -1], //3
+    ['h', 0.115385, 0.230769, "1", 0], //4
+    ['h', 0.115385, 0.307692, "2", 1], //5
+    ['h', 0.115385, 0.384615, "3", 2], //6
+    ['h', 0.115385, 0.461538, "4", 3], //7
+    ['h', 0.115385, 0.538462, "5", 4], //8
+    ['h', 0.115385, 0.615385, "6", 5], //9
+    ['h', 0.115385, 0.692308, "7", 6], //10
+    ['h', 0.115385, 0.769231, "8", 7], //11
+    ['v', 0.230769, 0.884615, "9", 8], //12
+    ['v', 0.307692, 0.884615, "10", 9], //13
+    ['v', 0.384615, 0.884615, "11", 10], //14
+    ['v', 0.461538, 0.884615, "12", 11], //15
+    ['v', 0.538462, 0.884615, "13", 12], //16
+    ['v', 0.615385, 0.884615, "14", 13], //17
+    ['v', 0.692308, 0.884615, "15", 14], //18
+    ['v', 0.769231, 0.884615, "16", 15], //19
+    ['h', 0.884615, 0.769231, "17", 16], //20
+    ['h', 0.884615, 0.692308, "18", 17], //21
+    ['h', 0.884615, 0.615385, "19", 18], //22
+    ['h', 0.884615, 0.538462, "20", 19], //23
+    ['h', 0.884615, 0.461538, "21", 20], //24
+    ['h', 0.884615, 0.384615, "22", 21], //25
+    ['h', 0.884615, 0.307692, "23", 22], //26
+    ['h', 0.884615, 0.230769, "24", 23], //27
+    ['v', 0.769231, 0.115385, "25", 24], //28
+    ['v', 0.692308, 0.115385, "26", 25], //29
+    ['v', 0.615385, 0.115385, "27", 26], //30
+    ['v', 0.538462, 0.115385, "28", 27], //31
+    ['v', 0.461538, 0.115385, "29", 28], //32
+    ['v', 0.384615, 0.115385, "30", 29], //33
+    ['v', 0.307692, 0.115385, "31", 30], //34
+    ['v', 0.230769, 0.115385, "32", 31], //35
+    ['h', 0.500000, 0.500000, "33", 32], //36
+  ];
+  const graph = [
+    ['l', 0.094231, 0.905769, 0.094231, 0.838462], //0
+    ['l', 0.161538, 0.094231, 0.094231, 0.094231], //1
+    ['l', 0.905769, 0.094231, 0.905769, 0.161538], //2
+    ['l', 0.838462, 0.905769, 0.905769, 0.905769], //3
+    ['l', 0.161538, 0.905769, 0.094231, 0.905769], //4
+    ['l', 0.838462, 0.094231, 0.905769, 0.094231], //5
+    ['l', 0.905769, 0.905769, 0.905769, 0.838462], //6
+    ['l', 1.000000, 1.000000, 1.000000, 0.000000], //7
+    ['l', 1.000000, 0.000000, 0.000000, 0.000000], //8
+    ['l', 0.000000, 0.000000, 0.000000, 1.000000], //9
+    ['l', 0.000000, 1.000000, 1.000000, 1.000000], //10
+    ['l', 0.884615, 0.115385, 0.884615, 0.884615], //11
+    ['l', 0.307692, 0.115385, 0.884615, 0.115385], //12
+    ['l', 0.115385, 0.307692, 0.307692, 0.115385], //13
+    ['l', 0.884615, 0.884615, 0.115385, 0.884615], //14
+    ['l', 0.115385, 0.884615, 0.115385, 0.307692], //15
+  ];
+  pack_html_draw(ctx, tbl, x, y, scale, 0.038462, pins, pin_names, drawnames, graph);
+}
+function package_draw_GD32VW553KMQ_QFN32(ctx, tbl, x, y, scale, drawnames){
+  const pins = [
+    ['r', 0.248077, 0.248077, 0.225000, 0.225000],//0
+    ['r', 0.248077, 0.526923, 0.225000, 0.225000],//1
+    ['r', 0.526923, 0.248077, 0.225000, 0.225000],//2
+    ['r', 0.526923, 0.526923, 0.225000, 0.225000],//3
+    ['r', 0.048077, 0.211538, 0.134615, 0.038462],//4
+    ['r', 0.048077, 0.288462, 0.134615, 0.038462],//5
+    ['r', 0.048077, 0.365385, 0.134615, 0.038462],//6
+    ['r', 0.048077, 0.442308, 0.134615, 0.038462],//7
+    ['r', 0.048077, 0.519231, 0.134615, 0.038462],//8
+    ['r', 0.048077, 0.596154, 0.134615, 0.038462],//9
+    ['r', 0.048077, 0.673077, 0.134615, 0.038462],//10
+    ['r', 0.048077, 0.750000, 0.134615, 0.038462],//11
+    ['r', 0.211538, 0.817308, 0.038462, 0.134615],//12
+    ['r', 0.288462, 0.817308, 0.038462, 0.134615],//13
+    ['r', 0.365385, 0.817308, 0.038462, 0.134615],//14
+    ['r', 0.442308, 0.817308, 0.038462, 0.134615],//15
+    ['r', 0.519231, 0.817308, 0.038462, 0.134615],//16
+    ['r', 0.596154, 0.817308, 0.038462, 0.134615],//17
+    ['r', 0.673077, 0.817308, 0.038462, 0.134615],//18
+    ['r', 0.750000, 0.817308, 0.038462, 0.134615],//19
+    ['r', 0.817308, 0.750000, 0.134615, 0.038462],//20
+    ['r', 0.817308, 0.673077, 0.134615, 0.038462],//21
+    ['r', 0.817308, 0.596154, 0.134615, 0.038462],//22
+    ['r', 0.817308, 0.519231, 0.134615, 0.038462],//23
+    ['r', 0.817308, 0.442308, 0.134615, 0.038462],//24
+    ['r', 0.817308, 0.365385, 0.134615, 0.038462],//25
+    ['r', 0.817308, 0.288462, 0.134615, 0.038462],//26
+    ['r', 0.817308, 0.211538, 0.134615, 0.038462],//27
+    ['r', 0.750000, 0.048077, 0.038462, 0.134615],//28
+    ['r', 0.673077, 0.048077, 0.038462, 0.134615],//29
+    ['r', 0.596154, 0.048077, 0.038462, 0.134615],//30
+    ['r', 0.519231, 0.048077, 0.038462, 0.134615],//31
+    ['r', 0.442308, 0.048077, 0.038462, 0.134615],//32
+    ['r', 0.365385, 0.048077, 0.038462, 0.134615],//33
+    ['r', 0.288462, 0.048077, 0.038462, 0.134615],//34
+    ['r', 0.211538, 0.048077, 0.038462, 0.134615],//35
+    ['r', 0.221154, 0.221154, 0.557692, 0.557692],//36
+  ];
+  const pin_names = [
+    ['h', 0.360577, 0.360577, "", -1], //0
+    ['h', 0.360577, 0.639423, "", -1], //1
+    ['h', 0.639423, 0.360577, "", -1], //2
+    ['h', 0.639423, 0.639423, "", -1], //3
+    ['h', 0.115385, 0.230769, "1", 0], //4
+    ['h', 0.115385, 0.307692, "2", 1], //5
+    ['h', 0.115385, 0.384615, "3", 2], //6
+    ['h', 0.115385, 0.461538, "4", 3], //7
+    ['h', 0.115385, 0.538462, "5", 4], //8
+    ['h', 0.115385, 0.615385, "6", 5], //9
+    ['h', 0.115385, 0.692308, "7", 6], //10
+    ['h', 0.115385, 0.769231, "8", 7], //11
+    ['v', 0.230769, 0.884615, "9", 8], //12
+    ['v', 0.307692, 0.884615, "10", 9], //13
+    ['v', 0.384615, 0.884615, "11", 10], //14
+    ['v', 0.461538, 0.884615, "12", 11], //15
+    ['v', 0.538462, 0.884615, "13", 12], //16
+    ['v', 0.615385, 0.884615, "14", 13], //17
+    ['v', 0.692308, 0.884615, "15", 14], //18
+    ['v', 0.769231, 0.884615, "16", 15], //19
+    ['h', 0.884615, 0.769231, "17", 16], //20
+    ['h', 0.884615, 0.692308, "18", 17], //21
+    ['h', 0.884615, 0.615385, "19", 18], //22
+    ['h', 0.884615, 0.538462, "20", 19], //23
+    ['h', 0.884615, 0.461538, "21", 20], //24
+    ['h', 0.884615, 0.384615, "22", 21], //25
+    ['h', 0.884615, 0.307692, "23", 22], //26
+    ['h', 0.884615, 0.230769, "24", 23], //27
+    ['v', 0.769231, 0.115385, "25", 24], //28
+    ['v', 0.692308, 0.115385, "26", 25], //29
+    ['v', 0.615385, 0.115385, "27", 26], //30
+    ['v', 0.538462, 0.115385, "28", 27], //31
+    ['v', 0.461538, 0.115385, "29", 28], //32
+    ['v', 0.384615, 0.115385, "30", 29], //33
+    ['v', 0.307692, 0.115385, "31", 30], //34
+    ['v', 0.230769, 0.115385, "32", 31], //35
+    ['h', 0.500000, 0.500000, "33", 32], //36
+  ];
+  const graph = [
+    ['l', 0.094231, 0.905769, 0.094231, 0.838462], //0
+    ['l', 0.161538, 0.094231, 0.094231, 0.094231], //1
+    ['l', 0.905769, 0.094231, 0.905769, 0.161538], //2
+    ['l', 0.838462, 0.905769, 0.905769, 0.905769], //3
+    ['l', 0.161538, 0.905769, 0.094231, 0.905769], //4
+    ['l', 0.838462, 0.094231, 0.905769, 0.094231], //5
+    ['l', 0.905769, 0.905769, 0.905769, 0.838462], //6
+    ['l', 1.000000, 1.000000, 1.000000, 0.000000], //7
+    ['l', 1.000000, 0.000000, 0.000000, 0.000000], //8
+    ['l', 0.000000, 0.000000, 0.000000, 1.000000], //9
+    ['l', 0.000000, 1.000000, 1.000000, 1.000000], //10
+    ['l', 0.884615, 0.115385, 0.884615, 0.884615], //11
+    ['l', 0.307692, 0.115385, 0.884615, 0.115385], //12
+    ['l', 0.115385, 0.307692, 0.307692, 0.115385], //13
+    ['l', 0.884615, 0.884615, 0.115385, 0.884615], //14
+    ['l', 0.115385, 0.884615, 0.115385, 0.307692], //15
+  ];
+  pack_html_draw(ctx, tbl, x, y, scale, 0.038462, pins, pin_names, drawnames, graph);
+}
+function package_draw_GD32VW553HIQ_QFN40(ctx, tbl, x, y, scale, drawnames){
+  const pins = [
+    ['r', 0.228226, 0.421774, 0.156452, 0.156452],//0
+    ['r', 0.421774, 0.421774, 0.156452, 0.156452],//1
+    ['r', 0.228226, 0.615323, 0.156452, 0.156452],//2
+    ['r', 0.421774, 0.615323, 0.156452, 0.156452],//3
+    ['r', 0.615323, 0.421774, 0.156452, 0.156452],//4
+    ['r', 0.228226, 0.228226, 0.156452, 0.156452],//5
+    ['r', 0.421774, 0.228226, 0.156452, 0.156452],//6
+    ['r', 0.615323, 0.615323, 0.156452, 0.156452],//7
+    ['r', 0.615323, 0.228226, 0.156452, 0.156452],//8
+    ['r', 0.040323, 0.189516, 0.133065, 0.040323],//9
+    ['r', 0.040323, 0.254032, 0.133065, 0.040323],//10
+    ['r', 0.040323, 0.318548, 0.133065, 0.040323],//11
+    ['r', 0.040323, 0.383065, 0.133065, 0.040323],//12
+    ['r', 0.040323, 0.447581, 0.133065, 0.040323],//13
+    ['r', 0.040323, 0.512097, 0.133065, 0.040323],//14
+    ['r', 0.040323, 0.576613, 0.133065, 0.040323],//15
+    ['r', 0.040323, 0.641129, 0.133065, 0.040323],//16
+    ['r', 0.040323, 0.705645, 0.133065, 0.040323],//17
+    ['r', 0.040323, 0.770161, 0.133065, 0.040323],//18
+    ['r', 0.189516, 0.826613, 0.040323, 0.133065],//19
+    ['r', 0.254032, 0.826613, 0.040323, 0.133065],//20
+    ['r', 0.318548, 0.826613, 0.040323, 0.133065],//21
+    ['r', 0.383065, 0.826613, 0.040323, 0.133065],//22
+    ['r', 0.447581, 0.826613, 0.040323, 0.133065],//23
+    ['r', 0.512097, 0.826613, 0.040323, 0.133065],//24
+    ['r', 0.576613, 0.826613, 0.040323, 0.133065],//25
+    ['r', 0.641129, 0.826613, 0.040323, 0.133065],//26
+    ['r', 0.705645, 0.826613, 0.040323, 0.133065],//27
+    ['r', 0.770161, 0.826613, 0.040323, 0.133065],//28
+    ['r', 0.826613, 0.770161, 0.133065, 0.040323],//29
+    ['r', 0.826613, 0.705645, 0.133065, 0.040323],//30
+    ['r', 0.826613, 0.641129, 0.133065, 0.040323],//31
+    ['r', 0.826613, 0.576613, 0.133065, 0.040323],//32
+    ['r', 0.826613, 0.512097, 0.133065, 0.040323],//33
+    ['r', 0.826613, 0.447581, 0.133065, 0.040323],//34
+    ['r', 0.826613, 0.383065, 0.133065, 0.040323],//35
+    ['r', 0.826613, 0.318548, 0.133065, 0.040323],//36
+    ['r', 0.826613, 0.254032, 0.133065, 0.040323],//37
+    ['r', 0.826613, 0.189516, 0.133065, 0.040323],//38
+    ['r', 0.770161, 0.040323, 0.040323, 0.133065],//39
+    ['r', 0.705645, 0.040323, 0.040323, 0.133065],//40
+    ['r', 0.641129, 0.040323, 0.040323, 0.133065],//41
+    ['r', 0.576613, 0.040323, 0.040323, 0.133065],//42
+    ['r', 0.512097, 0.040323, 0.040323, 0.133065],//43
+    ['r', 0.447581, 0.040323, 0.040323, 0.133065],//44
+    ['r', 0.383065, 0.040323, 0.040323, 0.133065],//45
+    ['r', 0.318548, 0.040323, 0.040323, 0.133065],//46
+    ['r', 0.254032, 0.040323, 0.040323, 0.133065],//47
+    ['r', 0.189516, 0.040323, 0.040323, 0.133065],//48
+    ['r', 0.209677, 0.209677, 0.580645, 0.580645],//49
+  ];
+  const pin_names = [
+    ['h', 0.306452, 0.500000, "", -1], //0
+    ['h', 0.500000, 0.500000, "", -1], //1
+    ['h', 0.306452, 0.693548, "", -1], //2
+    ['h', 0.500000, 0.693548, "", -1], //3
+    ['h', 0.693548, 0.500000, "", -1], //4
+    ['h', 0.306452, 0.306452, "", -1], //5
+    ['h', 0.500000, 0.306452, "", -1], //6
+    ['h', 0.693548, 0.693548, "", -1], //7
+    ['h', 0.693548, 0.306452, "", -1], //8
+    ['h', 0.106855, 0.209677, "1", 0], //9
+    ['h', 0.106855, 0.274194, "2", 1], //10
+    ['h', 0.106855, 0.338710, "3", 2], //11
+    ['h', 0.106855, 0.403226, "4", 3], //12
+    ['h', 0.106855, 0.467742, "5", 4], //13
+    ['h', 0.106855, 0.532258, "6", 5], //14
+    ['h', 0.106855, 0.596774, "7", 6], //15
+    ['h', 0.106855, 0.661290, "8", 7], //16
+    ['h', 0.106855, 0.725806, "9", 8], //17
+    ['h', 0.106855, 0.790323, "10", 9], //18
+    ['v', 0.209677, 0.893145, "11", 10], //19
+    ['v', 0.274194, 0.893145, "12", 11], //20
+    ['v', 0.338710, 0.893145, "13", 12], //21
+    ['v', 0.403226, 0.893145, "14", 13], //22
+    ['v', 0.467742, 0.893145, "15", 14], //23
+    ['v', 0.532258, 0.893145, "16", 15], //24
+    ['v', 0.596774, 0.893145, "17", 16], //25
+    ['v', 0.661290, 0.893145, "18", 17], //26
+    ['v', 0.725806, 0.893145, "19", 18], //27
+    ['v', 0.790323, 0.893145, "20", 19], //28
+    ['h', 0.893145, 0.790323, "21", 20], //29
+    ['h', 0.893145, 0.725806, "22", 21], //30
+    ['h', 0.893145, 0.661290, "23", 22], //31
+    ['h', 0.893145, 0.596774, "24", 23], //32
+    ['h', 0.893145, 0.532258, "25", 24], //33
+    ['h', 0.893145, 0.467742, "26", 25], //34
+    ['h', 0.893145, 0.403226, "27", 26], //35
+    ['h', 0.893145, 0.338710, "28", 27], //36
+    ['h', 0.893145, 0.274194, "29", 28], //37
+    ['h', 0.893145, 0.209677, "30", 29], //38
+    ['v', 0.790323, 0.106855, "31", 30], //39
+    ['v', 0.725806, 0.106855, "32", 31], //40
+    ['v', 0.661290, 0.106855, "33", 32], //41
+    ['v', 0.596774, 0.106855, "34", 33], //42
+    ['v', 0.532258, 0.106855, "35", 34], //43
+    ['v', 0.467742, 0.106855, "36", 35], //44
+    ['v', 0.403226, 0.106855, "37", 36], //45
+    ['v', 0.338710, 0.106855, "38", 37], //46
+    ['v', 0.274194, 0.106855, "39", 38], //47
+    ['v', 0.209677, 0.106855, "40", 39], //48
+    ['h', 0.500000, 0.500000, "41", 40], //49
+  ];
+  const graph = [
+    ['l', 0.920968, 0.920968, 0.920968, 0.852419], //0
+    ['l', 0.920968, 0.079032, 0.920968, 0.147581], //1
+    ['l', 0.852419, 0.920968, 0.920968, 0.920968], //2
+    ['l', 0.147581, 0.079032, 0.079032, 0.079032], //3
+    ['l', 0.079032, 0.920968, 0.079032, 0.852419], //4
+    ['l', 0.147581, 0.920968, 0.079032, 0.920968], //5
+    ['l', 0.852419, 0.079032, 0.920968, 0.079032], //6
+    ['l', 0.000000, 1.000000, 1.000000, 1.000000], //7
+    ['l', 1.000000, 0.000000, 0.000000, 0.000000], //8
+    ['l', 0.000000, 0.000000, 0.000000, 1.000000], //9
+    ['l', 1.000000, 1.000000, 1.000000, 0.000000], //10
+    ['l', 0.903226, 0.903226, 0.096774, 0.903226], //11
+    ['l', 0.258065, 0.096774, 0.903226, 0.096774], //12
+    ['l', 0.096774, 0.258065, 0.258065, 0.096774], //13
+    ['l', 0.903226, 0.096774, 0.903226, 0.903226], //14
+    ['l', 0.096774, 0.903226, 0.096774, 0.258065], //15
+  ];
+  pack_html_draw(ctx, tbl, x, y, scale, 0.040323, pins, pin_names, drawnames, graph);
+}
+function package_draw_GD32VW553HMQ_QFN40(ctx, tbl, x, y, scale, drawnames){
+  const pins = [
+    ['r', 0.228226, 0.421774, 0.156452, 0.156452],//0
+    ['r', 0.421774, 0.421774, 0.156452, 0.156452],//1
+    ['r', 0.228226, 0.615323, 0.156452, 0.156452],//2
+    ['r', 0.421774, 0.615323, 0.156452, 0.156452],//3
+    ['r', 0.615323, 0.421774, 0.156452, 0.156452],//4
+    ['r', 0.228226, 0.228226, 0.156452, 0.156452],//5
+    ['r', 0.421774, 0.228226, 0.156452, 0.156452],//6
+    ['r', 0.615323, 0.615323, 0.156452, 0.156452],//7
+    ['r', 0.615323, 0.228226, 0.156452, 0.156452],//8
+    ['r', 0.040323, 0.189516, 0.133065, 0.040323],//9
+    ['r', 0.040323, 0.254032, 0.133065, 0.040323],//10
+    ['r', 0.040323, 0.318548, 0.133065, 0.040323],//11
+    ['r', 0.040323, 0.383065, 0.133065, 0.040323],//12
+    ['r', 0.040323, 0.447581, 0.133065, 0.040323],//13
+    ['r', 0.040323, 0.512097, 0.133065, 0.040323],//14
+    ['r', 0.040323, 0.576613, 0.133065, 0.040323],//15
+    ['r', 0.040323, 0.641129, 0.133065, 0.040323],//16
+    ['r', 0.040323, 0.705645, 0.133065, 0.040323],//17
+    ['r', 0.040323, 0.770161, 0.133065, 0.040323],//18
+    ['r', 0.189516, 0.826613, 0.040323, 0.133065],//19
+    ['r', 0.254032, 0.826613, 0.040323, 0.133065],//20
+    ['r', 0.318548, 0.826613, 0.040323, 0.133065],//21
+    ['r', 0.383065, 0.826613, 0.040323, 0.133065],//22
+    ['r', 0.447581, 0.826613, 0.040323, 0.133065],//23
+    ['r', 0.512097, 0.826613, 0.040323, 0.133065],//24
+    ['r', 0.576613, 0.826613, 0.040323, 0.133065],//25
+    ['r', 0.641129, 0.826613, 0.040323, 0.133065],//26
+    ['r', 0.705645, 0.826613, 0.040323, 0.133065],//27
+    ['r', 0.770161, 0.826613, 0.040323, 0.133065],//28
+    ['r', 0.826613, 0.770161, 0.133065, 0.040323],//29
+    ['r', 0.826613, 0.705645, 0.133065, 0.040323],//30
+    ['r', 0.826613, 0.641129, 0.133065, 0.040323],//31
+    ['r', 0.826613, 0.576613, 0.133065, 0.040323],//32
+    ['r', 0.826613, 0.512097, 0.133065, 0.040323],//33
+    ['r', 0.826613, 0.447581, 0.133065, 0.040323],//34
+    ['r', 0.826613, 0.383065, 0.133065, 0.040323],//35
+    ['r', 0.826613, 0.318548, 0.133065, 0.040323],//36
+    ['r', 0.826613, 0.254032, 0.133065, 0.040323],//37
+    ['r', 0.826613, 0.189516, 0.133065, 0.040323],//38
+    ['r', 0.770161, 0.040323, 0.040323, 0.133065],//39
+    ['r', 0.705645, 0.040323, 0.040323, 0.133065],//40
+    ['r', 0.641129, 0.040323, 0.040323, 0.133065],//41
+    ['r', 0.576613, 0.040323, 0.040323, 0.133065],//42
+    ['r', 0.512097, 0.040323, 0.040323, 0.133065],//43
+    ['r', 0.447581, 0.040323, 0.040323, 0.133065],//44
+    ['r', 0.383065, 0.040323, 0.040323, 0.133065],//45
+    ['r', 0.318548, 0.040323, 0.040323, 0.133065],//46
+    ['r', 0.254032, 0.040323, 0.040323, 0.133065],//47
+    ['r', 0.189516, 0.040323, 0.040323, 0.133065],//48
+    ['r', 0.209677, 0.209677, 0.580645, 0.580645],//49
+  ];
+  const pin_names = [
+    ['h', 0.306452, 0.500000, "", -1], //0
+    ['h', 0.500000, 0.500000, "", -1], //1
+    ['h', 0.306452, 0.693548, "", -1], //2
+    ['h', 0.500000, 0.693548, "", -1], //3
+    ['h', 0.693548, 0.500000, "", -1], //4
+    ['h', 0.306452, 0.306452, "", -1], //5
+    ['h', 0.500000, 0.306452, "", -1], //6
+    ['h', 0.693548, 0.693548, "", -1], //7
+    ['h', 0.693548, 0.306452, "", -1], //8
+    ['h', 0.106855, 0.209677, "1", 0], //9
+    ['h', 0.106855, 0.274194, "2", 1], //10
+    ['h', 0.106855, 0.338710, "3", 2], //11
+    ['h', 0.106855, 0.403226, "4", 3], //12
+    ['h', 0.106855, 0.467742, "5", 4], //13
+    ['h', 0.106855, 0.532258, "6", 5], //14
+    ['h', 0.106855, 0.596774, "7", 6], //15
+    ['h', 0.106855, 0.661290, "8", 7], //16
+    ['h', 0.106855, 0.725806, "9", 8], //17
+    ['h', 0.106855, 0.790323, "10", 9], //18
+    ['v', 0.209677, 0.893145, "11", 10], //19
+    ['v', 0.274194, 0.893145, "12", 11], //20
+    ['v', 0.338710, 0.893145, "13", 12], //21
+    ['v', 0.403226, 0.893145, "14", 13], //22
+    ['v', 0.467742, 0.893145, "15", 14], //23
+    ['v', 0.532258, 0.893145, "16", 15], //24
+    ['v', 0.596774, 0.893145, "17", 16], //25
+    ['v', 0.661290, 0.893145, "18", 17], //26
+    ['v', 0.725806, 0.893145, "19", 18], //27
+    ['v', 0.790323, 0.893145, "20", 19], //28
+    ['h', 0.893145, 0.790323, "21", 20], //29
+    ['h', 0.893145, 0.725806, "22", 21], //30
+    ['h', 0.893145, 0.661290, "23", 22], //31
+    ['h', 0.893145, 0.596774, "24", 23], //32
+    ['h', 0.893145, 0.532258, "25", 24], //33
+    ['h', 0.893145, 0.467742, "26", 25], //34
+    ['h', 0.893145, 0.403226, "27", 26], //35
+    ['h', 0.893145, 0.338710, "28", 27], //36
+    ['h', 0.893145, 0.274194, "29", 28], //37
+    ['h', 0.893145, 0.209677, "30", 29], //38
+    ['v', 0.790323, 0.106855, "31", 30], //39
+    ['v', 0.725806, 0.106855, "32", 31], //40
+    ['v', 0.661290, 0.106855, "33", 32], //41
+    ['v', 0.596774, 0.106855, "34", 33], //42
+    ['v', 0.532258, 0.106855, "35", 34], //43
+    ['v', 0.467742, 0.106855, "36", 35], //44
+    ['v', 0.403226, 0.106855, "37", 36], //45
+    ['v', 0.338710, 0.106855, "38", 37], //46
+    ['v', 0.274194, 0.106855, "39", 38], //47
+    ['v', 0.209677, 0.106855, "40", 39], //48
+    ['h', 0.500000, 0.500000, "41", 40], //49
+  ];
+  const graph = [
+    ['l', 0.920968, 0.920968, 0.920968, 0.852419], //0
+    ['l', 0.920968, 0.079032, 0.920968, 0.147581], //1
+    ['l', 0.852419, 0.920968, 0.920968, 0.920968], //2
+    ['l', 0.147581, 0.079032, 0.079032, 0.079032], //3
+    ['l', 0.079032, 0.920968, 0.079032, 0.852419], //4
+    ['l', 0.147581, 0.920968, 0.079032, 0.920968], //5
+    ['l', 0.852419, 0.079032, 0.920968, 0.079032], //6
+    ['l', 0.000000, 1.000000, 1.000000, 1.000000], //7
+    ['l', 1.000000, 0.000000, 0.000000, 0.000000], //8
+    ['l', 0.000000, 0.000000, 0.000000, 1.000000], //9
+    ['l', 1.000000, 1.000000, 1.000000, 0.000000], //10
+    ['l', 0.903226, 0.903226, 0.096774, 0.903226], //11
+    ['l', 0.258065, 0.096774, 0.903226, 0.096774], //12
+    ['l', 0.096774, 0.258065, 0.258065, 0.096774], //13
+    ['l', 0.903226, 0.096774, 0.903226, 0.903226], //14
+    ['l', 0.096774, 0.903226, 0.096774, 0.258065], //15
+  ];
+  pack_html_draw(ctx, tbl, x, y, scale, 0.040323, pins, pin_names, drawnames, graph);
+}
+
+</script>
+
+
+
+</head>
+
+<body onload="OnLoad();">
+
+<form>
+
+<select id="mcuselected" onchange="SelectMCU()">
+  <option value="GD32VW553KIQ.QFN32">GD32VW553KIQ.QFN32</option>
+  <option value="GD32VW553KIQ.QFN32">GD32VW553KMQ.QFN32</option>
+  <option value="GD32VW553HIQ.QFN40">GD32VW553HIQ.QFN40</option>
+  <option value="GD32VW553HIQ.QFN40">GD32VW553HMQ.QFN40</option>
+</select>
+
+<br>
+<label for="Per.GPIO">GPIO</label><input type="checkbox" class="controls" id="Per.GPIO" name="GPIO" checked onclick="SelectPeriph('GPIO');"/>
+<label for="Per.5VT">5VT</label><input type="checkbox" class="controls" id="Per.5VT" name="5VT" checked onclick="SelectPeriph('5VT');"/>
+<label for="Per.TIM">TIM</label><input type="checkbox" class="controls" id="Per.TIM" name="TIM" checked onclick="SelectPeriph('TIM');"/>
+<label for="Per.Analog">Analog</label><input type="checkbox" class="controls" id="Per.Analog" name="Analog" checked onclick="SelectPeriph('Analog');"/>
+<label for="Per.UART">UART</label><input type="checkbox" class="controls" id="Per.UART" name="UART" checked onclick="SelectPeriph('UART');"/>
+<label for="Per.SPI">SPI</label><input type="checkbox" class="controls" id="Per.SPI" name="SPI" checked onclick="SelectPeriph('SPI');"/>
+<label for="Per.QSPI">QSPI</label><input type="checkbox" class="controls" id="Per.QSPI" name="QSPI" checked onclick="SelectPeriph('QSPI');"/>
+<label for="Per.I2C">I2C</label><input type="checkbox" class="controls" id="Per.I2C" name="I2C" checked onclick="SelectPeriph('I2C');"/>
+<label for="Per.QSPI">QSPI</label><input type="checkbox" class="controls" id="Per.QSPI" name="QSPI" checked onclick="SelectPeriph('QSPI');"/>
+<label for="Per.Other">Other</label><input type="checkbox" class="controls" id="Per.Other" name="Other" checked onclick="SelectPeriph('Other');"/>
+<label for="Per.Service">Service</label><input type="checkbox" class="controls" id="Per.Service" name="Service" checked onclick="SelectPeriph('Service');"/>
+
+<br>
+<input type="button" value="Save" onclick="SaveToFile()"/>
+<input type="file" id="LoadFile" accept=".pincfg" onchange="LoadFromFile();"/>
+
+<label for="hideempty">Hide empty</label><input type="checkbox" id="hideempty" name="hideempty" onclick="UnusedVisible();"/>
+<label for="pinnames">Pin names</label><input type="checkbox" id="pinnames" name="pinnames" onclick="package_draw();"/>
+<input type="button" value="HideAll" onclick="HideAll();"/>
+
+
+</form>
+
+<div id="col-1">
+<div class="table_wrapper">
+<table name="GD32VW553KIQ.QFN32" onmouseleave="table_onmouse(-1);" hidden>
+  <thead>
+    <tr>
+      <th><div>Pin</div></th>
+      <th><div>Name</div></th>
+      <th><div>GPIO</div></th>
+      <th><div>5VT</div></th>
+      <th><div>TIM</div></th>
+      <th><div>Analog</div></th>
+      <th><div>UART</div></th>
+      <th><div>SPI</div></th>
+      <th><div>QSPI</div></th>
+      <th><div>I2C</div></th>
+      <th><div>QSPI</div></th>
+      <th><div>Service</div></th>
+      <th><div>Other</div></th>
+      <th class="tbl_color"><div>Col</div></th>
+      <th class="tbl_pinname"><div>PN</div></th>
+      <th class="tbl_comment"><div>Comment</div></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr class="tbl_srv_O" onmousemove="table_onmouse(4);">
+      <td><div>1</div></td>
+      <td><div>PA15</div></td>
+      <td><div>PA15</div></td>
+      <td><div>+</div></td>
+      <td><div><span class="hltext">1.0<sup>1</sup></span>, <span class="hltext">1_ETI<sup>1</sup></span></div></td>
+      <td><div></div></td>
+      <td><div><span class="hltext">0_RX<sup>7</sup></span>, <span class="hltext">1_RX<sup>8</sup></span></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div><span class="hltext">0_SCL<sup>4</sup></span>, <span class="hltext">1_SCL<sup>6</sup></span></div></td>
+      <td><div></div></td>
+      <td><div><span class="hltext">JTDI<sup>0</sup></span></div></td>
+      <td><div><span class="hltext">EVENTOUT<sup>15</sup></span>, WKUP1</div></td>
+      <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(0);"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
+      <td><div><input type="text" value=""/></div></td>
+    <tr onmousemove="table_onmouse(5);">
+      <td><div>2</div></td>
+      <td><div>PC13</div></td>
+      <td><div>PC13</div></td>
+      <td><div>+</div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div><span class="hltext">0_CK<sup>0</sup></span></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div><span class="hltext">EVENTOUT<sup>15</sup></span>, RTC_TAMP_0, RTC_OUT, RTC_TS</div></td>
+      <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(1);"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
+      <td><div><input type="text" value=""/></div></td>
+    <tr class="tbl_srv_O" onmousemove="table_onmouse(6);">
+      <td><div>3</div></td>
+      <td><div>PC14</div></td>
+      <td><div>PC14</div></td>
+      <td><div>+</div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div>OSC32_IN</div></td>
+      <td><div><span class="hltext">EVENTOUT<sup>15</sup></span></div></td>
+      <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(2);"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
+      <td><div><input type="text" value=""/></div></td>
+    <tr class="tbl_srv_O" onmousemove="table_onmouse(7);">
+      <td><div>4</div></td>
+      <td><div>PC15</div></td>
+      <td><div>PC15</div></td>
+      <td><div>+</div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div>OSC32_OUT</div></td>
+      <td><div><span class="hltext">IFRP_OUT<sup>0</sup></span>, <span class="hltext">EVENTOUT<sup>15</sup></span></div></td>
+      <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(3);"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
+      <td><div><input type="text" value=""/></div></td>
+    <tr class="tbl_srv_F" onmousemove="table_onmouse(8);">
+      <td><div>5</div></td>
+      <td><div>NRST</div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div>NRST</div></td>
+      <td><div></div></td>
+      <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(4);"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
+      <td><div><input type="text" value=""/></div></td>
+    <tr class="tbl_srv_F" onmousemove="table_onmouse(9);">
+      <td><div>6</div></td>
+      <td><div>PU</div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div>PU</div></td>
+      <td><div></div></td>
+      <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(5);"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
+      <td><div><input type="text" value=""/></div></td>
+    <tr class="tbl_srv_F" onmousemove="table_onmouse(10);">
+      <td><div>7</div></td>
+      <td><div>AVCC33_ANA</div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div>VCC33_ANA</div></td>
+      <td><div></div></td>
+      <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(6);"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
+      <td><div><input type="text" value=""/></div></td>
+    <tr class="tbl_srv_F" onmousemove="table_onmouse(11);">
+      <td><div>8</div></td>
+      <td><div>RF</div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div>RF</div></td>
+      <td><div></div></td>
+      <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(7);"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
+      <td><div><input type="text" value=""/></div></td>
+    <tr class="tbl_srv_F" onmousemove="table_onmouse(12);">
+      <td><div>9</div></td>
+      <td><div>AVCC33_PA</div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div>AVCC33_PA</div></td>
+      <td><div></div></td>
+      <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(8);"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
+      <td><div><input type="text" value=""/></div></td>
+    <tr class="tbl_srv_F" onmousemove="table_onmouse(13);">
+      <td><div>10</div></td>
+      <td><div>AVCC33_CLK</div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div>AVCC33_CLK</div></td>
+      <td><div></div></td>
+      <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(9);"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
+      <td><div><input type="text" value=""/></div></td>
+    <tr class="tbl_srv_F" onmousemove="table_onmouse(14);">
+      <td><div>11</div></td>
+      <td><div>XTAL1</div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div>XTAL1</div></td>
+      <td><div></div></td>
+      <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(10);"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
+      <td><div><input type="text" value=""/></div></td>
+    <tr class="tbl_srv_F" onmousemove="table_onmouse(15);">
+      <td><div>12</div></td>
+      <td><div>XTAL2</div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div>XTAL2</div></td>
+      <td><div></div></td>
+      <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(11);"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
+      <td><div><input type="text" value=""/></div></td>
+    <tr class="tbl_srv_F" onmousemove="table_onmouse(16);">
+      <td><div>13</div></td>
+      <td><div>AVCC</div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div>AVCC</div></td>
+      <td><div></div></td>
+      <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(12);"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
+      <td><div><input type="text" value=""/></div></td>
+    <tr onmousemove="table_onmouse(17);">
+      <td><div>14</div></td>
+      <td><div>PA0</div></td>
+      <td><div>PA0</div></td>
+      <td><div>+</div></td>
+      <td><div><span class="hltext">1.0<sup>1</sup></span>, <span class="hltext">1_ETI<sup>1</sup></span>, <span class="hltext">0_ETI<sup>9</sup></span></div></td>
+      <td><div>0</div></td>
+      <td><div><span class="hltext">0_TX<sup>0</sup></span>, <span class="hltext">1_CTS<sup>7</sup></span></div></td>
+      <td><div><span class="hltext">MOSI<sup>5</sup></span></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div><span class="hltext">EVENTOUT<sup>15</sup></span>, WKUP0, RTC_TAMP_1</div></td>
+      <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(13);"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
+      <td><div><input type="text" value=""/></div></td>
+    <tr onmousemove="table_onmouse(18);">
+      <td><div>15</div></td>
+      <td><div>PA1</div></td>
+      <td><div>PA1</div></td>
+      <td><div>+</div></td>
+      <td><div><span class="hltext">1.1<sup>1</sup></span></div></td>
+      <td><div>1</div></td>
+      <td><div><span class="hltext">0_RX<sup>0</sup></span>, <span class="hltext">1_RTS<sup>7</sup></span></div></td>
+      <td><div><span class="hltext">MISO<sup>5</sup></span></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div><span class="hltext">EVENTOUT<sup>15</sup></span></div></td>
+      <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(14);"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
+      <td><div><input type="text" value=""/></div></td>
+    <tr onmousemove="table_onmouse(19);">
+      <td><div>16</div></td>
+      <td><div>PA2</div></td>
+      <td><div>PA2</div></td>
+      <td><div>+</div></td>
+      <td><div><span class="hltext">1.2<sup>1</sup></span>, <span class="hltext">0.0<sup>6</sup></span></div></td>
+      <td><div>2</div></td>
+      <td><div><span class="hltext">0_CTS<sup>0</sup></span>, <span class="hltext">1_TX<sup>7</sup></span></div></td>
+      <td><div><span class="hltext">SCK<sup>5</sup></span></div></td>
+      <td><div></div></td>
+      <td><div><span class="hltext">0_SCL<sup>4</sup></span></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div><span class="hltext">EVENTOUT<sup>15</sup></span></div></td>
+      <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(15);"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
+      <td><div><input type="text" value=""/></div></td>
+    <tr onmousemove="table_onmouse(20);">
+      <td><div>17</div></td>
+      <td><div>PA3</div></td>
+      <td><div>PA3</div></td>
+      <td><div>+</div></td>
+      <td><div><span class="hltext">1.3<sup>1</sup></span>, <span class="hltext">0.0_ON<sup>6</sup></span></div></td>
+      <td><div>3</div></td>
+      <td><div><span class="hltext">0_RTS<sup>0</sup></span>, <span class="hltext">1_RX<sup>7</sup></span></div></td>
+      <td><div><span class="hltext">NSS<sup>5</sup></span></div></td>
+      <td><div></div></td>
+      <td><div><span class="hltext">0_SDA<sup>4</sup></span></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div><span class="hltext">RTC_OUT<sup>9</sup></span>, <span class="hltext">EVENTOUT<sup>15</sup></span></div></td>
+      <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(16);"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
+      <td><div><input type="text" value=""/></div></td>
+    <tr onmousemove="table_onmouse(21);">
+      <td><div>18</div></td>
+      <td><div><abbr title="UART1-boot">PA4</abbr></div></td>
+      <td><div>PA4</div></td>
+      <td><div>+</div></td>
+      <td><div><span class="hltext">0.1<sup>8</sup></span></div></td>
+      <td><div>4</div></td>
+      <td><div><span class="hltext">1_TX<sup>0</sup></span></div></td>
+      <td><div><span class="hltext">MOSI<sup>2</sup></span>, <span class="hltext">NSS<sup>5</sup></span></div></td>
+      <td><div><span class="hltext">SCK<sup>3</sup></span></div></td>
+      <td><div></div></td>
+      <td><div><span class="hltext">SCK<sup>3</sup></span></div></td>
+      <td><div></div></td>
+      <td><div><span class="hltext">EVENTOUT<sup>15</sup></span></div></td>
+      <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(17);"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
+      <td><div><input type="text" value=""/></div></td>
+    <tr onmousemove="table_onmouse(22);">
+      <td><div>19</div></td>
+      <td><div><abbr title="UART1-boot">PA5</abbr></div></td>
+      <td><div>PA5</div></td>
+      <td><div>+</div></td>
+      <td><div><span class="hltext">2_ETI<sup>2</sup></span>, <span class="hltext">0.1_ON<sup>8</sup></span></div></td>
+      <td><div>5</div></td>
+      <td><div><span class="hltext">1_RX<sup>0</sup></span></div></td>
+      <td><div><span class="hltext">MISO<sup>4</sup></span>, <span class="hltext">SCK<sup>5</sup></span></div></td>
+      <td><div><span class="hltext">CSN<sup>3</sup></span></div></td>
+      <td><div></div></td>
+      <td><div><span class="hltext">CSN<sup>3</sup></span></div></td>
+      <td><div></div></td>
+      <td><div><span class="hltext">EVENTOUT<sup>15</sup></span></div></td>
+      <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(18);"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
+      <td><div><input type="text" value=""/></div></td>
+    <tr onmousemove="table_onmouse(23);">
+      <td><div>20</div></td>
+      <td><div><abbr title="UART2-boot">PA6</abbr></div></td>
+      <td><div>PA6</div></td>
+      <td><div>+</div></td>
+      <td><div><span class="hltext">2.0<sup>2</sup></span>, <span class="hltext">0.1<sup>8</sup></span>, <span class="hltext">1.1<sup>9</sup></span></div></td>
+      <td><div></div></td>
+      <td><div><span class="hltext">2_TX<sup>10</sup></span></div></td>
+      <td><div><span class="hltext">MISO<sup>5</sup></span>, <span class="hltext">SCK<sup>7</sup></span></div></td>
+      <td><div><span class="hltext">IO0<sup>3</sup></span></div></td>
+      <td><div><span class="hltext">SCL<sup>4</sup></span></div></td>
+      <td><div><span class="hltext">IO0<sup>3</sup></span></div></td>
+      <td><div></div></td>
+      <td><div><span class="hltext">EVENTOUT<sup>15</sup></span></div></td>
+      <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(19);"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
+      <td><div><input type="text" value=""/></div></td>
+    <tr onmousemove="table_onmouse(24);">
+      <td><div>21</div></td>
+      <td><div><abbr title="UART2-boot">PA7</abbr></div></td>
+      <td><div>PA7</div></td>
+      <td><div>+</div></td>
+      <td><div><span class="hltext">0.0_ON<sup>1</sup></span>, <span class="hltext">2.1<sup>2</sup></span>, <span class="hltext">0.1_ON<sup>6</sup></span>, <span class="hltext">1.2<sup>9</sup></span></div></td>
+      <td><div>7</div></td>
+      <td><div><span class="hltext">2_RX<sup>8</sup></span></div></td>
+      <td><div><span class="hltext">NSS<sup>4</sup></span>, <span class="hltext">MOSI<sup>5</sup></span></div></td>
+      <td><div><span class="hltext">IO1<sup>3</sup></span></div></td>
+      <td><div><span class="hltext">1_SDA<sup>0</sup></span></div></td>
+      <td><div><span class="hltext">IO1<sup>3</sup></span></div></td>
+      <td><div></div></td>
+      <td><div><span class="hltext">EVENTOUT<sup>15</sup></span>, WKUP2</div></td>
+      <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(20);"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
+      <td><div><input type="text" value=""/></div></td>
+    <tr onmousemove="table_onmouse(25);">
+      <td><div>22</div></td>
+      <td><div>PB0</div></td>
+      <td><div>PB0</div></td>
+      <td><div>+</div></td>
+      <td><div><span class="hltext">0.1_ON<sup>1</sup></span>, <span class="hltext">0.0<sup>2</sup></span>, <span class="hltext">0.2<sup>3</sup></span>, <span class="hltext">2_ETI<sup>8</sup></span>, <span class="hltext">16.0<sup>9</sup></span>, <span class="hltext">0_BKIN<sup>11</sup></span></div></td>
+      <td><div>8</div></td>
+      <td><div><span class="hltext">1_TX<sup>4</sup></span>, <span class="hltext">2_CTS<sup>10</sup></span></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div><span class="hltext">0_SCL<sup>6</sup></span></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div><span class="hltext">EVENTOUT<sup>15</sup></span></div></td>
+      <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(21);"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
+      <td><div><input type="text" value=""/></div></td>
+    <tr class="tbl_srv_O" onmousemove="table_onmouse(26);">
+      <td><div>23</div></td>
+      <td><div>PB1</div></td>
+      <td><div>PB1</div></td>
+      <td><div>+</div></td>
+      <td><div><span class="hltext">0.2_ON<sup>1</sup></span>, <span class="hltext">0.0_ON<sup>2</sup></span>, <span class="hltext">2.2<sup>3</sup></span>, <span class="hltext">16.0_ON<sup>9</sup></span></div></td>
+      <td><div></div></td>
+      <td><div><span class="hltext">1_RX<sup>4</sup></span>, <span class="hltext">2_RTS<sup>10</sup></span></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div><span class="hltext">0_SDA<sup>6</sup></span></div></td>
+      <td><div></div></td>
+      <td><div>BOOT1</div></td>
+      <td><div><span class="hltext">EVENTOUT<sup>15</sup></span></div></td>
+      <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(22);"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
+      <td><div><input type="text" value=""/></div></td>
+    <tr onmousemove="table_onmouse(27);">
+      <td><div>24</div></td>
+      <td><div><abbr title="UART0-boot">PB15</abbr></div></td>
+      <td><div>PB15</div></td>
+      <td><div>+</div></td>
+      <td><div><span class="hltext">0.2_ON<sup>1</sup></span>, <span class="hltext">2.0<sup>2</sup></span></div></td>
+      <td><div></div></td>
+      <td><div><span class="hltext">1_TX<sup>7</sup></span>, <span class="hltext">0_TX<sup>8</sup></span></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div><span class="hltext">0_SCL<sup>4</sup></span>, <span class="hltext">1_SCL<sup>6</sup></span></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div><span class="hltext">RTC_REFIN<sup>0</sup></span>, <span class="hltext">IFRP_OUT<sup>9</sup></span>, <span class="hltext">EVENTOUT<sup>15</sup></span></div></td>
+      <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(23);"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
+      <td><div><input type="text" value=""/></div></td>
+    <tr onmousemove="table_onmouse(28);">
+      <td><div>25</div></td>
+      <td><div><abbr title="UART0-boot">PA8</abbr></div></td>
+      <td><div>PA8</div></td>
+      <td><div>+</div></td>
+      <td><div><span class="hltext">0.0<sup>1</sup></span>, <span class="hltext">15.0<sup>8</sup></span>, <span class="hltext">0.2_ON<sup>10</sup></span></div></td>
+      <td><div></div></td>
+      <td><div><span class="hltext">0_RX<sup>2</sup></span>, <span class="hltext">1_RX<sup>3</sup></span>, <span class="hltext">0_CK<sup>7</sup></span></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div><span class="hltext">0_SDA<sup>5</sup></span>, <span class="hltext">1_SDA<sup>6</sup></span></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div><span class="hltext">CK_OUT0<sup>0</sup></span>, <span class="hltext">RTC_OUT<sup>9</sup></span>, <span class="hltext">EVENTOUT<sup>15</sup></span></div></td>
+      <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(24);"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
+      <td><div><input type="text" value=""/></div></td>
+    <tr onmousemove="table_onmouse(29);">
+      <td><div>26</div></td>
+      <td><div>PA12</div></td>
+      <td><div>PA12</div></td>
+      <td><div>+</div></td>
+      <td><div><span class="hltext">0_ETI<sup>1</sup></span>, <span class="hltext">0.3<sup>2</sup></span>, <span class="hltext">1.2<sup>9</sup></span>, <span class="hltext">16.0_ON<sup>10</sup></span></div></td>
+      <td><div></div></td>
+      <td><div><span class="hltext">0_CK<sup>7</sup></span></div></td>
+      <td><div><span class="hltext">NSS<sup>6</sup></span></div></td>
+      <td><div><span class="hltext">IO1<sup>4</sup></span></div></td>
+      <td><div></div></td>
+      <td><div><span class="hltext">IO1<sup>4</sup></span></div></td>
+      <td><div></div></td>
+      <td><div><span class="hltext">EVENTOUT<sup>15</sup></span>, WKUP3</div></td>
+      <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(25);"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
+      <td><div><input type="text" value=""/></div></td>
+    <tr class="tbl_srv_O" onmousemove="table_onmouse(30);">
+      <td><div>27</div></td>
+      <td><div>PB3<sup><a href="#comment_1" onclick="href_onclick('comment_1');">1</a></sup></div></td>
+      <td><div>PB3.</div></td>
+      <td><div>+</div></td>
+      <td><div><span class="hltext">1.1<sup>1</sup></span>, <span class="hltext">15_BKIN<sup>11</sup></span></div></td>
+      <td><div></div></td>
+      <td><div><span class="hltext">0_RX<sup>7</sup></span>, <span class="hltext">1_RX<sup>8</sup></span></div></td>
+      <td><div></div></td>
+      <td><div><span class="hltext">IO2<sup>4</sup></span></div></td>
+      <td><div></div></td>
+      <td><div><span class="hltext">IO2<sup>4</sup></span></div></td>
+      <td><div><span class="hltext">JTDO<sup>0</sup></span></div></td>
+      <td><div><span class="hltext">EVENTOUT<sup>15</sup></span></div></td>
+      <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(26);"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
+      <td><div><input type="text" value=""/></div></td>
+    <tr class="tbl_srv_O" onmousemove="table_onmouse(31);">
+      <td><div>28</div></td>
+      <td><div>PB4<sup><a href="#comment_1" onclick="href_onclick('comment_1');">1</a></sup></div></td>
+      <td><div>PB4</div></td>
+      <td><div>+</div></td>
+      <td><div><span class="hltext">1.0<sup>1</sup></span>, <span class="hltext">1_ETI<sup>1</sup></span></div></td>
+      <td><div></div></td>
+      <td><div><span class="hltext">0_TX<sup>7</sup></span>, <span class="hltext">1_TX<sup>8</sup></span></div></td>
+      <td><div></div></td>
+      <td><div><span class="hltext">IO3<sup>3</sup></span></div></td>
+      <td><div></div></td>
+      <td><div><span class="hltext">IO3<sup>3</sup></span></div></td>
+      <td><div><span class="hltext">NJTRST<sup>0</sup></span></div></td>
+      <td><div><span class="hltext">EVENTOUT<sup>15</sup></span></div></td>
+      <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(27);"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
+      <td><div><input type="text" value=""/></div></td>
+    <tr class="tbl_srv_O" onmousemove="table_onmouse(32);">
+      <td><div>29</div></td>
+      <td><div>PA13</div></td>
+      <td><div>PA13</div></td>
+      <td><div>+</div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div><span class="hltext">0_CTS<sup>7</sup></span>, <span class="hltext">1_CTS<sup>8</sup></span></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div><span class="hltext">0_SMBA<sup>4</sup></span>, <span class="hltext">1_SCL<sup>6</sup></span></div></td>
+      <td><div></div></td>
+      <td><div><span class="hltext">JTMS<sup>0</sup></span></div></td>
+      <td><div><span class="hltext">EVENTOUT<sup>15</sup></span></div></td>
+      <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(28);"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
+      <td><div><input type="text" value=""/></div></td>
+    <tr class="tbl_srv_O" onmousemove="table_onmouse(33);">
+      <td><div>30</div></td>
+      <td><div>PA14</div></td>
+      <td><div>PA14</div></td>
+      <td><div>+</div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div><span class="hltext">0_RTS<sup>7</sup></span>, <span class="hltext">1_RTS<sup>8</sup></span></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div><span class="hltext">1_SMBA<sup>4</sup></span>, <span class="hltext">1_SDA<sup>6</sup></span></div></td>
+      <td><div></div></td>
+      <td><div><span class="hltext">JTCK<sup>0</sup></span></div></td>
+      <td><div><span class="hltext">EVENTOUT<sup>15</sup></span></div></td>
+      <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(29);"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
+      <td><div><input type="text" value=""/></div></td>
+    <tr class="tbl_srv_F" onmousemove="table_onmouse(34);">
+      <td><div>31</div></td>
+      <td><div>VCC</div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div>VCC</div></td>
+      <td><div></div></td>
+      <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(30);"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
+      <td><div><input type="text" value=""/></div></td>
+    <tr class="tbl_srv_O" onmousemove="table_onmouse(35);">
+      <td><div>32</div></td>
+      <td><div>PC8</div></td>
+      <td><div>PC8</div></td>
+      <td><div>+</div></td>
+      <td><div><span class="hltext">2.2<sup>2</sup></span></div></td>
+      <td><div></div></td>
+      <td><div><span class="hltext">0_TX<sup>7</sup></span>, <span class="hltext">1_TX<sup>8</sup></span></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div><span class="hltext">0_SDA<sup>4</sup></span>, <span class="hltext">1_SDA<sup>6</sup></span></div></td>
+      <td><div></div></td>
+      <td><div>BOOT0</div></td>
+      <td><div><span class="hltext">EVENTOUT<sup>15</sup></span></div></td>
+      <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(31);"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
+      <td><div><input type="text" value=""/></div></td>
+    <tr class="tbl_srv_F" onmousemove="table_onmouse(36);">
+      <td><div>33</div></td>
+      <td><div>GND</div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div>GND</div></td>
+      <td><div></div></td>
+      <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(32);"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
+      <td><div><input type="text" value=""/></div></td>
+  </tbody>
+</table>
+<table name="GD32VW553HIQ.QFN40" onmouseleave="table_onmouse(-1);" hidden>
+  <thead>
+    <tr>
+      <th><div>Pin</div></th>
+      <th><div>Name</div></th>
+      <th><div>GPIO</div></th>
+      <th><div>5VT</div></th>
+      <th><div>TIM</div></th>
+      <th><div>Analog</div></th>
+      <th><div>UART</div></th>
+      <th><div>SPI</div></th>
+      <th><div>QSPI</div></th>
+      <th><div>I2C</div></th>
+      <th><div>QSPI</div></th>
+      <th><div>Service</div></th>
+      <th><div>Other</div></th>
+      <th class="tbl_color"><div>Col</div></th>
+      <th class="tbl_pinname"><div>PN</div></th>
+      <th class="tbl_comment"><div>Comment</div></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr class="tbl_srv_O" onmousemove="table_onmouse(9);">
+      <td><div>1</div></td>
+      <td><div>PC8</div></td>
+      <td><div>PC8</div></td>
+      <td><div>+</div></td>
+      <td><div><span class="hltext">2.2<sup>2</sup></span></div></td>
+      <td><div></div></td>
+      <td><div><span class="hltext">0_TX<sup>7</sup></span>, <span class="hltext">1_TX<sup>8</sup></span></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div><span class="hltext">0_SDA<sup>4</sup></span>, <span class="hltext">1_SDA<sup>6</sup></span></div></td>
+      <td><div></div></td>
+      <td><div>BOOT0</div></td>
+      <td><div><span class="hltext">EVENTOUT<sup>15</sup></span></div></td>
+      <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(0);"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
+      <td><div><input type="text" value=""/></div></td>
+    <tr class="tbl_srv_O" onmousemove="table_onmouse(10);">
+      <td><div>2</div></td>
+      <td><div>PA15</div></td>
+      <td><div>PA15</div></td>
+      <td><div>+</div></td>
+      <td><div><span class="hltext">1.0<sup>1</sup></span>, <span class="hltext">1_ETI<sup>1</sup></span></div></td>
+      <td><div></div></td>
+      <td><div><span class="hltext">0_RX<sup>7</sup></span>, <span class="hltext">1_RX<sup>8</sup></span></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div><span class="hltext">0_SCL<sup>4</sup></span>, <span class="hltext">1_SCL<sup>6</sup></span></div></td>
+      <td><div></div></td>
+      <td><div><span class="hltext">JTDI<sup>0</sup></span></div></td>
+      <td><div>WKUP1, <span class="hltext">EVENTOUT<sup>15</sup></span></div></td>
+      <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(1);"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
+      <td><div><input type="text" value=""/></div></td>
+    <tr onmousemove="table_onmouse(11);">
+      <td><div>3</div></td>
+      <td><div>PC13</div></td>
+      <td><div>PC13</div></td>
+      <td><div>+</div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div><span class="hltext">0_CK<sup>0</sup></span></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div><span class="hltext">EVENTOUT<sup>15</sup></span>, RTC_TAMP_0, RTC_OUT, RTC_TS</div></td>
+      <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(2);"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
+      <td><div><input type="text" value=""/></div></td>
+    <tr class="tbl_srv_O" onmousemove="table_onmouse(12);">
+      <td><div>4</div></td>
+      <td><div>PC14</div></td>
+      <td><div>PC14</div></td>
+      <td><div>+</div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div>OSC32_IN</div></td>
+      <td><div><span class="hltext">EVENTOUT<sup>15</sup></span></div></td>
+      <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(3);"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
+      <td><div><input type="text" value=""/></div></td>
+    <tr class="tbl_srv_O" onmousemove="table_onmouse(13);">
+      <td><div>5</div></td>
+      <td><div>PC15</div></td>
+      <td><div>PC15</div></td>
+      <td><div>+</div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div>OSC32_OUT</div></td>
+      <td><div><span class="hltext">EVENTOUT<sup>15</sup></span>, <span class="hltext">IFRP_OUT<sup>0</sup></span></div></td>
+      <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(4);"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
+      <td><div><input type="text" value=""/></div></td>
+    <tr class="tbl_srv_F" onmousemove="table_onmouse(14);">
+      <td><div>6</div></td>
+      <td><div>NRST</div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div>NRST</div></td>
+      <td><div></div></td>
+      <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(5);"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
+      <td><div><input type="text" value=""/></div></td>
+    <tr class="tbl_srv_F" onmousemove="table_onmouse(15);">
+      <td><div>7</div></td>
+      <td><div>PU</div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div>PU</div></td>
+      <td><div></div></td>
+      <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(6);"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
+      <td><div><input type="text" value=""/></div></td>
+    <tr class="tbl_srv_F" onmousemove="table_onmouse(16);">
+      <td><div>8</div></td>
+      <td><div>AVCC33_AN</div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div>AVCC33_AN</div></td>
+      <td><div></div></td>
+      <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(7);"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
+      <td><div><input type="text" value=""/></div></td>
+    <tr class="tbl_srv_F" onmousemove="table_onmouse(17);">
+      <td><div>9</div></td>
+      <td><div>NC</div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div>NC</div></td>
+      <td><div></div></td>
+      <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(8);"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
+      <td><div><input type="text" value=""/></div></td>
+    <tr class="tbl_srv_F" onmousemove="table_onmouse(18);">
+      <td><div>10</div></td>
+      <td><div>RF</div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div>RF</div></td>
+      <td><div></div></td>
+      <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(9);"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
+      <td><div><input type="text" value=""/></div></td>
+    <tr class="tbl_srv_F" onmousemove="table_onmouse(19);">
+      <td><div>11</div></td>
+      <td><div>AVCC33_PA</div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div>AVCC33_PA</div></td>
+      <td><div></div></td>
+      <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(10);"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
+      <td><div><input type="text" value=""/></div></td>
+    <tr class="tbl_srv_F" onmousemove="table_onmouse(20);">
+      <td><div>12</div></td>
+      <td><div>AVCC33_CLK</div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div>AVCC32_CLK</div></td>
+      <td><div></div></td>
+      <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(11);"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
+      <td><div><input type="text" value=""/></div></td>
+    <tr class="tbl_srv_F" onmousemove="table_onmouse(21);">
+      <td><div>13</div></td>
+      <td><div>XTAL1</div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div>XTAL1</div></td>
+      <td><div></div></td>
+      <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(12);"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
+      <td><div><input type="text" value=""/></div></td>
+    <tr class="tbl_srv_F" onmousemove="table_onmouse(22);">
+      <td><div>14</div></td>
+      <td><div>XTAL2</div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div>XTAL2</div></td>
+      <td><div></div></td>
+      <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(13);"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
+      <td><div><input type="text" value=""/></div></td>
+    <tr class="tbl_srv_F" onmousemove="table_onmouse(23);">
+      <td><div>15</div></td>
+      <td><div>AVCC</div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div>AVCC</div></td>
+      <td><div></div></td>
+      <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(14);"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
+      <td><div><input type="text" value=""/></div></td>
+    <tr onmousemove="table_onmouse(24);">
+      <td><div>16</div></td>
+      <td><div>PA0</div></td>
+      <td><div>PA0</div></td>
+      <td><div>+</div></td>
+      <td><div><span class="hltext">1.0<sup>1</sup></span>, <span class="hltext">1_ETI<sup>1</sup></span>, <span class="hltext">0_ETI<sup>9</sup></span></div></td>
+      <td><div>0</div></td>
+      <td><div><span class="hltext">0_TX<sup>0</sup></span>, <span class="hltext">1_CTS<sup>7</sup></span></div></td>
+      <td><div><span class="hltext">MOSI<sup>5</sup></span></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div><span class="hltext">EVENTOUT<sup>15</sup></span>, WKUP0, RTC_TAMP_1</div></td>
+      <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(15);"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
+      <td><div><input type="text" value=""/></div></td>
+    <tr onmousemove="table_onmouse(25);">
+      <td><div>17</div></td>
+      <td><div>PA1</div></td>
+      <td><div>PA1</div></td>
+      <td><div>+</div></td>
+      <td><div><span class="hltext">1.1<sup>1</sup></span></div></td>
+      <td><div>1</div></td>
+      <td><div><span class="hltext">0_RX<sup>0</sup></span>, <span class="hltext">1_RTS<sup>7</sup></span></div></td>
+      <td><div><span class="hltext">MISO<sup>5</sup></span></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div><span class="hltext">EVENTOUT<sup>15</sup></span></div></td>
+      <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(16);"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
+      <td><div><input type="text" value=""/></div></td>
+    <tr onmousemove="table_onmouse(26);">
+      <td><div>18</div></td>
+      <td><div>PA2</div></td>
+      <td><div>PA2</div></td>
+      <td><div>+</div></td>
+      <td><div><span class="hltext">1.2<sup>1</sup></span>, <span class="hltext">0.0<sup>6</sup></span></div></td>
+      <td><div>2</div></td>
+      <td><div><span class="hltext">0_CTS<sup>0</sup></span>, <span class="hltext">1_TX<sup>7</sup></span></div></td>
+      <td><div><span class="hltext">SCK<sup>5</sup></span></div></td>
+      <td><div></div></td>
+      <td><div><span class="hltext">0_SCL<sup>4</sup></span></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div><span class="hltext">EVENTOUT<sup>15</sup></span></div></td>
+      <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(17);"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
+      <td><div><input type="text" value=""/></div></td>
+    <tr onmousemove="table_onmouse(27);">
+      <td><div>19</div></td>
+      <td><div>PA3</div></td>
+      <td><div>PA3</div></td>
+      <td><div>+</div></td>
+      <td><div><span class="hltext">1.3<sup>1</sup></span>, <span class="hltext">0.0_ON<sup>6</sup></span></div></td>
+      <td><div>3</div></td>
+      <td><div><span class="hltext">0_RTS<sup>0</sup></span>, <span class="hltext">1_RX<sup>7</sup></span></div></td>
+      <td><div><span class="hltext">NSS<sup>5</sup></span></div></td>
+      <td><div></div></td>
+      <td><div><span class="hltext">0_SDA<sup>4</sup></span></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div><span class="hltext">RTC_OUT<sup>9</sup></span>, <span class="hltext">EVENTOUT<sup>15</sup></span></div></td>
+      <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(18);"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
+      <td><div><input type="text" value=""/></div></td>
+    <tr onmousemove="table_onmouse(28);">
+      <td><div>20</div></td>
+      <td><div><abbr title="UART1-boot">PA4</abbr></div></td>
+      <td><div>PA4</div></td>
+      <td><div>+</div></td>
+      <td><div><span class="hltext">0.1<sup>8</sup></span></div></td>
+      <td><div>4</div></td>
+      <td><div><span class="hltext">1_TX<sup>0</sup></span></div></td>
+      <td><div><span class="hltext">MOSI<sup>2</sup></span>, <span class="hltext">NSS<sup>5</sup></span></div></td>
+      <td><div><span class="hltext">SCK<sup>3</sup></span></div></td>
+      <td><div></div></td>
+      <td><div><span class="hltext">SCK<sup>3</sup></span></div></td>
+      <td><div></div></td>
+      <td><div><span class="hltext">EVENTOUT<sup>15</sup></span></div></td>
+      <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(19);"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
+      <td><div><input type="text" value=""/></div></td>
+    <tr onmousemove="table_onmouse(29);">
+      <td><div>21</div></td>
+      <td><div><abbr title="UART1-boot">PA5</abbr></div></td>
+      <td><div>PA5</div></td>
+      <td><div>+</div></td>
+      <td><div><span class="hltext">2_ETI<sup>2</sup></span>, <span class="hltext">0.1_ON<sup>8</sup></span></div></td>
+      <td><div>5</div></td>
+      <td><div><span class="hltext">1_RX<sup>0</sup></span></div></td>
+      <td><div><span class="hltext">MISO<sup>4</sup></span>, <span class="hltext">SCK<sup>5</sup></span></div></td>
+      <td><div><span class="hltext">CSN<sup>3</sup></span></div></td>
+      <td><div></div></td>
+      <td><div><span class="hltext">CSN<sup>3</sup></span></div></td>
+      <td><div></div></td>
+      <td><div><span class="hltext">EVENTOUT<sup>15</sup></span></div></td>
+      <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(20);"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
+      <td><div><input type="text" value=""/></div></td>
+    <tr onmousemove="table_onmouse(30);">
+      <td><div>22</div></td>
+      <td><div><abbr title="UART2-boot">PA6</abbr></div></td>
+      <td><div>PA6</div></td>
+      <td><div>+</div></td>
+      <td><div><span class="hltext">2.0<sup>2</sup></span>, <span class="hltext">0.1<sup>8</sup></span>, <span class="hltext">1.1<sup>9</sup></span></div></td>
+      <td><div>6</div></td>
+      <td><div><span class="hltext">2_TX<sup>10</sup></span></div></td>
+      <td><div><span class="hltext">MISO<sup>5</sup></span>, <span class="hltext">SCK<sup>7</sup></span></div></td>
+      <td><div><span class="hltext">IO0<sup>3</sup></span></div></td>
+      <td><div><span class="hltext">1_SCL<sup>4</sup></span></div></td>
+      <td><div><span class="hltext">IO0<sup>3</sup></span></div></td>
+      <td><div></div></td>
+      <td><div><span class="hltext">EVENTOUT<sup>15</sup></span></div></td>
+      <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(21);"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
+      <td><div><input type="text" value=""/></div></td>
+    <tr onmousemove="table_onmouse(31);">
+      <td><div>23</div></td>
+      <td><div><abbr title="UART2-boot">PA7</abbr></div></td>
+      <td><div>PA7</div></td>
+      <td><div>+</div></td>
+      <td><div><span class="hltext">0.0_ON<sup>1</sup></span>, <span class="hltext">2.1<sup>2</sup></span>, <span class="hltext">0.1_ON<sup>6</sup></span>, <span class="hltext">1.2<sup>9</sup></span></div></td>
+      <td><div>7.</div></td>
+      <td><div><span class="hltext">2_RX<sup>8</sup></span></div></td>
+      <td><div><span class="hltext">NSS<sup>4</sup></span>, <span class="hltext">MOSI<sup>5</sup></span></div></td>
+      <td><div><span class="hltext">IO1<sup>3</sup></span></div></td>
+      <td><div><span class="hltext">1_SDA<sup>0</sup></span></div></td>
+      <td><div><span class="hltext">IO1<sup>3</sup></span></div></td>
+      <td><div></div></td>
+      <td><div><span class="hltext">EVENTOUT<sup>15</sup></span>, WKUP2</div></td>
+      <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(22);"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
+      <td><div><input type="text" value=""/></div></td>
+    <tr onmousemove="table_onmouse(32);">
+      <td><div>24</div></td>
+      <td><div>PB0</div></td>
+      <td><div>PB0</div></td>
+      <td><div>+</div></td>
+      <td><div><span class="hltext">0.1_ON<sup>1</sup></span>, <span class="hltext">0.0<sup>2</sup></span>, <span class="hltext">0.2<sup>3</sup></span>, <span class="hltext">2_ETI<sup>8</sup></span>, <span class="hltext">16.0<sup>9</sup></span>, <span class="hltext">0_BKIN<sup>11</sup></span></div></td>
+      <td><div>8</div></td>
+      <td><div><span class="hltext">1_TX<sup>4</sup></span>, <span class="hltext">2_CTS<sup>10</sup></span></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div><span class="hltext">0_SCL<sup>6</sup></span></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div><span class="hltext">EVENTOUT<sup>15</sup></span></div></td>
+      <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(23);"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
+      <td><div><input type="text" value=""/></div></td>
+    <tr class="tbl_srv_O" onmousemove="table_onmouse(33);">
+      <td><div>25</div></td>
+      <td><div>PB1</div></td>
+      <td><div>PB1</div></td>
+      <td><div>+</div></td>
+      <td><div><span class="hltext">0.2_ON<sup>1</sup></span>, <span class="hltext">0.0_ON<sup>2</sup></span>, <span class="hltext">2.2<sup>3</sup></span>, <span class="hltext">16.0_ON<sup>9</sup></span></div></td>
+      <td><div></div></td>
+      <td><div><span class="hltext">1_RX<sup>4</sup></span>, <span class="hltext">2_RTS<sup>10</sup></span></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div><span class="hltext">0_SDA<sup>6</sup></span></div></td>
+      <td><div></div></td>
+      <td><div>BOOT1</div></td>
+      <td><div><span class="hltext">EVENTOUT<sup>15</sup></span></div></td>
+      <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(24);"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
+      <td><div><input type="text" value=""/></div></td>
+    <tr onmousemove="table_onmouse(34);">
+      <td><div>26</div></td>
+      <td><div>PB2</div></td>
+      <td><div>PB2</div></td>
+      <td><div>+</div></td>
+      <td><div><span class="hltext">1.3<sup>1</sup></span>, <span class="hltext">2.3<sup>3</sup></span>, <span class="hltext">0_ETI<sup>8</sup></span>, <span class="hltext">16_BKIN<sup>9</sup></span></div></td>
+      <td><div></div></td>
+      <td><div><span class="hltext">1_CTS<sup>4</sup></span></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div><span class="hltext">EVENTOUT<sup>15</sup></span></div></td>
+      <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(25);"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
+      <td><div><input type="text" value=""/></div></td>
+    <tr onmousemove="table_onmouse(35);">
+      <td><div>27</div></td>
+      <td><div>PB11</div></td>
+      <td><div>PB11</div></td>
+      <td><div>+</div></td>
+      <td><div><span class="hltext">1.2<sup>1</sup></span>, <span class="hltext">0.1_ON<sup>2</sup></span>, <span class="hltext">15.BKIN<sup>11</sup></span></div></td>
+      <td><div></div></td>
+      <td><div><span class="hltext">1_RTS<sup>8</sup></span></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div><span class="hltext">CK_OUT1<sup>0</sup></span>, <span class="hltext">EVENTOUT<sup>15</sup></span></div></td>
+      <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(26);"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
+      <td><div><input type="text" value=""/></div></td>
+    <tr onmousemove="table_onmouse(36);">
+      <td><div>28</div></td>
+      <td><div>PB12</div></td>
+      <td><div>PB12</div></td>
+      <td><div>+</div></td>
+      <td><div><span class="hltext">0_BKIN<sup>1</sup></span>, <span class="hltext">0.3<sup>2</sup></span>, <span class="hltext">1.2<sup>3</sup></span></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div><span class="hltext">1_SCL<sup>6</sup></span></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div><span class="hltext">EVENTOUT<sup>15</sup></span></div></td>
+      <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(27);"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
+      <td><div><input type="text" value=""/></div></td>
+    <tr onmousemove="table_onmouse(37);">
+      <td><div>29</div></td>
+      <td><div>PB13</div></td>
+      <td><div>PB13</div></td>
+      <td><div>+</div></td>
+      <td><div><span class="hltext">0.0_ON<sup>1</sup></span>, <span class="hltext">1.3<sup>3</sup></span>, <span class="hltext">15.0<sup>8</sup></span></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div><span class="hltext">1_SDA<sup>6</sup></span></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div><span class="hltext">EVENTOUT<sup>15</sup></span></div></td>
+      <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(28);"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
+      <td><div><input type="text" value=""/></div></td>
+    <tr onmousemove="table_onmouse(38);">
+      <td><div>30</div></td>
+      <td><div><abbr title="UART0-boot">PB15</abbr></div></td>
+      <td><div>PB15</div></td>
+      <td><div>+</div></td>
+      <td><div><span class="hltext">0.2_ON<sup>1</sup></span>, <span class="hltext">2.0<sup>2</sup></span></div></td>
+      <td><div></div></td>
+      <td><div><span class="hltext">1_TX<sup>7</sup></span>, <span class="hltext">0_TX<sup>8</sup></span></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div><span class="hltext">0_SCL<sup>4</sup></span>, <span class="hltext">1_SCL<sup>6</sup></span></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div><span class="hltext">RTC_REFIN<sup>0</sup></span>, <span class="hltext">IFRP_OUT<sup>9</sup></span>, <span class="hltext">EVENTOUT<sup>15</sup></span></div></td>
+      <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(29);"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
+      <td><div><input type="text" value=""/></div></td>
+    <tr onmousemove="table_onmouse(39);">
+      <td><div>31</div></td>
+      <td><div><abbr title="UART0-boot">PA8</abbr></div></td>
+      <td><div>PA8</div></td>
+      <td><div>+</div></td>
+      <td><div><span class="hltext">0.0<sup>1</sup></span>, <span class="hltext">15.0<sup>8</sup></span>, <span class="hltext">0.2_ON<sup>10</sup></span></div></td>
+      <td><div></div></td>
+      <td><div><span class="hltext">0_RX<sup>2</sup></span>, <span class="hltext">1_RX<sup>3</sup></span>, <span class="hltext">0_CK<sup>7</sup></span></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div><span class="hltext">0_SDA<sup>5</sup></span>, <span class="hltext">1_SDA<sup>6</sup></span></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div><span class="hltext">CK_OUT0<sup>0</sup></span>, <span class="hltext">RTC_OUT<sup>9</sup></span>, <span class="hltext">EVENTOUT<sup>15</sup></span></div></td>
+      <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(30);"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
+      <td><div><input type="text" value=""/></div></td>
+    <tr onmousemove="table_onmouse(40);">
+      <td><div>32</div></td>
+      <td><div>PA9</div></td>
+      <td><div>PA9</div></td>
+      <td><div>+</div></td>
+      <td><div><span class="hltext">0.1<sup>1</sup></span>, <span class="hltext">15.0_ON<sup>8</sup></span></div></td>
+      <td><div></div></td>
+      <td><div><span class="hltext">0_TX<sup>7</sup></span></div></td>
+      <td><div><span class="hltext">MOSI<sup>0</sup></span></div></td>
+      <td><div><span class="hltext">SCK<sup>4</sup></span></div></td>
+      <td><div></div></td>
+      <td><div><span class="hltext">SCK<sup>4</sup></span></div></td>
+      <td><div></div></td>
+      <td><div><span class="hltext">EVENTOUT<sup>15</sup></span></div></td>
+      <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(31);"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
+      <td><div><input type="text" value=""/></div></td>
+    <tr onmousemove="table_onmouse(41);">
+      <td><div>33</div></td>
+      <td><div>PA10</div></td>
+      <td><div>PA10</div></td>
+      <td><div>+</div></td>
+      <td><div><span class="hltext">0.2<sup>1</sup></span>, <span class="hltext">16.0<sup>7</sup></span></div></td>
+      <td><div></div></td>
+      <td><div><span class="hltext">0_RX<sup>8</sup></span></div></td>
+      <td><div><span class="hltext">MISO<sup>0</sup></span></div></td>
+      <td><div><span class="hltext">CSN<sup>4</sup></span></div></td>
+      <td><div></div></td>
+      <td><div><span class="hltext">CSN<sup>4</sup></span></div></td>
+      <td><div></div></td>
+      <td><div><span class="hltext">EVENTOUT<sup>15</sup></span></div></td>
+      <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(32);"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
+      <td><div><input type="text" value=""/></div></td>
+    <tr onmousemove="table_onmouse(42);">
+      <td><div>34</div></td>
+      <td><div>PA11</div></td>
+      <td><div>PA11</div></td>
+      <td><div>+</div></td>
+      <td><div><span class="hltext">0.3<sup>1</sup></span>, <span class="hltext">16_BKIN<sup>7</sup></span>, <span class="hltext">1.3<sup>9</sup></span></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div><span class="hltext">SCK<sup>0</sup></span></div></td>
+      <td><div><span class="hltext">IO0<sup>4</sup></span></div></td>
+      <td><div></div></td>
+      <td><div><span class="hltext">IO0<sup>4</sup></span></div></td>
+      <td><div></div></td>
+      <td><div><span class="hltext">EVENTOUT<sup>15</sup></span></div></td>
+      <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(33);"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
+      <td><div><input type="text" value=""/></div></td>
+    <tr onmousemove="table_onmouse(43);">
+      <td><div>35</div></td>
+      <td><div>PA12</div></td>
+      <td><div>PA12</div></td>
+      <td><div>+</div></td>
+      <td><div><span class="hltext">0_ETI<sup>1</sup></span>, <span class="hltext">0.3<sup>2</sup></span>, <span class="hltext">1.2<sup>9</sup></span>, <span class="hltext">16.0_ON<sup>10</sup></span></div></td>
+      <td><div></div></td>
+      <td><div><span class="hltext">0_CK<sup>7</sup></span></div></td>
+      <td><div><span class="hltext">NSS<sup>6</sup></span></div></td>
+      <td><div><span class="hltext">IO1<sup>4</sup></span></div></td>
+      <td><div></div></td>
+      <td><div><span class="hltext">IO1<sup>4</sup></span></div></td>
+      <td><div></div></td>
+      <td><div><span class="hltext">EVENTOUT<sup>15</sup></span>, WKUP3</div></td>
+      <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(34);"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
+      <td><div><input type="text" value=""/></div></td>
+    <tr class="tbl_srv_O" onmousemove="table_onmouse(44);">
+      <td><div>36</div></td>
+      <td><div>PB3<sup><a href="#comment_1" onclick="href_onclick('comment_1');">1</a></sup></div></td>
+      <td><div>PB3</div></td>
+      <td><div>+</div></td>
+      <td><div><span class="hltext">1.1<sup>1</sup></span>, <span class="hltext">15_BKIN<sup>11</sup></span></div></td>
+      <td><div></div></td>
+      <td><div><span class="hltext">0_RX<sup>7</sup></span>, <span class="hltext">1_RX<sup>8</sup></span></div></td>
+      <td><div></div></td>
+      <td><div><span class="hltext">IO2<sup>3</sup></span></div></td>
+      <td><div></div></td>
+      <td><div><span class="hltext">IO2<sup>3</sup></span></div></td>
+      <td><div><span class="hltext">JTDO<sup>0</sup></span></div></td>
+      <td><div><span class="hltext">EVENTOUT<sup>15</sup></span></div></td>
+      <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(35);"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
+      <td><div><input type="text" value=""/></div></td>
+    <tr class="tbl_srv_O" onmousemove="table_onmouse(45);">
+      <td><div>37</div></td>
+      <td><div>PB4<sup><a href="#comment_1" onclick="href_onclick('comment_1');">1</a></sup></div></td>
+      <td><div>PB4</div></td>
+      <td><div>+</div></td>
+      <td><div><span class="hltext">1.0<sup>1</sup></span>, <span class="hltext">1_ETI<sup>1</sup></span></div></td>
+      <td><div></div></td>
+      <td><div><span class="hltext">0_TX<sup>7</sup></span>, <span class="hltext">1_TX<sup>8</sup></span></div></td>
+      <td><div></div></td>
+      <td><div><span class="hltext">IO3<sup>3</sup></span></div></td>
+      <td><div></div></td>
+      <td><div><span class="hltext">IO3<sup>3</sup></span></div></td>
+      <td><div><span class="hltext">NJTRST<sup>0</sup></span></div></td>
+      <td><div><span class="hltext">EVENTOUT<sup>15</sup></span></div></td>
+      <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(36);"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
+      <td><div><input type="text" value=""/></div></td>
+    <tr class="tbl_srv_O" onmousemove="table_onmouse(46);">
+      <td><div>38</div></td>
+      <td><div>PA13</div></td>
+      <td><div>PA13</div></td>
+      <td><div>+</div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div><span class="hltext">0_CTS<sup>7</sup></span>, <span class="hltext">1_CTS<sup>8</sup></span></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div><span class="hltext">0_SMBA<sup>4</sup></span>, <span class="hltext">1_SCL<sup>6</sup></span></div></td>
+      <td><div></div></td>
+      <td><div><span class="hltext">JTMS<sup>0</sup></span></div></td>
+      <td><div><span class="hltext">EVENTOUT<sup>15</sup></span></div></td>
+      <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(37);"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
+      <td><div><input type="text" value=""/></div></td>
+    <tr class="tbl_srv_O" onmousemove="table_onmouse(47);">
+      <td><div>39</div></td>
+      <td><div>PA14</div></td>
+      <td><div>PA14</div></td>
+      <td><div>+</div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div><span class="hltext">0_RTS<sup>7</sup></span>, <span class="hltext">1_RTS<sup>8</sup></span></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div><span class="hltext">1_SMBA<sup>4</sup></span>, <span class="hltext">1_SDA<sup>6</sup></span></div></td>
+      <td><div></div></td>
+      <td><div><span class="hltext">JTCK<sup>0</sup></span></div></td>
+      <td><div><span class="hltext">EVENTOUT<sup>15</sup></span></div></td>
+      <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(38);"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
+      <td><div><input type="text" value=""/></div></td>
+    <tr class="tbl_srv_F" onmousemove="table_onmouse(48);">
+      <td><div>40</div></td>
+      <td><div>VCC</div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div>VCC</div></td>
+      <td><div></div></td>
+      <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(39);"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
+      <td><div><input type="text" value=""/></div></td>
+    <tr class="tbl_srv_F" onmousemove="table_onmouse(49);">
+      <td><div>41</div></td>
+      <td><div>GND</div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div></div></td>
+      <td><div>GND</div></td>
+      <td><div></div></td>
+      <td><input name="usersel" type="color" value="#ffffff" onchange="SelectColor(40);"/></td>
+      <td><input type="text" value="" size="2" onchange="PN_input();"/></td>
+      <td><div><input type="text" value=""/></div></td>
+  </tbody>
+</table>
+</div>
+</div>
+<div id="col-2">
+  <canvas id="canvas" onmousemove="cnv_procdrag(event);" onwheel="cnv_wheel(event);">Package</canvas>
+</div>
+<br>
+<details id="details_comments" ontoggle="comm_ontoggle();"><summary>Примечания</summary>
+<p id="comment_1"><sup>1</sup>). Проверить RX/TX на PB3, PB4</p>
+</details>
+
+
+
+</body>

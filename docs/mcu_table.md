@@ -30,6 +30,11 @@ td{
     <td><a href="files/registers/GD32VF103.html">Регистры</a></td>
   </tr>
   <tr>
+    <td>GD32VW553</td>
+    <td><a href="files/pintable/gd32vw553.html">Распиновка</a></td>
+    <td><a href="files/registers/GD32VW553.html">Регистры</a></td>
+  </tr>
+  <tr>
   <td colspan="3">CH32</td>
   </tr>
   <tr>
