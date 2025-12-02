@@ -363,8 +363,8 @@ function cnv_wheel(event){
 function package_draw(){
   const funcs = [
     ["CH32V208GBU6.QFN28X4", package_draw_CH32V208GBU6_QFN28X4],
-    ["CH32V203CBU6.QFN48X7", package_draw_CH32V203CBU6_QFN48X7],
-    ["CH32V203RBT6.LQFP64M", package_draw_CH32V203RBT6_LQFP64M],
+    ["CH32V208CBU6.QFN48X7", package_draw_CH32V208CBU6_QFN48X7],
+    ["CH32V208RBT6.LQFP64M", package_draw_CH32V208RBT6_LQFP64M],
     ["CH32V208WBU6.QFN68", package_draw_CH32V208WBU6_QFN68],
   ];
   const canvas = document.getElementById("canvas");
@@ -575,7 +575,7 @@ function package_draw_CH32V208GBU6_QFN28X4(ctx, tbl, x, y, scale, drawnames){
   ];
   pack_html_draw(ctx, tbl, x, y, scale, 0.038462, pins, pin_names, drawnames, graph);
 }
-function package_draw_CH32V203CBU6_QFN48X7(ctx, tbl, x, y, scale, drawnames){
+function package_draw_CH32V208CBU6_QFN48X7(ctx, tbl, x, y, scale, drawnames){
   const pins = [
     ['r', 0.030488, 0.149390, 0.097561, 0.030488],//0
     ['r', 0.030488, 0.210366, 0.097561, 0.030488],//1
@@ -716,7 +716,7 @@ function package_draw_CH32V203CBU6_QFN48X7(ctx, tbl, x, y, scale, drawnames){
   ];
   pack_html_draw(ctx, tbl, x, y, scale, 0.030488, pins, pin_names, drawnames, graph);
 }
-function package_draw_CH32V203RBT6_LQFP64M(ctx, tbl, x, y, scale, drawnames){
+function package_draw_CH32V208RBT6_LQFP64M(ctx, tbl, x, y, scale, drawnames){
   const pins = [
     ['r', 0.018657, 0.208955, 0.115672, 0.022388],//0
     ['r', 0.018657, 0.246269, 0.115672, 0.022388],//1
@@ -1099,8 +1099,8 @@ function package_draw_CH32V208WBU6_QFN68(ctx, tbl, x, y, scale, drawnames){
 
 <select id="mcuselected" onchange="SelectMCU()">
   <option value="CH32V208GBU6.QFN28X4">CH32V208GBU6.QFN28X4</option>
-  <option value="CH32V203CBU6.QFN48X7">CH32V203CBU6.QFN48X7</option>
-  <option value="CH32V203RBT6.LQFP64M">CH32V203RBT6.LQFP64M</option>
+  <option value="CH32V208CBU6.QFN48X7">CH32V208CBU6.QFN48X7</option>
+  <option value="CH32V208RBT6.LQFP64M">CH32V208RBT6.LQFP64M</option>
   <option value="CH32V208WBU6.QFN68">CH32V208WBU6.QFN68</option>
 </select>
 
@@ -1678,7 +1678,7 @@ function package_draw_CH32V208WBU6_QFN68(ctx, tbl, x, y, scale, drawnames){
       <td><div><input type="text" value=""/></div></td>
   </tbody>
 </table>
-<table name="CH32V203CBU6.QFN48X7" onmouseleave="table_onmouse(-1);" hidden>
+<table name="CH32V208CBU6.QFN48X7" onmouseleave="table_onmouse(-1);" hidden>
   <thead>
     <tr>
       <th><div>Pin</div></th>
@@ -2585,7 +2585,7 @@ function package_draw_CH32V208WBU6_QFN68(ctx, tbl, x, y, scale, drawnames){
       <td><div><input type="text" value=""/></div></td>
   </tbody>
 </table>
-<table name="CH32V203RBT6.LQFP64M" onmouseleave="table_onmouse(-1);" hidden>
+<table name="CH32V208RBT6.LQFP64M" onmouseleave="table_onmouse(-1);" hidden>
   <thead>
     <tr>
       <th><div>Pin</div></th>
